@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>pyportfolios.com — where finance theory, coding &amp; markets converge</title>
+<meta name="description" content="An educational platform that bridges advanced quantitative finance and practical Python implementation — blending technical rigor, real-world application and visual clarity." />
+
+<!-- Fonts: Lora + Courier Prime (Google), Switzer (Fontshare) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+<link href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700,900&display=swap" rel="stylesheet" />
+
+<!-- Tailwind v4 (browser build) -->
+<script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+
+<!-- Tailwind theme tokens (mirrors site/src/app/globals.css @theme) -->
+<style type="text/tailwindcss">
+  @theme {
+    --color-anthracite: #151515;
+    --color-navy: #0a0f1e;
+    --color-ink: #000000;
+    --color-pearl: #eeeeee;
+    --color-sisal: #f4f2e8;
+    --color-paper: #ffffff;
+    --color-aqua: #1fffff;
+    --color-navy-elevated: #0e152a;
+    --color-navy-sunken: #070b16;
+    --color-mist: #98a1b4;
+    --color-steel: #5c647c;
+    --color-graphite: #4a4a42;
+    --color-teal: #0a8a8a;
+    --font-serif: var(--font-lora);
+    --font-sans: var(--font-switzer);
+    --font-mono: var(--font-courier);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+  }
+</style>
+
+<!-- Plain CSS: font-family vars, base, typography, effects (mirrors globals.css) -->
+<style>
+  :root {
+    --font-lora: "Lora", Georgia, serif;
+    --font-switzer: "Switzer", ui-sans-serif, system-ui, sans-serif;
+    --font-courier: "Courier Prime", ui-monospace, monospace;
+
+    --hairline-on-dark: color-mix(in srgb, #eeeeee 8%, transparent);
+    --hairline-strong: color-mix(in srgb, #eeeeee 14%, transparent);
+    --hairline-on-light: color-mix(in srgb, #151515 12%, transparent);
+    --aqua-dim: color-mix(in srgb, #1fffff 15%, transparent);
+
+    --t-display: clamp(2.85rem, 6.4vw + 0.5rem, 6.75rem);
+    --t-h1: clamp(2rem, 3.2vw + 1rem, 3.5rem);
+    --t-h2: clamp(1.45rem, 1.6vw + 0.9rem, 2.1rem);
+
+    --dur-fast: 200ms;
+    --dur-med: 420ms;
+    --dur-slow: 1300ms;
+  }
+
+  body {
+    background: var(--color-navy, #0a0f1e);
+    color: var(--color-pearl, #eeeeee);
+    font-family: var(--font-switzer);
+    font-feature-settings: "ss01", "cv01";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    margin: 0;
+  }
+
+  /* Print-grade film grain — fixed, barely-there */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  ::selection { background: var(--aqua-dim); color: #fff; }
+  .tnum { font-variant-numeric: tabular-nums lining-nums; font-feature-settings: "tnum", "lnum"; }
+  :focus-visible { outline: 1.5px solid #1fffff; outline-offset: 3px; border-radius: 2px; }
+
+  .t-eyebrow { font-family: var(--font-courier); text-transform: uppercase; letter-spacing: 0.32em; font-size: 0.68rem; }
+  .t-display { font-family: var(--font-lora); font-size: var(--t-display); line-height: 1; letter-spacing: -0.025em; font-weight: 480; }
+  .t-display em { font-style: italic; font-weight: 480; }
+  .t-h1 { font-family: var(--font-lora); font-size: var(--t-h1); line-height: 1.08; letter-spacing: -0.018em; font-weight: 500; }
+  .t-h2 { font-family: var(--font-lora); font-size: var(--t-h2); line-height: 1.14; letter-spacing: -0.012em; font-weight: 500; }
+  .t-mono { font-family: var(--font-courier); }
+
+  /* Drop cap — classical editorial flourish for long-form reading */
+  .dropcap::first-letter {
+    font-family: var(--font-lora); font-weight: 500; float: left;
+    font-size: 3.6em; line-height: 0.74; padding: 0.06em 0.12em 0 0; color: var(--color-anthracite, #151515);
+  }
+
+  /* Refined inline link — hairline underline grows from the left on hover */
+  .link-fine { position: relative; }
+  .link-fine::after {
+    content: ""; position: absolute; left: 0; bottom: -3px; height: 1px; width: 100%;
+    background: currentColor; transform: scaleX(0); transform-origin: left;
+    transition: transform var(--dur-med) var(--ease-out-expo);
+  }
+  .link-fine:hover::after { transform: scaleX(1); }
+
+  /* Soft studio aura behind hero — cool luminance, NOT neon */
+  .hero-aura {
+    background:
+      radial-gradient(46% 42% at 30% 32%, color-mix(in srgb, #eeeeee 7%, transparent), transparent 70%),
+      radial-gradient(40% 38% at 72% 24%, color-mix(in srgb, #1fffff 5%, transparent), transparent 72%);
+  }
+
+  /* Edge vignette — gentle gravity toward center, like a printed page */
+  .vignette { box-shadow: inset 0 0 220px 40px color-mix(in srgb, #000000 55%, transparent); }
+
+  .grid-paper {
+    background-image:
+      linear-gradient(to right, var(--hairline-on-dark) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--hairline-on-dark) 1px, transparent 1px);
+    background-size: 58px 58px;
+    -webkit-mask-image: radial-gradient(ellipse 82% 72% at 50% 32%, #000 26%, transparent 80%);
+    mask-image: radial-gradient(ellipse 82% 72% at 50% 32%, #000 26%, transparent 80%);
+  }
+
+  /* Decorative corner ticks — registration-mark motif */
+  .corner-ticks { position: relative; }
+  .corner-ticks::before, .corner-ticks::after {
+    content: ""; position: absolute; width: 9px; height: 9px;
+    border-color: var(--hairline-strong); border-style: solid; pointer-events: none;
+  }
+  .corner-ticks::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
+  .corner-ticks::after { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+
+  .live-dot { position: relative; }
+  .live-dot::before {
+    content: ""; position: absolute; inset: 0; border-radius: 9999px;
+    background: #1fffff; animation: pulse-ring 3.6s var(--ease-out-expo) infinite;
+  }
+  @keyframes pulse-ring { 0% { transform: scale(1); opacity: 0.55; } 70%, 100% { transform: scale(2.3); opacity: 0; } }
+
+  .float-curve { animation: float-curve 18s var(--ease-in-out-quint) infinite; will-change: transform, opacity; }
+  @keyframes float-curve { 0%, 100% { transform: translateY(0); opacity: 0.8; } 50% { transform: translateY(-8px); opacity: 0.95; } }
+
+  .draw-line { stroke-dasharray: 1400; stroke-dashoffset: 1400; animation: draw 2.8s var(--ease-out-expo) forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  .marquee { display: inline-flex; white-space: nowrap; animation: marquee 48s linear infinite; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .float-curve, .marquee, .draw-line, .live-dot::before { animation: none !important; }
+    .draw-line { stroke-dashoffset: 0; }
+  }
+</style>
+</head>
+
+<body>
+<div class="min-h-screen bg-navy text-pearl">
+  <!-- ============ NAV ============ -->
+  <header class="sticky top-0 z-50 border-b border-pearl/10 bg-navy/80 backdrop-blur-md">
+    <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <a href="#top" class="group flex items-baseline gap-1">
+        <span class="text-lg tracking-tight text-pearl" style="font-weight:900">pyportfolios</span>
+        <span class="h-1.5 w-1.5 translate-y-[-2px] rounded-full bg-aqua" aria-hidden="true"></span>
+      </a>
+      <ul class="hidden items-center gap-8 md:flex">
+        <li><a href="#focus" class="t-mono text-xs uppercase tracking-[0.18em] text-mist transition-colors duration-200 hover:text-pearl">Focus</a></li>
+        <li><a href="#literature" class="t-mono text-xs uppercase tracking-[0.18em] text-mist transition-colors duration-200 hover:text-pearl">Literature</a></li>
+        <li><a href="#course" class="t-mono text-xs uppercase tracking-[0.18em] text-mist transition-colors duration-200 hover:text-pearl">Course</a></li>
+        <li><a href="#research" class="t-mono text-xs uppercase tracking-[0.18em] text-mist transition-colors duration-200 hover:text-pearl">Research</a></li>
+      </ul>
+      <div class="flex items-center gap-3">
+        <span class="hidden items-center gap-2 sm:flex">
+          <span class="live-dot inline-block h-1.5 w-1.5 rounded-full bg-aqua" aria-hidden="true"></span>
+          <span class="t-mono text-[0.65rem] uppercase tracking-[0.18em] text-steel">Markets open</span>
+        </span>
+        <a href="#course" class="rounded-sm border border-pearl/20 px-4 py-2 t-mono text-xs uppercase tracking-[0.16em] text-pearl transition-colors duration-200 hover:border-aqua hover:text-aqua">Sign in</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <!-- ============ HERO ============ -->
+    <section class="relative overflow-hidden border-b border-pearl/10">
+      <div class="hero-aura absolute inset-0" aria-hidden="true"></div>
+      <div class="grid-paper absolute inset-0" aria-hidden="true"></div>
+      <svg class="float-curve absolute inset-x-0 bottom-0 h-[58%] w-full" viewBox="0 0 1200 320" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="curveFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1FFFFF" stop-opacity="0.06" />
+            <stop offset="100%" stop-color="#1FFFFF" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+        <path d="M0,300 C120,288 190,250 280,256 C380,262 430,205 540,188 C650,171 690,150 790,118 C880,90 940,98 1040,64 C1110,40 1150,42 1200,28 L1200,320 L0,320 Z" fill="url(#curveFill)" />
+        <path d="M0,300 C120,288 190,250 280,256 C380,262 430,205 540,188 C650,171 690,150 790,118 C880,90 940,98 1040,64 C1110,40 1150,42 1200,28" fill="none" stroke="#1FFFFF" stroke-opacity="0.32" stroke-width="1.25" />
+      </svg>
+      <div class="vignette pointer-events-none absolute inset-0" aria-hidden="true"></div>
+      <div class="relative mx-auto max-w-6xl px-6 py-32 md:py-52">
+        <div class="flex items-center gap-4">
+          <span class="h-px w-10 bg-pearl/25" aria-hidden="true"></span>
+          <p class="t-eyebrow text-mist">Coding · Trading · Markets — Edition III</p>
+        </div>
+        <h1 class="t-display mt-8 max-w-4xl text-pearl">
+          Where finance theory, coding<br class="hidden sm:block" /> &amp; markets <em>converge</em><span class="text-aqua">.</span>
+        </h1>
+        <p class="mt-9 max-w-lg text-lg leading-relaxed text-mist">
+          The platform for the sophisticated coder. Academic-level models, ready-to-run
+          Python, and state-of-the-art frameworks — applied to real data from the world's
+          major exchanges.
+        </p>
+        <div class="mt-12 flex flex-wrap items-center gap-8">
+          <a href="#course" class="group rounded-sm bg-pearl px-8 py-3.5 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua">
+            Start the course
+            <span class="ml-2 inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
+          </a>
+          <a href="#research" class="link-fine t-mono text-sm uppercase tracking-[0.16em] text-pearl/90 transition-colors duration-300 hover:text-pearl">Explore research</a>
+        </div>
+      </div>
+      <div class="relative overflow-hidden border-t border-pearl/10 bg-navy-sunken/50 py-3">
+        <div class="marquee t-mono text-xs uppercase tracking-[0.2em] text-steel">
+          <span class="flex shrink-0">
+            <span class="flex items-center"><span class="px-6">NYSE</span><span class="text-aqua/60">·</span></span>
+            <span class="flex items-center"><span class="px-6">NASDAQ</span><span class="text-aqua/60">·</span></span>
+            <span class="flex items-center"><span class="px-6">CME</span><span class="text-aqua/60">·</span></span>
+            <span class="flex items-center"><span class="px-6">ICE</span><span class="text-aqua/60">·</span></span>
+            <span class="flex items-center"><span class="px-6">CBOE</span><span class="text-aqua/60">·</span></span>
+            <span class="flex items-center"><span class="px-6">EUREX</span><span class="text-aqua/60">·</span></span>
+            <span class="flex items-center"><span class="px-6">LSE</span><span class="text-aqua/60">·</span></span>
+            <span class="flex items-center"><span class="px-6">JPX</span><span class="text-aqua/60">·</span></span>
+            <span class="flex items-center"><span class="px-6">HKEX</span><span class="text-aqua/60">·</span></span>
+            <span class="flex items-center"><span class="px-6">NSE</span><span class="text-aqua/60">·</span></span>
+          </span>
+          <span class="flex shrink-0" aria-hidden="true">
+            <span class="flex items-center"><span class="px-6">NYSE</span><span class="text-aqua/60">·</span></span>
+            <span class="flex items-center"><span class="px-6">NASDAQ</span><span class="text-aqua/60">·</span></span>
+            <span class="flex items-center"><span class="px-6">CME</span><span class="text-aqua/60">·</span></span>
+            <span class="flex items-center"><span class="px-6">ICE</span><span class="text-aqua/60">·</span></span>
+            <span class="flex items-center"><span class="px-6">CBOE</span><span class="text-aqua/60">·</span></span>
+            <span class="flex items-center"><span class="px-6">EUREX</span><span class="text-aqua/60">·</span></span>
+            <span class="flex items-center"><span class="px-6">LSE</span><span class="text-aqua/60">·</span></span>
+            <span class="flex items-center"><span class="px-6">JPX</span><span class="text-aqua/60">·</span></span>
+            <span class="flex items-center"><span class="px-6">HKEX</span><span class="text-aqua/60">·</span></span>
+            <span class="flex items-center"><span class="px-6">NSE</span><span class="text-aqua/60">·</span></span>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 01 COLOR ============ -->
+    <section id="focus" class="mx-auto max-w-6xl px-6 py-28 md:py-32">
+      <div class="mb-10 flex items-baseline gap-4 border-b border-pearl/10 pb-4">
+        <span class="t-mono text-sm text-steel">§ 01</span>
+        <h2 class="t-mono text-sm uppercase tracking-[0.24em] text-mist">Color System</h2>
+      </div>
+      <p class="mb-10 max-w-2xl text-lg leading-relaxed text-mist">
+        Grounded darks, delicate neutrals, and a single charged accent. Aqua signals
+        life — a ticking value, an active state, one insight on a chart — and never more than that.
+      </p>
+      <div class="grid gap-4 sm:grid-cols-3">
+        <div class="overflow-hidden rounded-sm border border-pearl/10">
+          <div class="flex h-28 items-end p-4" style="background:#151515"><span class="tnum t-mono text-sm text-pearl">#151515</span></div>
+          <div class="flex items-center justify-between bg-navy-elevated/60 px-4 py-3"><span class="text-sm font-medium text-pearl">Anthracite</span><span class="t-mono text-[0.7rem] uppercase tracking-[0.12em] text-steel">Strength · Stability</span></div>
+        </div>
+        <div class="overflow-hidden rounded-sm border border-pearl/10">
+          <div class="flex h-28 items-end p-4" style="background:#0A0F1E"><span class="tnum t-mono text-sm text-pearl">#0A0F1E</span></div>
+          <div class="flex items-center justify-between bg-navy-elevated/60 px-4 py-3"><span class="text-sm font-medium text-pearl">Deep Navy</span><span class="t-mono text-[0.7rem] uppercase tracking-[0.12em] text-steel">Trust · Calm</span></div>
+        </div>
+        <div class="overflow-hidden rounded-sm border border-pearl/10">
+          <div class="flex h-28 items-end p-4" style="background:#000000"><span class="tnum t-mono text-sm text-pearl">#000000</span></div>
+          <div class="flex items-center justify-between bg-navy-elevated/60 px-4 py-3"><span class="text-sm font-medium text-pearl">Black</span><span class="t-mono text-[0.7rem] uppercase tracking-[0.12em] text-steel">Authority</span></div>
+        </div>
+      </div>
+      <div class="mt-4 grid gap-4 sm:grid-cols-3">
+        <div class="overflow-hidden rounded-sm border border-pearl/10">
+          <div class="flex h-28 items-end p-4" style="background:#EEEEEE"><span class="tnum t-mono text-sm text-anthracite">#EEEEEE</span></div>
+          <div class="flex items-center justify-between bg-navy-elevated/60 px-4 py-3"><span class="text-sm font-medium text-pearl">Pearl White</span><span class="t-mono text-[0.7rem] uppercase tracking-[0.12em] text-steel">Delicate · Subtle</span></div>
+        </div>
+        <div class="overflow-hidden rounded-sm border border-pearl/10">
+          <div class="flex h-28 items-end p-4" style="background:#F4F2E8"><span class="tnum t-mono text-sm text-anthracite">#F4F2E8</span></div>
+          <div class="flex items-center justify-between bg-navy-elevated/60 px-4 py-3"><span class="text-sm font-medium text-pearl">Pale Sisal</span><span class="t-mono text-[0.7rem] uppercase tracking-[0.12em] text-steel">Elegance</span></div>
+        </div>
+        <div class="overflow-hidden rounded-sm border border-pearl/10">
+          <div class="flex h-28 items-end p-4" style="background:#FFFFFF"><span class="tnum t-mono text-sm text-anthracite">#FFFFFF</span></div>
+          <div class="flex items-center justify-between bg-navy-elevated/60 px-4 py-3"><span class="text-sm font-medium text-pearl">White</span><span class="t-mono text-[0.7rem] uppercase tracking-[0.12em] text-steel">Clean · Peace</span></div>
+        </div>
+      </div>
+      <div class="mt-4">
+        <div class="flex flex-col justify-between gap-4 rounded-sm border border-aqua/30 bg-aqua/[0.06] p-6 sm:flex-row sm:items-center">
+          <div class="flex items-center gap-4">
+            <span class="h-12 w-12 rounded-sm bg-aqua"></span>
+            <div><p class="text-base font-semibold text-pearl">Aqua</p><p class="text-sm text-mist">Vitality — used sparingly</p></div>
+          </div>
+          <span class="tnum t-mono text-sm text-aqua">#1FFFFF</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 02 TYPE ============ -->
+    <section class="border-y border-pearl/10 bg-navy-elevated/40">
+      <div class="mx-auto max-w-6xl px-6 py-28 md:py-32">
+        <div class="mb-10 flex items-baseline gap-4 border-b border-pearl/10 pb-4">
+          <span class="t-mono text-sm text-steel">§ 02</span>
+          <h2 class="t-mono text-sm uppercase tracking-[0.24em] text-mist">Type System</h2>
+        </div>
+        <div class="grid gap-px overflow-hidden rounded-sm border border-pearl/10 bg-pearl/10 md:grid-cols-3">
+          <div class="bg-navy px-7 py-8">
+            <span class="block text-7xl leading-none text-pearl font-serif">Aa</span>
+            <p class="mt-6 text-base font-semibold text-pearl">Lora</p>
+            <p class="t-mono text-[0.7rem] uppercase tracking-[0.16em] text-aqua/70">Headings · Slogans</p>
+            <p class="mt-3 text-sm leading-relaxed text-mist font-serif">Calligraphic serif — tradition &amp; approachability.</p>
+          </div>
+          <div class="bg-navy px-7 py-8">
+            <span class="block text-7xl leading-none text-pearl font-sans" style="font-weight:900">Aa</span>
+            <p class="mt-6 text-base font-semibold text-pearl">Switzer</p>
+            <p class="t-mono text-[0.7rem] uppercase tracking-[0.16em] text-aqua/70">Display · Body</p>
+            <p class="mt-3 text-sm leading-relaxed text-mist font-sans">Clean neo-grotesque — modern, editorial, legible.</p>
+          </div>
+          <div class="bg-navy px-7 py-8">
+            <span class="block text-7xl leading-none text-pearl t-mono">Aa</span>
+            <p class="mt-6 text-base font-semibold text-pearl">Courier Prime</p>
+            <p class="t-mono text-[0.7rem] uppercase tracking-[0.16em] text-aqua/70">Code · Data · Labels</p>
+            <p class="mt-3 text-sm leading-relaxed text-mist t-mono">Refined monospace — tuned for Python snippets.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 03 COMPONENTS ============ -->
+    <section id="literature" class="mx-auto max-w-6xl px-6 py-28 md:py-32">
+      <div class="mb-10 flex items-baseline gap-4 border-b border-pearl/10 pb-4">
+        <span class="t-mono text-sm text-steel">§ 03</span>
+        <h2 class="t-mono text-sm uppercase tracking-[0.24em] text-mist">Components</h2>
+      </div>
+      <div class="grid gap-6 lg:grid-cols-3">
+        <article class="group flex flex-col rounded-sm border border-pearl/10 bg-navy-elevated/50 p-7 transition-all duration-500 hover:-translate-y-0.5 hover:border-pearl/25">
+          <span class="t-mono text-xs uppercase tracking-[0.18em] text-aqua/80">Portfolio Optimization</span>
+          <h3 class="t-h2 mt-4 text-pearl">Ledoit-Wolf shrinkage, from scratch</h3>
+          <p class="mt-3 flex-1 leading-relaxed text-mist">Why the sample covariance matrix fails out-of-sample — and how shrinkage repairs it, with a runnable notebook.</p>
+          <div class="mt-6 flex items-center gap-4 border-t border-pearl/10 pt-4 t-mono text-xs uppercase tracking-[0.14em] text-steel">
+            <span>8 min</span><span class="text-aqua/50">·</span><span>Python</span><span class="text-aqua/50">·</span><span class="text-aqua">Notebook ↗</span>
+          </div>
+        </article>
+        <div class="corner-ticks flex flex-col justify-between rounded-sm border border-pearl/10 bg-navy-elevated/50 p-6">
+          <div class="flex items-start justify-between">
+            <span class="t-mono text-xs uppercase tracking-[0.18em] text-mist">Risk-Parity · Backtest</span>
+            <span class="live-dot inline-block h-2 w-2 rounded-full bg-aqua" aria-hidden="true"></span>
+          </div>
+          <div class="my-6">
+            <p class="tnum t-mono text-5xl font-bold text-pearl">1.87</p>
+            <p class="mt-1 t-mono text-xs uppercase tracking-[0.16em] text-steel">Sharpe (net) · 2009—2025</p>
+          </div>
+          <svg viewBox="0 0 140 40" class="h-9 w-full" aria-hidden="true">
+            <polyline points="0,34 16,30 32,32 48,22 64,26 80,15 96,18 112,9 128,12 140,3" fill="none" stroke="#1FFFFF" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <div class="mt-4 grid grid-cols-2 gap-3 border-t border-pearl/10 pt-4">
+            <div><p class="t-mono text-[0.65rem] uppercase tracking-[0.14em] text-steel">Max DD</p><p class="tnum t-mono text-base text-pearl">−12.4%</p></div>
+            <div><p class="t-mono text-[0.65rem] uppercase tracking-[0.14em] text-steel">Vol</p><p class="tnum t-mono text-base text-aqua">8.9%</p></div>
+          </div>
+        </div>
+        <div class="overflow-hidden rounded-sm border border-pearl/10 bg-navy-sunken/70">
+          <div class="flex items-center gap-2 border-b border-pearl/10 px-4 py-3">
+            <span class="h-2.5 w-2.5 rounded-full bg-pearl/20"></span>
+            <span class="h-2.5 w-2.5 rounded-full bg-pearl/20"></span>
+            <span class="h-2.5 w-2.5 rounded-full bg-aqua/60"></span>
+            <span class="ml-2 t-mono text-xs text-steel">shrinkage.py</span>
+          </div>
+          <pre class="overflow-x-auto p-5 t-mono text-[0.8rem] leading-relaxed"><code><span class="text-steel"># Ledoit-Wolf shrinkage</span>
+<span class="text-aqua">from</span> sklearn.covariance <span class="text-aqua">import</span> LedoitWolf
+
+lw = LedoitWolf().fit(returns)
+cov = lw.covariance_
+w   = inv(cov) @ ones
+w  /= w.sum()  <span class="text-steel"># risk-parity</span></code></pre>
+        </div>
+      </div>
+      <div class="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-pearl/10 pt-6">
+        <span class="t-mono text-xs uppercase tracking-[0.2em] text-steel">The stack</span>
+        <span class="t-mono text-sm text-mist">numpy</span>
+        <span class="t-mono text-sm text-mist">pandas</span>
+        <span class="t-mono text-sm text-mist">scipy</span>
+        <span class="t-mono text-sm text-mist">cvxpy</span>
+        <span class="t-mono text-sm text-mist">scikit-learn</span>
+        <span class="t-mono text-sm text-mist">statsmodels</span>
+        <span class="t-mono text-sm text-mist">PyPortfolioOpt</span>
+        <span class="t-mono text-sm text-mist">vectorbt</span>
+        <span class="t-mono text-sm text-mist">QuantLib</span>
+      </div>
+    </section>
+
+    <!-- ============ 04 DATA / GRAPH ============ -->
+    <section id="research" class="border-y border-pearl/10 bg-navy-elevated/40">
+      <div class="mx-auto grid max-w-6xl items-center gap-12 px-6 py-28 md:py-32 lg:grid-cols-2">
+        <div>
+          <div class="mb-10 flex items-baseline gap-4 border-b border-pearl/10 pb-4">
+            <span class="t-mono text-sm text-steel">§ 04</span>
+            <h2 class="t-mono text-sm uppercase tracking-[0.24em] text-mist">Data &amp; Graphs</h2>
+          </div>
+          <h3 class="t-h1 text-pearl">Information-rich, never overwhelming.</h3>
+          <p class="mt-5 max-w-md text-lg leading-relaxed text-mist">Minimalist graphs with muted borders and a single fresh accent to mark the one insight that matters. Switzer titles, Courier labels, tabular numerals.</p>
+        </div>
+        <figure class="corner-ticks rounded-sm border border-pearl/10 bg-navy-sunken/60 p-7">
+          <svg viewBox="0 0 600 240" class="w-full" role="img" aria-label="Out-of-sample volatility: sample covariance versus Ledoit-Wolf shrinkage across portfolios.">
+            <line x1="0" y1="40" x2="600" y2="40" stroke="#EEEEEE" stroke-opacity="0.06" stroke-width="1" />
+            <line x1="0" y1="90" x2="600" y2="90" stroke="#EEEEEE" stroke-opacity="0.06" stroke-width="1" />
+            <line x1="0" y1="140" x2="600" y2="140" stroke="#EEEEEE" stroke-opacity="0.06" stroke-width="1" />
+            <line x1="0" y1="190" x2="600" y2="190" stroke="#EEEEEE" stroke-opacity="0.06" stroke-width="1" />
+            <line x1="120" y1="0" x2="120" y2="210" stroke="#EEEEEE" stroke-opacity="0.06" stroke-width="1" />
+            <line x1="240" y1="0" x2="240" y2="210" stroke="#EEEEEE" stroke-opacity="0.06" stroke-width="1" />
+            <line x1="360" y1="0" x2="360" y2="210" stroke="#EEEEEE" stroke-opacity="0.06" stroke-width="1" />
+            <line x1="480" y1="0" x2="480" y2="210" stroke="#EEEEEE" stroke-opacity="0.06" stroke-width="1" />
+            <polyline points="0,70 60,96 120,58 180,120 240,78 300,150 360,96 420,170 480,120 540,196 600,150" fill="none" stroke="#59617A" stroke-width="1.5" stroke-linejoin="round" />
+            <path class="draw-line" d="M0,110 C90,108 130,118 200,126 C280,135 320,150 400,156 C470,161 520,172 600,178" fill="none" stroke="#1FFFFF" stroke-width="2.25" stroke-linecap="round" />
+            <circle cx="600" cy="178" r="3.5" fill="#1FFFFF" />
+          </svg>
+          <figcaption class="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-pearl/10 pt-3">
+            <span class="t-mono text-xs uppercase tracking-[0.18em] text-steel">Fig. 01 — Sample vs Shrinkage Covariance · Risk-Parity</span>
+            <span class="flex items-center gap-4 t-mono text-xs">
+              <span class="flex items-center gap-1.5 text-mist"><span class="inline-block h-px w-4 bg-steel"></span> Sample</span>
+              <span class="flex items-center gap-1.5 text-aqua"><span class="inline-block h-px w-4 bg-aqua"></span> Shrinkage</span>
+            </span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============ 05 READING (LIGHT) ============ -->
+    <section id="course" class="bg-sisal text-anthracite">
+      <div class="mx-auto max-w-3xl px-6 py-28">
+        <div class="mb-10 flex items-baseline gap-4 border-b border-anthracite/15 pb-4">
+          <span class="t-mono text-sm text-graphite">§ 05</span>
+          <span class="t-mono text-sm uppercase tracking-[0.24em] text-graphite">Reading Surface — Light</span>
+        </div>
+        <span class="t-mono text-xs uppercase tracking-[0.2em] text-teal">Course · Quant Finance Basics</span>
+        <h3 class="t-h1 mt-4 text-anthracite">Mean-variance, and what it forgets</h3>
+        <p class="dropcap mt-8 text-lg leading-[1.75] text-anthracite/85">
+          Markowitz gave us the efficient frontier in 1952 — a frame so durable it still
+          anchors how institutions think about risk. Yet the moment you estimate inputs from
+          finite data, the optimizer turns into an <em class="font-serif italic">error-maximizing machine</em>.
+          This is the tension every practitioner inherits.
+        </p>
+        <blockquote class="my-10 border-l-2 border-teal pl-6">
+          <p class="font-serif text-2xl italic leading-snug text-anthracite">"The optimizer is exquisitely sensitive to inputs it can never know precisely."</p>
+        </blockquote>
+        <p class="text-lg leading-[1.75] text-anthracite/85">
+          The fix is rarely a fancier optimizer — it is a humbler estimate. Shrink the
+          covariance toward structure, as in <code class="rounded-sm bg-anthracite/[0.06] px-1.5 py-0.5 t-mono text-[0.85em] text-teal">LedoitWolf()</code>,
+          and the out-of-sample frontier stops lying to you.
+        </p>
+        <p class="mt-8 t-mono text-xs uppercase tracking-[0.18em] text-graphite">Same brand · light canvas · long-form legibility</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="bg-navy-sunken">
+    <div class="mx-auto max-w-6xl px-6 py-16">
+      <div class="flex flex-col justify-between gap-10 md:flex-row">
+        <div class="max-w-sm">
+          <div class="flex items-baseline gap-1">
+            <span class="text-lg text-pearl" style="font-weight:900">pyportfolios</span>
+            <span class="h-1.5 w-1.5 translate-y-[-2px] rounded-full bg-aqua" aria-hidden="true"></span>
+          </div>
+          <p class="mt-4 font-serif text-lg italic leading-snug text-mist">Where finance theory, coding &amp; markets converge into your path of growth.</p>
+          <p class="mt-5 t-mono text-xs italic text-steel">Diligam te, Domine, fortitudo mea.</p>
+        </div>
+        <div class="grid grid-cols-2 gap-10 t-mono text-xs">
+          <div>
+            <p class="uppercase tracking-[0.2em] text-steel">Sections</p>
+            <ul class="mt-4 space-y-2.5">
+              <li><a href="#focus" class="text-mist transition-colors hover:text-aqua">Focus</a></li>
+              <li><a href="#literature" class="text-mist transition-colors hover:text-aqua">Literature</a></li>
+              <li><a href="#course" class="text-mist transition-colors hover:text-aqua">Course</a></li>
+              <li><a href="#research" class="text-mist transition-colors hover:text-aqua">Research</a></li>
+            </ul>
+          </div>
+          <div>
+            <p class="uppercase tracking-[0.2em] text-steel">Contact</p>
+            <ul class="mt-4 space-y-2.5 text-mist">
+              <li>pyportfolios@protonmail.com</li>
+              <li>Albuquerque, NM</li>
+              <li class="text-aqua">pyportfolios.com</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="mt-14 flex flex-col justify-between gap-3 border-t border-pearl/10 pt-6 t-mono text-xs uppercase tracking-[0.16em] text-steel sm:flex-row">
+        <span>© 2026 pyportfolios · Visual Identity Edition III</span>
+        <span>Style tile — Quant Research House</span>
+      </div>
+    </div>
+  </footer>
+</div>
+</body>
+</html>

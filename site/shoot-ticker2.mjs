@@ -1,0 +1,11 @@
+import { chromium } from "playwright";
+const b = await chromium.launch();
+const ctx = await b.newContext({ viewport:{width:1180,height:520}, deviceScaleFactor:1, reducedMotion:"reduce" });
+const p = await ctx.newPage();
+await p.goto("http://localhost:1133/v0",{waitUntil:"networkidle",timeout:60000});
+await p.evaluate(()=>document.fonts.ready);
+await p.waitForTimeout(1200);
+const band = await p.$('[aria-label="World markets — live local time and trading status"]');
+if (band) await band.screenshot({ path:"../screenshots/ticker1x.png" });
+await b.close();
+console.log("done");

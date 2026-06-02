@@ -1,0 +1,474 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   pyportfolios.com — design tokens
+   Direction: "Quant Research House" — hedge-fund restraint × editorial warmth.
+   Canvas: hybrid (dark navy brand surfaces / pale sisal reading surfaces).
+   Refinement pass: more air, print-grade texture, surgical accent, no neon.
+   ========================================================================== */
+
+@theme {
+  /* — Brand palette (Edition III) — */
+  --color-anthracite: #151515; /* strength · stability */
+  --color-navy: #0a0f1e; /* trust · calm — primary dark canvas */
+  --color-ink: #000000; /* authority */
+  --color-pearl: #eeeeee; /* delicate neutral — primary text on dark */
+  --color-sisal: #f4f2e8; /* elegance — reading canvas */
+  --color-paper: #ffffff; /* clean */
+  --color-aqua: #1fffff; /* the single charged accent — used sparingly */
+
+  /* — Derived surfaces & ink (dark canvas) — */
+  --color-navy-elevated: #0e152a; /* cards / raised surfaces */
+  --color-navy-sunken: #070b16; /* footer / deepest */
+  --color-mist: #98a1b4; /* muted text on dark (lifted for legibility) */
+  --color-steel: #5c647c; /* faint text / captions on dark */
+
+  /* — Light-surface ink — */
+  --color-graphite: #4a4a42; /* muted text on sisal */
+  --color-teal: #0a8a8a; /* legible accent for links on light */
+
+  /* — Type system — */
+  --font-serif: var(--font-lora);
+  --font-sans: var(--font-switzer);
+  --font-mono: var(--font-courier);
+
+  /* — Motion (unhurried, expensive) — */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quint: cubic-bezier(0.83, 0, 0.17, 1);
+}
+
+:root {
+  /* Hairlines — the structural grammar (ledger / working-paper). Finer = classier. */
+  --hairline-on-dark: color-mix(in srgb, var(--color-pearl) 8%, transparent);
+  --hairline-strong: color-mix(in srgb, var(--color-pearl) 14%, transparent);
+  --hairline-on-light: color-mix(in srgb, var(--color-anthracite) 12%, transparent);
+  --aqua-dim: color-mix(in srgb, var(--color-aqua) 15%, transparent);
+
+  /* Fluid type scale — a touch more drama at the top end */
+  --t-display: clamp(2.85rem, 6.4vw + 0.5rem, 6.75rem);
+  --t-h1: clamp(2rem, 3.2vw + 1rem, 3.5rem);
+  --t-h2: clamp(1.45rem, 1.6vw + 0.9rem, 2.1rem);
+
+  --dur-fast: 200ms;
+  --dur-med: 420ms;
+  --dur-slow: 1300ms;
+}
+
+/* ------------------------------------------------------------------ base -- */
+@layer base {
+  body {
+    background: var(--color-navy);
+    color: var(--color-pearl);
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "ss01", "cv01";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Print-grade film grain — fixed, GPU-cheap, barely-there. Premium tactility. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  ::selection {
+    background: var(--aqua-dim);
+    color: var(--color-paper);
+  }
+
+  .tnum {
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: "tnum", "lnum";
+  }
+
+  :focus-visible {
+    outline: 1.5px solid var(--color-aqua);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+/* ------------------------------------------------------------ typography -- */
+.t-eyebrow {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  font-size: 0.68rem;
+}
+.t-display {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: var(--t-display);
+  line-height: 1;
+  letter-spacing: -0.025em;
+  font-weight: 480; /* lighter than before — editorial elegance over heft */
+}
+.t-display em {
+  font-style: italic;
+  font-weight: 480;
+}
+.t-h1 {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: var(--t-h1);
+  line-height: 1.08;
+  letter-spacing: -0.018em;
+  font-weight: 500;
+}
+.t-h2 {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: var(--t-h2);
+  line-height: 1.14;
+  letter-spacing: -0.012em;
+  font-weight: 500;
+}
+.t-mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+/* Drop cap — classical editorial flourish for long-form reading surfaces */
+.dropcap::first-letter {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 500;
+  float: left;
+  font-size: 3.6em;
+  line-height: 0.74;
+  padding: 0.06em 0.12em 0 0;
+  color: var(--color-anthracite);
+}
+
+/* Refined inline link — hairline underline that grows from the left on hover */
+.link-fine {
+  position: relative;
+}
+.link-fine::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 1px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-med) var(--ease-out-expo);
+}
+.link-fine:hover::after {
+  transform: scaleX(1);
+}
+
+/* ===== v11 "The Quarterly" — classic editorial utilities (tone-aware) =====
+   Devices reference --ed-ink so the same masthead/leaders/plates work on either
+   canvas. Default = anthracite (light); .editorial-dark flips ink to pearl so
+   the journal sits on the brand's PRIMARY dark surface (deck: darks are primary). */
+.editorial-dark {
+  --ed-ink: var(--color-pearl);
+  --ed-cap: var(--color-pearl);
+}
+
+/* double rule — periodical masthead convention */
+.rule-double {
+  position: relative;
+  border-top: 1px solid color-mix(in srgb, var(--ed-ink, #151515) 50%, transparent);
+}
+.rule-double::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 4px;
+  border-top: 1px solid color-mix(in srgb, var(--ed-ink, #151515) 20%, transparent);
+}
+
+/* oversized editorial drop cap */
+.dropcap-xl::first-letter {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 600;
+  float: left;
+  font-size: 5em;
+  line-height: 0.64;
+  padding: 0.05em 0.14em 0 0;
+  color: var(--ed-cap, var(--color-anthracite));
+}
+
+/* classic table-of-contents dot leaders */
+.leader { display: flex; align-items: baseline; gap: 0.75rem; }
+.leader > .leader-fill {
+  flex: 1 1 auto;
+  align-self: stretch;
+  border-bottom: 1px dotted color-mix(in srgb, var(--ed-ink, #151515) 32%, transparent);
+  transform: translateY(-0.3em);
+}
+
+/* engraved plate frame — thin line · gap · thin line */
+.plate-frame {
+  border: 1px solid color-mix(in srgb, var(--ed-ink, #151515) 22%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--ed-ink, #151515) 22%, transparent);
+  outline-offset: 5px;
+}
+
+/* oldstyle figures for running serif text */
+.onum { font-variant-numeric: oldstyle-nums proportional-nums; }
+
+/* --------------------------------------------------------------- effects -- */
+
+/* Soft studio aura behind the hero headline — cool luminance, NOT neon glow */
+.hero-aura {
+  background:
+    radial-gradient(46% 42% at 30% 32%, color-mix(in srgb, var(--color-pearl) 7%, transparent), transparent 70%),
+    radial-gradient(40% 38% at 72% 24%, color-mix(in srgb, var(--color-aqua) 5%, transparent), transparent 72%);
+}
+
+/* Edge vignette — gentle gravity toward the center, like a printed page */
+.vignette {
+  box-shadow: inset 0 0 220px 40px color-mix(in srgb, var(--color-ink) 55%, transparent);
+}
+
+/* Faint graph-paper grid for hero/data backdrops */
+.grid-paper {
+  background-image:
+    linear-gradient(to right, var(--hairline-on-dark) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--hairline-on-dark) 1px, transparent 1px);
+  background-size: 58px 58px;
+  -webkit-mask-image: radial-gradient(ellipse 82% 72% at 50% 32%, #000 26%, transparent 80%);
+  mask-image: radial-gradient(ellipse 82% 72% at 50% 32%, #000 26%, transparent 80%);
+}
+
+/* Editorial photo treatment — subtle grain over the duotone scene (deck §05) */
+.photo-duotone {
+  position: relative;
+}
+.photo-duotone::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+
+/* Decorative corner ticks — tasteful terminal/registration-mark motif */
+.corner-ticks {
+  position: relative;
+}
+.corner-ticks::before,
+.corner-ticks::after {
+  content: "";
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-color: var(--hairline-strong);
+  border-style: solid;
+  pointer-events: none;
+}
+.corner-ticks::before {
+  top: -1px;
+  left: -1px;
+  border-width: 1px 0 0 1px;
+}
+.corner-ticks::after {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 1px 1px 0;
+}
+
+/* "Live" status dot — refined, smaller, slower breath */
+.live-dot {
+  position: relative;
+}
+.live-dot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: var(--color-aqua);
+  animation: pulse-ring 3.6s var(--ease-out-expo) infinite;
+}
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.55; }
+  70%, 100% { transform: scale(2.3); opacity: 0; }
+}
+
+/* Ambient float for the hero equity curve — slower, calmer */
+.float-curve {
+  animation: float-curve 18s var(--ease-in-out-quint) infinite;
+  will-change: transform, opacity;
+}
+@keyframes float-curve {
+  0%, 100% { transform: translateY(0); opacity: 0.8; }
+  50% { transform: translateY(-8px); opacity: 0.95; }
+}
+
+/* Draw-on for the SVG line in the figure */
+.draw-line {
+  stroke-dasharray: 1400;
+  stroke-dashoffset: 1400;
+  animation: draw 2.8s var(--ease-out-expo) forwards;
+}
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Marquee ticker (track is duplicated in markup → translate -50%) */
+.marquee {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee 48s linear infinite;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Pause the drift on hover/focus — auto-motion must never fight a reader. */
+.marquee:hover,
+.marquee:focus-within {
+  animation-play-state: paused;
+}
+
+/* World-markets ticker — soft edge fade so cities arrive and leave gracefully. */
+.ticker-mask {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+}
+
+/* Reduced motion: no drift, no pulse — a calm, manually scrollable tape. */
+@media (prefers-reduced-motion: reduce) {
+  .ticker-mask {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .ticker-mask::-webkit-scrollbar { display: none; }
+  .ticker-mask .marquee > [aria-hidden="true"] { display: none; }
+}
+
+/* Scroll-reveal — progressive enhancement, no-op where unsupported */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 24%;
+    }
+  }
+}
+@keyframes reveal-in {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Honor reduced-motion globally */
+@media (prefers-reduced-motion: reduce) {
+  .float-curve,
+  .marquee,
+  .draw-line,
+  .live-dot::before {
+    animation: none !important;
+  }
+  .draw-line { stroke-dashoffset: 0; }
+}
+
+/* ===================================================== article surface ===
+   Long-form reading lives on the light (Pale Sisal) canvas. Code, by contrast,
+   sits on the brand's dark navy — a deliberate dual-canvas punctuation that
+   echoes the hero. Build-time highlighting → these are static spans. */
+
+.code-card {
+  background: var(--color-navy);
+  border: 1px solid var(--hairline-on-dark);
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--color-anthracite) 8%, transparent);
+}
+.code-card pre { margin: 0; }
+.code-card code { display: block; white-space: pre; }
+
+/* Python token palette — kept inside the brand (navy/pearl/aqua/sisal). */
+.tok-com { color: var(--color-steel); font-style: italic; }
+.tok-str { color: #cdc6a9; }            /* dim sisal — quiet, warm */
+.tok-kw  { color: var(--color-aqua); }  /* the single charged accent */
+.tok-num { color: var(--color-mist); }
+
+/* Long-form measure: numerals align, links carry a fine teal underline. */
+.article-body { font-feature-settings: "ss01", "cv01"; }
+.article-body a:not(.code-card a) {
+  color: var(--color-teal);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* ===================================================== purposeful motion ===
+   Each rule earns its keep — continuity, attention, feedback, or live state —
+   and every one degrades to a static equivalent under reduced-motion. */
+
+/* (1) Page cross-dissolve for the dark↔light canvas change (View Transitions
+   API). The default root snapshot already cross-fades; we only tune timing. */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 360ms;
+    animation-timing-function: var(--ease-out-expo);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* (2) Figure insight-line draws itself as it scrolls into view — the eye
+   follows the finding. dasharray > path length, so with no animation the line
+   simply shows solid (the safe fallback for reduced-motion / older engines). */
+.draw-on-view { stroke-dasharray: 1200; }
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .draw-on-view {
+      stroke-dashoffset: 1200;
+      animation: draw 1.5s var(--ease-out-expo) both;
+      animation-timeline: view();
+      animation-range: entry 6% cover 34%;
+    }
+  }
+}
+
+/* (3) Nav condenses once you scroll past the hero — "you've left the top".
+   Scroll-driven (Chromium-progressive); static everywhere else. */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .nav-condense {
+      animation: nav-condense linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 200px;
+    }
+    .nav-logo {
+      animation: nav-logo-shrink linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 200px;
+      transform-origin: left center;
+    }
+  }
+}
+@keyframes nav-condense {
+  to { padding-top: 0.55rem; padding-bottom: 0.55rem; }
+}
+@keyframes nav-logo-shrink {
+  to { transform: scale(0.88); }
+}
+
+/* (4) Value flash — a quiet aqua brighten on live state change (feedback). */
+@keyframes value-flash {
+  0% { color: var(--color-aqua); text-shadow: 0 0 10px var(--aqua-dim); }
+  100% { color: inherit; text-shadow: none; }
+}
+.value-flash { animation: value-flash 750ms var(--ease-out-expo); }
+@media (prefers-reduced-motion: reduce) {
+  .value-flash { animation: none; }
+}

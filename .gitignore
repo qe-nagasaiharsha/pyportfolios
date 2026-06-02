@@ -1,0 +1,22 @@
+# ── pyportfolios.com ──────────────────────────────────────────────
+
+# Dependencies & build output (also covered by site/.gitignore)
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+
+# Client source material — raw downloads, not part of the build
+/Louis Chakkalakala Upwork-20260529T204855Z-3-001.zip
+/Louis Chakkalakala Upwork-20260529T204855Z-3-001/
+
+# nginx runtime prefix (logs/temp/pid generated when serving locally)
+/deploy/nginx-runtime/
+
+# Dev capture artifacts — regenerable via site/shoot*.mjs
+/screenshots/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.log

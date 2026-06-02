@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>pyportfolios · Contract Room — Milestone 1 Package</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..600;1,400..500&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  /* ===== pyportfolios brand tokens (Edition III) ===== */
+  :root {
+    --navy: #0a0f1e;
+    --navy-elevated: #0e152a;
+    --navy-sunken: #070b16;
+    --pearl: #eeeeee;
+    --mist: #98a1b4;
+    --steel: #5c647c;
+    --aqua: #1fffff;
+    --sisal: #f4f2e8;
+
+    --hairline: color-mix(in srgb, var(--pearl) 8%, transparent);
+    --hairline-strong: color-mix(in srgb, var(--pearl) 14%, transparent);
+    --aqua-dim: color-mix(in srgb, var(--aqua) 14%, transparent);
+
+    --serif: "Lora", Georgia, serif;
+    --mono: "Courier Prime", ui-monospace, monospace;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--navy);
+    color: var(--pearl);
+    font-family: var(--sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    padding: clamp(1.25rem, 4vw, 4rem) 1.25rem 4rem;
+  }
+
+  /* faint film grain — premium tactility */
+  body::after {
+    content: ""; position: fixed; inset: 0; z-index: 9999;
+    pointer-events: none; opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .wrap { max-width: 56rem; margin-inline: auto; }
+
+  .tnum { font-variant-numeric: tabular-nums lining-nums; }
+  .mono { font-family: var(--mono); }
+  .eyebrow {
+    font-family: var(--mono); text-transform: uppercase;
+    letter-spacing: 0.28em; font-size: 0.66rem; color: var(--steel);
+  }
+
+  /* ===== masthead ===== */
+  header { text-align: center; padding-bottom: 2.5rem; }
+  .wordmark {
+    display: inline-flex; align-items: baseline; gap: 0.35rem;
+    font-weight: 900; font-size: 1.15rem; letter-spacing: -0.02em;
+  }
+  .wordmark .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--aqua); transform: translateY(-3px); }
+  header h1 {
+    font-family: var(--serif); font-weight: 500; letter-spacing: -0.02em;
+    font-size: clamp(1.9rem, 4vw + 1rem, 3rem); line-height: 1.05;
+    margin-top: 1.4rem;
+  }
+  header h1 em { font-style: italic; color: var(--mist); }
+  header .sub { color: var(--mist); margin-top: 0.9rem; font-size: 1.02rem; }
+
+  .rule { border: 0; border-top: 1px solid var(--hairline-strong); position: relative; margin: 1.6rem 0; }
+  .rule::after { content: ""; position: absolute; inset-inline: 0; top: 4px; border-top: 1px solid var(--hairline); }
+
+  /* ===== summary stats ===== */
+  .stats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    border: 1px solid var(--hairline); border-radius: 3px; overflow: hidden;
+    background: var(--hairline); gap: 1px; margin-bottom: 3rem;
+  }
+  .stat { background: var(--navy-elevated); padding: 1.1rem 1.25rem; }
+  .stat .k { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--steel); }
+  .stat .v { font-family: var(--serif); font-size: 1.65rem; margin-top: 0.35rem; }
+  .stat .v small { font-size: 0.85rem; color: var(--mist); }
+  @media (max-width: 640px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+
+  /* ===== timeline ===== */
+  .section-label { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+  .section-label .line { height: 1px; width: 2rem; background: color-mix(in srgb, var(--aqua) 55%, transparent); }
+  .section-label h2 { font-family: var(--mono); font-size: 0.82rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--mist); font-weight: 400; }
+
+  .timeline { position: relative; padding-left: 2.25rem; }
+  .timeline::before {
+    content: ""; position: absolute; left: 7px; top: 6px; bottom: 6px;
+    width: 1px; background: linear-gradient(var(--hairline-strong), var(--hairline));
+  }
+
+  .ms { position: relative; margin-bottom: 1.1rem; }
+  .ms::before {
+    content: ""; position: absolute; left: -2.25rem; top: 1.55rem;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--navy); border: 1px solid var(--steel);
+    transform: translateX(0);
+  }
+  .ms[data-status="delivered"]::before { background: var(--aqua); border-color: var(--aqua); box-shadow: 0 0 0 4px var(--aqua-dim); }
+  .ms[data-status="active"]::before { border-color: var(--aqua); box-shadow: 0 0 0 4px var(--aqua-dim); }
+
+  .card {
+    border: 1px solid var(--hairline); border-radius: 4px;
+    background: var(--navy-elevated); padding: 1.5rem 1.6rem;
+    transition: transform 0.42s var(--ease), border-color 0.42s var(--ease);
+  }
+  .ms[data-status="active"] .card { border-color: color-mix(in srgb, var(--aqua) 35%, transparent); }
+  .card:hover { transform: translateY(-2px); border-color: var(--hairline-strong); }
+
+  .card .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+  .card .idx { font-family: var(--serif); font-size: 2.2rem; line-height: 1; color: color-mix(in srgb, var(--pearl) 22%, transparent); }
+  .card h3 { font-family: var(--serif); font-weight: 500; font-size: 1.3rem; letter-spacing: -0.01em; margin-top: 0.35rem; }
+  .card p { color: var(--mist); margin-top: 0.7rem; max-width: 46ch; font-size: 0.96rem; }
+
+  .meta { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+  .amount { font-family: var(--serif); font-size: 1.5rem; }
+  .due { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--steel); }
+  .due b { color: var(--mist); font-weight: 400; }
+
+  .badge {
+    font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.16em;
+    text-transform: uppercase; padding: 0.3rem 0.65rem; border-radius: 999px;
+    border: 1px solid var(--hairline-strong); color: var(--mist);
+    display: inline-flex; align-items: center; gap: 0.45rem; white-space: nowrap;
+  }
+  .badge[data-s="delivered"] { background: var(--aqua); color: var(--navy); border-color: var(--aqua); font-weight: 700; }
+  .badge[data-s="active"] { border-color: var(--aqua); color: var(--aqua); }
+  .badge[data-s="upcoming"] { color: var(--steel); }
+  .pulse { width: 6px; height: 6px; border-radius: 50%; background: currentColor; position: relative; }
+  .badge[data-s="active"] .pulse::after {
+    content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--aqua);
+    animation: pulse 3s var(--ease) infinite;
+  }
+  @keyframes pulse { 0% { transform: scale(1); opacity: 0.6; } 70%,100% { transform: scale(2.6); opacity: 0; } }
+
+  .deliverables { margin-top: 1.1rem; padding-top: 1rem; border-top: 1px solid var(--hairline); display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .chip { font-family: var(--mono); font-size: 0.68rem; color: var(--mist); border: 1px solid var(--hairline); border-radius: 3px; padding: 0.3rem 0.6rem; }
+  .chip.done { color: var(--aqua); border-color: color-mix(in srgb, var(--aqua) 30%, transparent); }
+
+  /* ===== totals footer ===== */
+  .totals {
+    margin-top: 2.5rem; border: 1px solid var(--hairline); border-radius: 4px;
+    background: var(--navy-sunken); padding: 1.4rem 1.6rem;
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
+  }
+  .progress-wrap { flex: 1 1 16rem; }
+  .bar { height: 6px; border-radius: 999px; background: var(--hairline-strong); overflow: hidden; margin-top: 0.6rem; }
+  .bar > span { display: block; height: 100%; width: 25%; background: var(--aqua); border-radius: 999px; }
+  .grand { font-family: var(--serif); font-size: 2rem; }
+  .grand small { color: var(--mist); font-size: 0.9rem; }
+
+  footer.note { text-align: center; margin-top: 2.5rem; color: var(--steel); font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; }
+  footer.note .aqua { color: var(--aqua); }
+
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="wordmark">pyportfolios<span class="dot" aria-hidden="true"></span></span>
+    <p class="eyebrow" style="margin-top:1.5rem">Upwork · Contract Room</p>
+    <h1>Milestone 1 Package<br /><em>Website build &amp; research library</em></h1>
+    <p class="sub">Four funded milestones · biweekly package · 01–14 June 2026</p>
+    <hr class="rule" />
+  </header>
+
+  <section class="stats" aria-label="Package summary">
+    <div class="stat"><div class="k">Package value</div><div class="v tnum">$400<small> .00</small></div></div>
+    <div class="stat"><div class="k">Milestones</div><div class="v tnum">4</div></div>
+    <div class="stat"><div class="k">Window</div><div class="v tnum">Jun 1–14</div></div>
+    <div class="stat"><div class="k">Per milestone</div><div class="v tnum">$100<small> .00</small></div></div>
+  </section>
+
+  <div class="section-label"><span class="line" aria-hidden="true"></span><h2>Milestones</h2></div>
+
+  <div class="timeline">
+
+    <!-- Milestone 1 -->
+    <article class="ms" data-status="delivered">
+      <div class="card">
+        <div class="top">
+          <div>
+            <span class="idx tnum">1</span>
+            <h3>Landing page — pyportfolios.com</h3>
+          </div>
+          <span class="badge" data-s="delivered"><span class="pulse" aria-hidden="true"></span>Delivered</span>
+        </div>
+        <p>The brand landing page in the agreed “Quant Research House” theme — focus, markets, libraries, models, geographies, and course, built to the fin.ai quality bar.</p>
+        <div class="deliverables">
+          <span class="chip done">Hero + equity curve</span>
+          <span class="chip done">Focus · Markets · Libraries · Models</span>
+          <span class="chip done">Geographies · Course</span>
+          <span class="chip done">v0–v5 + v11 variants</span>
+        </div>
+        <div class="deliverables" style="border:0;padding-top:0.9rem">
+          <div class="meta">
+            <span class="amount tnum">$100.00</span>
+            <span class="due">Due · <b>Jun 2</b></span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Milestone 2 -->
+    <article class="ms" data-status="active">
+      <div class="card">
+        <div class="top">
+          <div>
+            <span class="idx tnum">2</span>
+            <h3>Article pages — 4 categories, 8 articles</h3>
+          </div>
+          <span class="badge" data-s="active"><span class="pulse" aria-hidden="true"></span>In progress</span>
+        </div>
+        <p>Eight article pages across four categories — two articles &amp; notebooks each — in a reusable editorial template (sticky contents, inline code, figures, a downloadable notebook per article).</p>
+        <div class="deliverables">
+          <span class="chip">Finance Fundamentals ×2</span>
+          <span class="chip">Portfolio Optimization ×2</span>
+          <span class="chip">Risk Management ×2</span>
+          <span class="chip">Algorithmic Trading ×2</span>
+          <span class="chip">8 Jupyter notebooks</span>
+        </div>
+        <div class="deliverables" style="border:0;padding-top:0.9rem">
+          <div class="meta">
+            <span class="amount tnum">$100.00</span>
+            <span class="due">Due · <b>Jun 6</b></span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Milestone 3 -->
+    <article class="ms" data-status="upcoming">
+      <div class="card">
+        <div class="top">
+          <div>
+            <span class="idx tnum">3</span>
+            <h3>Literature library — books &amp; landmark papers</h3>
+          </div>
+          <span class="badge" data-s="upcoming"><span class="pulse" aria-hidden="true"></span>Upcoming</span>
+        </div>
+        <p>A curated list of the top 25–50 quant-finance, portfolio-optimization and trading books, plus the academic journal papers that shaped quant finance over the last 75 years (Markowitz, Black–Litterman, Ledoit–Wolf …).</p>
+        <div class="deliverables">
+          <span class="chip">Top 25–50 books</span>
+          <span class="chip">Landmark journal papers</span>
+          <span class="chip">75-year span</span>
+        </div>
+        <div class="deliverables" style="border:0;padding-top:0.9rem">
+          <div class="meta">
+            <span class="amount tnum">$100.00</span>
+            <span class="due">Due · <b>Jun 10</b></span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Milestone 4 -->
+    <article class="ms" data-status="upcoming">
+      <div class="card">
+        <div class="top">
+          <div>
+            <span class="idx tnum">4</span>
+            <h3>Course category — Quant Finance Basics</h3>
+          </div>
+          <span class="badge" data-s="upcoming"><span class="pulse" aria-hidden="true"></span>Upcoming</span>
+        </div>
+        <p>The existing course structure for quant-finance basics, set up as its own separate category within the platform.</p>
+        <div class="deliverables">
+          <span class="chip">Course structure</span>
+          <span class="chip">Separate category</span>
+        </div>
+        <div class="deliverables" style="border:0;padding-top:0.9rem">
+          <div class="meta">
+            <span class="amount tnum">$100.00</span>
+            <span class="due">Due · <b>Jun 14</b></span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </div>
+
+  <section class="totals" aria-label="Progress">
+    <div class="progress-wrap">
+      <span class="eyebrow">Package progress · 1 of 4 delivered</span>
+      <div class="bar"><span></span></div>
+    </div>
+    <div class="grand tnum">$100 <small>/ $400 funded</small></div>
+  </section>
+
+  <footer class="note">
+    Where finance theory, coding &amp; markets converge · <span class="aqua">pyportfolios.com</span>
+  </footer>
+
+</div>
+</body>
+</html>

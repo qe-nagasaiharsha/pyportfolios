@@ -1,0 +1,10 @@
+import { chromium } from "playwright";
+const b = await chromium.launch();
+const ctx = await b.newContext({ viewport:{width:1440,height:900}, deviceScaleFactor:1.5, reducedMotion:"reduce" });
+const p = await ctx.newPage();
+const errs=[]; p.on("console",m=>{if(m.type()==="error")errs.push(m.text())}); p.on("pageerror",e=>errs.push(String(e)));
+await p.goto("http://localhost:1133/v2",{waitUntil:"networkidle",timeout:60000});
+await p.evaluate(()=>document.fonts.ready); await p.waitForTimeout(500);
+await p.screenshot({path:"../screenshots/final-v2.png",fullPage:true});
+console.log("v2 | console errors:", errs.length?errs.join("; "):"none");
+await b.close();

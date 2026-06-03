@@ -7,6 +7,7 @@
    ========================================================================== */
 
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import type { Variant } from "@/lib/variants";
 import { Crest, CrestLockup } from "@/components/brand/Crest";
 import { PhotoPlate } from "@/components/brand/PhotoPlate";
@@ -14,9 +15,19 @@ import { StackCards } from "@/components/brand/StackCards";
 import { WorldMap, EXCHANGES_BY_REGION } from "@/components/brand/WorldMap";
 import { SloganBand } from "@/components/brand/SloganBand";
 import { VersionSwitcher } from "@/components/VersionSwitcher";
-import { WorldMarkets } from "@/components/WorldMarkets";
+import { WorldSphere } from "@/components/WorldSphere";
 import { CountUp } from "@/components/motion/CountUp";
 import { TransitionLink } from "@/components/motion/TransitionLink";
+import { HowItWorks } from "@/components/landing/HowItWorks";
+import { LessonDemo } from "@/components/landing/LessonDemo";
+import { StatsBand } from "@/components/landing/StatsBand";
+import { Pricing } from "@/components/landing/Pricing";
+import { FAQ } from "@/components/landing/FAQ";
+import { EarlyAccess } from "@/components/landing/EarlyAccess";
+import { ScrollReveal } from "@/components/motion/ScrollReveal";
+import { Tilt } from "@/components/motion/Tilt";
+import { EquityCurve } from "@/components/charts/EquityCurve";
+import { ReturnsHistogram } from "@/components/charts/ReturnsHistogram";
 
 const NAV = ["Focus", "Markets", "Course", "Research"] as const;
 
@@ -68,16 +79,7 @@ function HeroCurve() {
         </linearGradient>
       </defs>
       <path d="M0,300 C120,288 190,250 280,256 C380,262 430,205 540,188 C650,171 690,150 790,118 C880,90 940,98 1040,64 C1110,40 1150,42 1200,28 L1200,320 L0,320 Z" fill="url(#curveFill)" />
-      <path d="M0,300 C120,288 190,250 280,256 C380,262 430,205 540,188 C650,171 690,150 790,118 C880,90 940,98 1040,64 C1110,40 1150,42 1200,28" fill="none" stroke="#1FFFFF" strokeOpacity="0.32" strokeWidth="1.25" />
-    </svg>
-  );
-}
-
-function Sparkline() {
-  return (
-    <svg viewBox="0 0 140 40" className="h-9 w-full" aria-hidden="true">
-      <polyline points="0,34 16,30 32,32 48,22 64,26 80,15 96,18 112,9 128,12 140,3"
-        fill="none" stroke="#1FFFFF" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+      <path className="draw-line" d="M0,300 C120,288 190,250 280,256 C380,262 430,205 540,188 C650,171 690,150 790,118 C880,90 940,98 1040,64 C1110,40 1150,42 1200,28" fill="none" stroke="#1FFFFF" strokeOpacity="0.32" strokeWidth="1.25" />
     </svg>
   );
 }
@@ -93,7 +95,7 @@ function FigureCovariance() {
         {gridX.map((x) => <line key={`x${x}`} x1={x} y1="0" x2={x} y2="210" stroke="#EEEEEE" strokeOpacity="0.06" strokeWidth="1" />)}
         <polyline points="0,70 60,96 120,58 180,120 240,78 300,150 360,96 420,170 480,120 540,196 600,150"
           fill="none" stroke="#59617A" strokeWidth="1.5" strokeLinejoin="round" />
-        <path className="draw-line" d="M0,110 C90,108 130,118 200,126 C280,135 320,150 400,156 C470,161 520,172 600,178"
+        <path className="draw-path" style={{ "--len": "760" } as CSSProperties} d="M0,110 C90,108 130,118 200,126 C280,135 320,150 400,156 C470,161 520,172 600,178"
           fill="none" stroke="#1FFFFF" strokeWidth="2.25" strokeLinecap="round" />
         <circle cx="600" cy="178" r="3.5" fill="#1FFFFF" />
       </svg>
@@ -114,6 +116,7 @@ export default function StyleTile({ variant }: { variant: Variant }) {
 
   return (
     <div className="min-h-screen bg-navy text-pearl">
+      <ScrollReveal />
       {/* ============ STICKY TOP: version toggle row + site nav ========= */}
       <div className="sticky top-0 z-50">
         <VersionSwitcher />
@@ -154,45 +157,62 @@ export default function StyleTile({ variant }: { variant: Variant }) {
           <div className="grid-paper absolute inset-0" aria-hidden="true" />
           <HeroCurve />
           <div className="vignette pointer-events-none absolute inset-0" aria-hidden="true" />
-          <div className="relative mx-auto max-w-6xl px-6 py-32 md:py-52">
-            {f.crest ? (
-              <div className="mb-8"><Crest size={56} tone="light" /></div>
-            ) : null}
-            <div className="flex items-center gap-4">
-              <span className="h-px w-10 bg-pearl/25" aria-hidden="true" />
-              <p className="t-eyebrow text-mist">{heroEyebrow}</p>
-            </div>
-            <h1 className="t-display mt-8 max-w-4xl text-pearl">
-              Where finance theory, coding<br className="hidden sm:block" /> &amp; markets <em>converge</em><span className="text-aqua">.</span>
-            </h1>
-            <p className="mt-9 max-w-lg text-lg leading-relaxed text-mist">
-              The platform for the sophisticated coder. Academic-level models, ready-to-run
-              Python, and state-of-the-art frameworks — applied to real data from the world&apos;s major exchanges.
-            </p>
-            <div className="mt-12 flex flex-wrap items-center gap-8">
-              <a href="#course" className="group rounded-sm bg-pearl px-8 py-3.5 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua">
-                Start the course
-                <span className="ml-2 inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
-              </a>
-              <a href="#research" className="link-fine t-mono text-sm uppercase tracking-[0.16em] text-pearl/90 transition-colors duration-300 hover:text-pearl">Explore research</a>
+          <div className="relative mx-auto max-w-6xl px-6 py-24 md:py-32">
+            <div className="grid items-center gap-x-12 gap-y-14 lg:grid-cols-[1.04fr_minmax(0,0.96fr)]">
+              {/* message */}
+              <div>
+                {f.crest ? (
+                  <div className="hero-in mb-8" style={{ "--hero-delay": "0ms" } as CSSProperties}><Crest size={56} tone="light" /></div>
+                ) : null}
+                <div className="hero-in flex items-center gap-4" style={{ "--hero-delay": "60ms" } as CSSProperties}>
+                  <span className="h-px w-10 bg-pearl/25" aria-hidden="true" />
+                  <p className="t-eyebrow text-mist">{heroEyebrow}</p>
+                </div>
+                <h1 className="hero-in t-display mt-8 max-w-xl text-pearl" style={{ "--hero-delay": "150ms" } as CSSProperties}>
+                  Where finance theory, coding<br className="hidden sm:block" /> &amp; markets <em className="converge-underline">converge</em><span className="text-aqua">.</span>
+                </h1>
+                <p className="hero-in mt-9 max-w-lg text-lg leading-relaxed text-mist" style={{ "--hero-delay": "300ms" } as CSSProperties}>
+                  The platform for the sophisticated coder. Academic-level models, ready-to-run
+                  Python, and state-of-the-art frameworks — applied to real data from the world&apos;s major exchanges.
+                </p>
+                <div className="hero-in mt-12 flex flex-wrap items-center gap-8" style={{ "--hero-delay": "430ms" } as CSSProperties}>
+                  <a href="#course" className="group rounded-sm bg-pearl px-8 py-3.5 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua">
+                    Start the course
+                    <span className="ml-2 inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
+                  </a>
+                  <a href="#research" className="link-fine t-mono text-sm uppercase tracking-[0.16em] text-pearl/90 transition-colors duration-300 hover:text-pearl">Explore research</a>
+                </div>
+                <ul className="hero-in mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 t-mono text-[0.64rem] uppercase tracking-[0.16em] text-steel" style={{ "--hero-delay": "520ms" } as CSSProperties}>
+                  {["Free to start", "8 case studies + notebooks", "Runs on PC & Mac"].map((t) => (
+                    <li key={t} className="flex items-center gap-2"><span className="h-1 w-1 rounded-full bg-aqua" aria-hidden="true" />{t}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* live world-markets globe — auto-rotating, real coordinates + local time */}
+              <div className="hero-in relative" style={{ "--hero-delay": "320ms" } as CSSProperties}>
+                <WorldSphere />
+              </div>
             </div>
           </div>
-
-          {/* world markets ticker — live local time + open/closed status */}
-          <WorldMarkets />
         </section>
 
         {/* v5 — slogan band */}
         {f.slogans ? <SloganBand /> : null}
 
+        {/* how it works — the learning loop */}
+        <HowItWorks />
+
         {/* ================================================ OUR FOCUS ==== */}
         <section id="focus" className="mx-auto max-w-6xl px-6 py-28 md:py-32">
-          <SectionLabel title="Our Focus" />
-          <p className="mb-12 max-w-2xl text-lg leading-relaxed text-mist">
-            An educational platform that bridges advanced quantitative finance and practical
-            Python implementation — blending technical rigor, real-world application and visual clarity.
-          </p>
-          <div className="grid gap-px overflow-hidden rounded-sm border border-pearl/10 bg-pearl/10 md:grid-cols-3">
+          <div data-reveal>
+            <SectionLabel title="Our Focus" />
+            <p className="mb-12 max-w-2xl text-lg leading-relaxed text-mist">
+              An educational platform that bridges advanced quantitative finance and practical
+              Python implementation — blending technical rigor, real-world application and visual clarity.
+            </p>
+          </div>
+          <div data-reveal style={{ "--reveal-delay": "120ms" } as CSSProperties} className="grid gap-px overflow-hidden rounded-sm border border-pearl/10 bg-pearl/10 md:grid-cols-3">
             {PILLARS.map((p) => (
               <div key={p.no} className="bg-navy px-7 py-9">
                 <span className="font-serif text-4xl text-pearl/20" style={{ fontWeight: 500 }}>{p.no}</span>
@@ -206,7 +226,7 @@ export default function StyleTile({ variant }: { variant: Variant }) {
 
         {/* ================================================== MARKETS ==== */}
         <section id="markets" className="border-y border-pearl/10 bg-navy-elevated/40">
-          <div className="mx-auto max-w-6xl px-6 py-28 md:py-32">
+          <div data-reveal className="mx-auto max-w-6xl px-6 py-28 md:py-32">
             <SectionLabel title="Markets" />
             <div className="grid gap-10 md:grid-cols-3">
               {MARKETS.map((m) => (
@@ -232,7 +252,7 @@ export default function StyleTile({ variant }: { variant: Variant }) {
         </section>
 
         {/* ================================================ LIBRARIES ==== */}
-        <section id="libraries" className="mx-auto max-w-6xl px-6 py-28 md:py-32">
+        <section id="libraries" data-reveal className="mx-auto max-w-6xl px-6 py-28 md:py-32">
           <SectionLabel title="Libraries" />
           <h3 className="t-h1 max-w-xl text-pearl">The Python quant stack.</h3>
           <p className="mt-5 max-w-md text-lg leading-relaxed text-mist">
@@ -253,10 +273,13 @@ export default function StyleTile({ variant }: { variant: Variant }) {
           </div>
         </section>
 
+        {/* see a lesson — show, don't tell */}
+        <LessonDemo />
+
         {/* ================================================== MODELS ===== */}
         <section className="border-y border-pearl/10 bg-navy-elevated/40">
           <div className="mx-auto grid max-w-6xl items-start gap-12 px-6 py-28 md:py-32 lg:grid-cols-2">
-            <div>
+            <div data-reveal>
               <SectionLabel title="Models" />
               <h3 className="t-h1 text-pearl">Concepts &amp; models, applied.</h3>
               <p className="mt-5 max-w-md text-lg leading-relaxed text-mist">
@@ -272,8 +295,18 @@ export default function StyleTile({ variant }: { variant: Variant }) {
                 ))}
               </dl>
             </div>
-            <div className="lg:pt-16">
+            <div data-reveal style={{ "--reveal-delay": "120ms" } as CSSProperties} className="space-y-6 lg:pt-16">
               <FigureCovariance />
+              <figure className="corner-ticks rounded-sm border border-pearl/10 bg-navy-sunken/60 p-7">
+                <ReturnsHistogram />
+                <figcaption className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-pearl/10 pt-3">
+                  <span className="t-mono text-xs uppercase tracking-[0.18em] text-steel">Daily returns · VaR tail</span>
+                  <span className="flex items-center gap-4 t-mono text-xs">
+                    <span className="flex items-center gap-1.5 text-aqua"><span className="inline-block h-2 w-2 bg-aqua/80" aria-hidden="true" /> Loss tail</span>
+                    <span className="flex items-center gap-1.5 text-mist"><span className="inline-block h-2 w-2 bg-steel/70" aria-hidden="true" /> Returns</span>
+                  </span>
+                </figcaption>
+              </figure>
             </div>
           </div>
         </section>
@@ -315,52 +348,63 @@ export default function StyleTile({ variant }: { variant: Variant }) {
 
         {/* ================================================= RESEARCH ==== */}
         <section id="research" className="mx-auto max-w-6xl px-6 py-28 md:py-32">
-          <SectionLabel title="Featured Research" />
+          <div data-reveal><SectionLabel title="Featured Research" /></div>
           <div className="grid gap-6 lg:grid-cols-3">
-            {ARTICLES.map((a) => (
-              <TransitionLink key={a.title} href={`/research/${a.slug}`} className="group flex flex-col rounded-sm border border-pearl/10 bg-navy-elevated/50 p-7 transition-all duration-500 hover:-translate-y-0.5 hover:border-pearl/25">
-                <span className="t-mono text-xs uppercase tracking-[0.18em] text-aqua/80">{a.cat}</span>
-                <h3 className="t-h2 mt-4 text-pearl">{a.title}</h3>
-                <p className="mt-3 flex-1 leading-relaxed text-mist">{a.blurb}</p>
-                <div className="mt-6 flex items-center gap-3 border-t border-pearl/10 pt-4 t-mono text-xs uppercase tracking-[0.14em] text-steel">
-                  {a.meta.map((m, i) => (
-                    <span key={m} className="flex items-center gap-3">
-                      {i > 0 ? <span className="text-aqua/50" aria-hidden="true">·</span> : null}
-                      <span className={i === a.meta.length - 1 ? "text-aqua" : ""}>{m}</span>
-                    </span>
-                  ))}
-                </div>
-              </TransitionLink>
+            {ARTICLES.map((a, idx) => (
+              <div key={a.title} data-reveal style={{ "--reveal-delay": `${idx * 90}ms` } as CSSProperties} className="h-full">
+                <Tilt className="h-full">
+                  <TransitionLink href={`/research/${a.slug}`} className="glow-card group flex h-full flex-col rounded-sm border border-pearl/10 bg-navy-elevated/50 p-7 hover:border-aqua/40">
+                    <span className="t-mono text-xs uppercase tracking-[0.18em] text-aqua/80">{a.cat}</span>
+                    <h3 className="t-h2 mt-4 text-pearl">{a.title}</h3>
+                    <p className="mt-3 flex-1 leading-relaxed text-mist">{a.blurb}</p>
+                    <div className="mt-6 flex items-center gap-3 border-t border-pearl/10 pt-4 t-mono text-xs uppercase tracking-[0.14em] text-steel">
+                      {a.meta.map((m, i) => (
+                        <span key={m} className="flex items-center gap-3">
+                          {i > 0 ? <span className="text-aqua/50" aria-hidden="true">·</span> : null}
+                          <span className={i === a.meta.length - 1 ? "text-aqua" : ""}>{m}</span>
+                        </span>
+                      ))}
+                    </div>
+                  </TransitionLink>
+                </Tilt>
+              </div>
             ))}
 
             {/* live backtest metric card */}
-            <div className="corner-ticks flex flex-col justify-between rounded-sm border border-pearl/10 bg-navy-elevated/50 p-6">
-              <div className="flex items-start justify-between">
-                <span className="t-mono text-xs uppercase tracking-[0.18em] text-mist">Risk-Parity · Backtest</span>
-                <span className="live-dot inline-block h-2 w-2 rounded-full bg-aqua" aria-hidden="true" />
-              </div>
-              <div className="my-6">
-                <p className="tnum t-mono text-5xl font-bold text-pearl"><CountUp value={1.87} decimals={2} /></p>
-                <p className="mt-1 t-mono text-xs uppercase tracking-[0.16em] text-steel">Sharpe (net) · 2009—2025</p>
-              </div>
-              <Sparkline />
-              <div className="mt-4 grid grid-cols-2 gap-3 border-t border-pearl/10 pt-4">
-                <Metric label="Max DD" value="−12.4%" />
-                <Metric label="Vol" value="8.9%" tone="aqua" />
-              </div>
+            <div data-reveal style={{ "--reveal-delay": "180ms" } as CSSProperties} className="h-full">
+              <Tilt className="h-full">
+                <div className="glow-card corner-ticks flex h-full flex-col justify-between rounded-sm border border-pearl/10 bg-navy-elevated/50 p-6 hover:border-aqua/40">
+                  <div className="flex items-start justify-between">
+                    <span className="t-mono text-xs uppercase tracking-[0.18em] text-mist">Risk-Parity · Backtest</span>
+                    <span className="live-dot inline-block h-2 w-2 rounded-full bg-aqua" aria-hidden="true" />
+                  </div>
+                  <div className="my-6">
+                    <p className="tnum t-mono text-5xl font-bold text-pearl"><CountUp value={1.87} decimals={2} /></p>
+                    <p className="mt-1 t-mono text-xs uppercase tracking-[0.16em] text-steel">Sharpe (net) · 2009—2025</p>
+                  </div>
+                  <EquityCurve />
+                  <div className="mt-4 grid grid-cols-2 gap-3 border-t border-pearl/10 pt-4">
+                    <Metric label="Max DD" value="−12.4%" />
+                    <Metric label="Vol" value="8.9%" tone="aqua" />
+                  </div>
+                </div>
+              </Tilt>
             </div>
           </div>
 
-          <div className="mt-10">
+          <div data-reveal className="mt-10">
             <Link href="/research" className="link-fine t-mono text-sm uppercase tracking-[0.16em] text-pearl/90 transition-colors duration-300 hover:text-pearl">
               All research &amp; notebooks →
             </Link>
           </div>
         </section>
 
+        {/* by the numbers */}
+        <StatsBand />
+
         {/* ========================================= COURSE (LIGHT) ====== */}
         <section id="course" className="bg-sisal text-anthracite">
-          <div className="mx-auto max-w-3xl px-6 py-28">
+          <div data-reveal className="mx-auto max-w-3xl px-6 py-28">
             <div className="mb-10 flex items-center gap-4 border-b border-anthracite/15 pb-4">
               <span className="h-px w-8 bg-teal/60" aria-hidden="true" />
               <span className="t-mono text-sm uppercase tracking-[0.24em] text-graphite">Course · Quant Finance Basics</span>
@@ -385,6 +429,11 @@ export default function StyleTile({ variant }: { variant: Variant }) {
             </a>
           </div>
         </section>
+
+        {/* pricing · faq · early-access capture */}
+        <Pricing />
+        <FAQ />
+        <EarlyAccess />
       </main>
 
       {/* ==================================================== FOOTER ===== */}

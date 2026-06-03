@@ -3,12 +3,14 @@
 
 import { type Article, CATEGORIES, formatDate } from "@/lib/articles";
 import { TransitionLink } from "@/components/motion/TransitionLink";
+import { Tilt } from "@/components/motion/Tilt";
 
 export function ArticleCard({ article }: { article: Article }) {
   return (
+    <Tilt className="h-full">
     <TransitionLink
       href={`/research/${article.slug}`}
-      className="group flex flex-col rounded-sm border border-pearl/10 bg-navy-elevated/50 p-7 transition-all duration-500 hover:-translate-y-0.5 hover:border-pearl/25"
+      className="glow-card group flex h-full flex-col rounded-sm border border-pearl/10 bg-navy-elevated/50 p-7 hover:border-aqua/40"
     >
       <div className="flex items-center justify-between">
         <span className="t-mono text-xs uppercase tracking-[0.18em] text-aqua/80">{CATEGORIES[article.category].name}</span>
@@ -24,5 +26,6 @@ export function ArticleCard({ article }: { article: Article }) {
         <span className="text-aqua transition-transform duration-300 group-hover:translate-x-0.5">Read ↗</span>
       </div>
     </TransitionLink>
+    </Tilt>
   );
 }

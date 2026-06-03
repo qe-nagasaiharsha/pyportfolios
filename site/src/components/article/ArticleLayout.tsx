@@ -14,6 +14,8 @@ import {
 } from "@/lib/articles";
 import { ArticleNav } from "@/components/article/ArticleNav";
 import { ArticleToc } from "@/components/article/ArticleToc";
+import { ScrollReveal } from "@/components/motion/ScrollReveal";
+import { ReadingProgress } from "@/components/motion/ReadingProgress";
 
 function NotebookBadge({ href }: { href: string }) {
   return (
@@ -36,6 +38,8 @@ export function ArticleLayout({ article, children }: { article: Article; childre
 
   return (
     <div className="min-h-screen bg-navy">
+      <ReadingProgress />
+      <ScrollReveal />
       <ArticleNav />
 
       <article className="bg-sisal text-anthracite">

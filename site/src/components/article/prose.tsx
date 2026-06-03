@@ -123,7 +123,7 @@ export function Section({ id, n, title, children }: { id: string; n: number; tit
   const num = String(n).padStart(2, "0");
   return (
     <section id={id} className="article-section scroll-mt-28">
-      <h2 className="mt-16 flex items-baseline gap-4 font-serif text-2xl text-anthracite md:text-3xl" style={{ fontWeight: 500 }}>
+      <h2 data-reveal className="mt-16 flex items-baseline gap-4 font-serif text-2xl text-anthracite md:text-3xl" style={{ fontWeight: 500 }}>
         <span className="t-mono text-sm text-teal" style={{ fontWeight: 400 }}>{num}</span>
         <span>{title}</span>
       </h2>
@@ -194,7 +194,7 @@ export function Figure({
   legend?: { label: string; tone: "muted" | "aqua" }[];
 }) {
   return (
-    <figure className="corner-ticks my-9 rounded-sm border border-anthracite/12 bg-paper/60 p-6">
+    <figure data-reveal className="corner-ticks my-9 rounded-sm border border-anthracite/12 bg-paper/60 p-6">
       <div className="w-full">{children}</div>
       <figcaption className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-anthracite/12 pt-3">
         <span className="t-mono text-xs uppercase tracking-[0.16em] text-graphite">{caption}</span>

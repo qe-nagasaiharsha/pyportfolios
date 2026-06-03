@@ -6,9 +6,11 @@ import {
   CATEGORIES,
   articlesByCategory,
 } from "@/lib/articles";
+import type { CSSProperties } from "react";
 import { ArticleNav } from "@/components/article/ArticleNav";
 import { ArticleCard } from "@/components/article/ArticleCard";
 import { CountUp } from "@/components/motion/CountUp";
+import { ScrollReveal } from "@/components/motion/ScrollReveal";
 
 export const metadata: Metadata = {
   title: "Research — pyportfolios",
@@ -19,13 +21,14 @@ export const metadata: Metadata = {
 export default function ResearchIndex() {
   return (
     <div className="min-h-screen bg-navy text-pearl">
+      <ScrollReveal />
       <ArticleNav />
 
       <main>
         {/* hero */}
         <section className="relative overflow-hidden border-b border-pearl/10">
           <div className="grid-paper absolute inset-0" aria-hidden="true" />
-          <div className="relative mx-auto max-w-6xl px-6 py-24 md:py-32 lg:px-8">
+          <div data-reveal className="relative mx-auto max-w-6xl px-6 py-24 md:py-32 lg:px-8">
             <div className="flex items-center gap-4">
               <span className="h-px w-10 bg-pearl/25" aria-hidden="true" />
               <p className="t-eyebrow text-mist">Research · Case studies &amp; notebooks</p>
@@ -58,7 +61,7 @@ export default function ResearchIndex() {
               className="scroll-mt-20 border-b border-pearl/10 [&:nth-child(odd)]:bg-navy-elevated/30"
             >
               <div className="mx-auto max-w-6xl px-6 py-20 md:py-24 lg:px-8">
-                <div className="flex flex-col justify-between gap-4 border-b border-pearl/10 pb-6 md:flex-row md:items-end">
+                <div data-reveal className="flex flex-col justify-between gap-4 border-b border-pearl/10 pb-6 md:flex-row md:items-end">
                   <div className="flex items-baseline gap-4">
                     <span className="font-serif text-3xl text-pearl/20">{cat.numeral}</span>
                     <div>
@@ -71,8 +74,10 @@ export default function ResearchIndex() {
                   </span>
                 </div>
                 <div className="mt-10 grid gap-6 md:grid-cols-2">
-                  {items.map((a) => (
-                    <ArticleCard key={a.slug} article={a} />
+                  {items.map((a, i) => (
+                    <div key={a.slug} data-reveal style={{ "--reveal-delay": `${i * 80}ms` } as CSSProperties} className="h-full">
+                      <ArticleCard article={a} />
+                    </div>
                   ))}
                 </div>
               </div>

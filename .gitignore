@@ -16,6 +16,12 @@ out/
 # Dev capture artifacts — regenerable via site/shoot*.mjs
 /screenshots/
 
+# Dev-only scripts (Playwright screenshot capture + one-off land-dot generator)
+/site/shoot-globe.mjs
+/site/shoot-motion.mjs
+/site/ours-full.mjs
+/site/gen-dots.mjs
+
 # OS / editor cruft
 .DS_Store
 Thumbs.db

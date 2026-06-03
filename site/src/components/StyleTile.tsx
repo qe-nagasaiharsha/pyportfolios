@@ -16,6 +16,12 @@ import { WorldMap, EXCHANGES_BY_REGION } from "@/components/brand/WorldMap";
 import { SloganBand } from "@/components/brand/SloganBand";
 import { VersionSwitcher } from "@/components/VersionSwitcher";
 import { WorldSphere } from "@/components/WorldSphere";
+import { HeroBackdrop } from "@/components/HeroBackdrop";
+import { Aurora } from "@/components/brand/Aurora";
+import { ContourField } from "@/components/brand/ContourField";
+import { MountainScene } from "@/components/brand/MountainScene";
+import { WaveScene } from "@/components/brand/WaveScene";
+import { StarField } from "@/components/brand/StarField";
 import { CountUp } from "@/components/motion/CountUp";
 import { TransitionLink } from "@/components/motion/TransitionLink";
 import { HowItWorks } from "@/components/landing/HowItWorks";
@@ -153,8 +159,7 @@ export default function StyleTile({ variant }: { variant: Variant }) {
       <main id="top">
         {/* ================================================== HERO ======= */}
         <section className="relative overflow-hidden border-b border-pearl/10">
-          <div className="hero-aura absolute inset-0" aria-hidden="true" />
-          <div className="grid-paper absolute inset-0" aria-hidden="true" />
+          <HeroBackdrop />
           <HeroCurve />
           <div className="vignette pointer-events-none absolute inset-0" aria-hidden="true" />
           <div className="relative mx-auto max-w-6xl px-6 py-24 md:py-32">
@@ -204,7 +209,9 @@ export default function StyleTile({ variant }: { variant: Variant }) {
         <HowItWorks />
 
         {/* ================================================ OUR FOCUS ==== */}
-        <section id="focus" className="mx-auto max-w-6xl px-6 py-28 md:py-32">
+        <section id="focus" className="relative overflow-hidden py-28 md:py-32">
+          <StarField />
+          <div className="relative mx-auto max-w-6xl px-6">
           <div data-reveal>
             <SectionLabel title="Our Focus" />
             <p className="mb-12 max-w-2xl text-lg leading-relaxed text-mist">
@@ -222,11 +229,13 @@ export default function StyleTile({ variant }: { variant: Variant }) {
               </div>
             ))}
           </div>
+          </div>
         </section>
 
         {/* ================================================== MARKETS ==== */}
-        <section id="markets" className="border-y border-pearl/10 bg-navy-elevated/40">
-          <div data-reveal className="mx-auto max-w-6xl px-6 py-28 md:py-32">
+        <section id="markets" className="relative overflow-hidden border-y border-pearl/10 bg-navy-elevated/40">
+          <WaveScene />
+          <div data-reveal className="relative mx-auto max-w-6xl px-6 py-28 md:py-32">
             <SectionLabel title="Markets" />
             <div className="grid gap-10 md:grid-cols-3">
               {MARKETS.map((m) => (
@@ -252,7 +261,9 @@ export default function StyleTile({ variant }: { variant: Variant }) {
         </section>
 
         {/* ================================================ LIBRARIES ==== */}
-        <section id="libraries" data-reveal className="mx-auto max-w-6xl px-6 py-28 md:py-32">
+        <section id="libraries" className="relative overflow-hidden py-28 md:py-32">
+          <Aurora />
+          <div data-reveal className="relative mx-auto max-w-6xl px-6">
           <SectionLabel title="Libraries" />
           <h3 className="t-h1 max-w-xl text-pearl">The Python quant stack.</h3>
           <p className="mt-5 max-w-md text-lg leading-relaxed text-mist">
@@ -271,14 +282,16 @@ export default function StyleTile({ variant }: { variant: Variant }) {
               </div>
             )}
           </div>
+          </div>
         </section>
 
         {/* see a lesson — show, don't tell */}
         <LessonDemo />
 
         {/* ================================================== MODELS ===== */}
-        <section className="border-y border-pearl/10 bg-navy-elevated/40">
-          <div className="mx-auto grid max-w-6xl items-start gap-12 px-6 py-28 md:py-32 lg:grid-cols-2">
+        <section className="relative overflow-hidden border-y border-pearl/10 bg-navy-elevated/40">
+          <ContourField />
+          <div className="relative mx-auto grid max-w-6xl items-start gap-12 px-6 py-28 md:py-32 lg:grid-cols-2">
             <div data-reveal>
               <SectionLabel title="Models" />
               <h3 className="t-h1 text-pearl">Concepts &amp; models, applied.</h3>
@@ -347,7 +360,9 @@ export default function StyleTile({ variant }: { variant: Variant }) {
         ) : null}
 
         {/* ================================================= RESEARCH ==== */}
-        <section id="research" className="mx-auto max-w-6xl px-6 py-28 md:py-32">
+        <section id="research" className="relative overflow-hidden py-28 md:py-32">
+          <MountainScene />
+          <div className="relative mx-auto max-w-6xl px-6">
           <div data-reveal><SectionLabel title="Featured Research" /></div>
           <div className="grid gap-6 lg:grid-cols-3">
             {ARTICLES.map((a, idx) => (
@@ -396,6 +411,7 @@ export default function StyleTile({ variant }: { variant: Variant }) {
             <Link href="/research" className="link-fine t-mono text-sm uppercase tracking-[0.16em] text-pearl/90 transition-colors duration-300 hover:text-pearl">
               All research &amp; notebooks →
             </Link>
+          </div>
           </div>
         </section>
 

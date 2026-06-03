@@ -236,6 +236,46 @@
   mask-image: radial-gradient(ellipse 82% 72% at 50% 32%, #000 26%, transparent 80%);
 }
 
+/* ===== Hero deep-field backdrop (HeroBackdrop.tsx) =========================
+   The landing-hero background. Replaces the flat graph-paper grid with an
+   "observatory" field: an azimuthal map graticule under a soft studio light,
+   plus a pointer-reactive luminance for depth on the dark navy. */
+.hero-backdrop { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.hero-backdrop > * { position: absolute; inset: 0; }
+
+/* studio light — cool pearl key over the headline + a dim aqua bloom by the
+   globe, so the sphere reads as lit by the same source. */
+.hero-backdrop__light {
+  background:
+    radial-gradient(62% 56% at 24% 26%, color-mix(in srgb, var(--color-pearl) 10%, transparent), transparent 70%),
+    radial-gradient(50% 56% at 82% 62%, color-mix(in srgb, var(--color-aqua) 8%, transparent), transparent 68%),
+    radial-gradient(95% 72% at 50% -4%, color-mix(in srgb, var(--color-pearl) 4%, transparent), transparent 60%);
+}
+
+/* graticule — focal point off-left; the mask reveals only sweeping arcs and
+   fades them out before the globe. */
+.hero-backdrop__grat {
+  -webkit-mask-image: radial-gradient(118% 108% at 4% 50%, #000 28%, transparent 70%);
+  mask-image: radial-gradient(118% 108% at 4% 50%, #000 28%, transparent 70%);
+}
+.hero-backdrop__grat svg { display: block; width: 100%; height: 100%; }
+
+/* pointer luminance — follows the cursor (set via --mx/--my), else rests as a
+   soft centered glow (the static, no-JS fallback). */
+.hero-backdrop__beam {
+  background: radial-gradient(24% 32% at var(--mx, 50%) var(--my, 34%),
+    color-mix(in srgb, var(--color-pearl) 7%, transparent), transparent 68%);
+}
+
+/* slow ambient drift — liveness without motion sickness; static when asked. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-backdrop__light { animation: hero-drift 24s var(--ease-in-out-quint) infinite; will-change: transform; }
+}
+@keyframes hero-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-1.5%, 1.1%, 0) scale(1.04); }
+}
+
 /* Editorial photo treatment — subtle grain over the duotone scene (deck §05) */
 .photo-duotone {
   position: relative;

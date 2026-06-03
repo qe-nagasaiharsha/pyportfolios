@@ -582,3 +582,31 @@
   .faq-mark::before,
   .faq-mark::after { transition: none; }
 }
+
+/* ===================================================== aurora glow ===
+   Slow cool blobs for section-break ambience (Aurora.tsx). Subtle; static
+   under reduced-motion. */
+.aurora-blob {
+  position: absolute;
+  display: block;
+  border-radius: 9999px;
+  filter: blur(72px);
+  will-change: transform;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .aurora-1 { animation: aurora-1 26s var(--ease-in-out-quint) infinite; }
+  .aurora-2 { animation: aurora-2 32s var(--ease-in-out-quint) infinite; }
+  .aurora-3 { animation: aurora-3 38s var(--ease-in-out-quint) infinite; }
+}
+@keyframes aurora-1 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(6%, -8%, 0) scale(1.12); }
+}
+@keyframes aurora-2 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-7%, 6%, 0) scale(1.08); }
+}
+@keyframes aurora-3 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(5%, 7%, 0) scale(1.14); }
+}

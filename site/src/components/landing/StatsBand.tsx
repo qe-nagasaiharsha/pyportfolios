@@ -3,6 +3,7 @@
 
 import type { CSSProperties } from "react";
 import { CountUp } from "@/components/motion/CountUp";
+import { ContourField } from "@/components/brand/ContourField";
 
 const STATS: { value: number; suffix?: string; label: string }[] = [
   { value: 8, label: "Case studies" },
@@ -13,8 +14,9 @@ const STATS: { value: number; suffix?: string; label: string }[] = [
 
 export function StatsBand() {
   return (
-    <section className="border-y border-pearl/10 bg-navy-elevated/40">
-      <div className="mx-auto max-w-6xl px-6 py-20 md:py-24">
+    <section className="relative overflow-hidden border-y border-pearl/10 bg-navy-elevated/40">
+      <ContourField />
+      <div className="relative mx-auto max-w-6xl px-6 py-20 md:py-24">
         <div className="grid gap-12 lg:grid-cols-[1.05fr_minmax(0,1fr)] lg:items-center">
           <div data-reveal>
             <h2 className="t-h1 max-w-md text-pearl">Built like research, not a course-mill.</h2>

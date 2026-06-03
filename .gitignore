@@ -21,6 +21,8 @@ out/
 /site/shoot-motion.mjs
 /site/ours-full.mjs
 /site/gen-dots.mjs
+/site/shoot-bg.mjs
+/site/shoot-bg2.mjs
 
 # OS / editor cruft
 .DS_Store

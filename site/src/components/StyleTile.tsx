@@ -461,6 +461,8 @@ export default function StyleTile({ variant }: { variant: Variant }) {
                 <p className="uppercase tracking-[0.2em] text-steel">Sections</p>
                 <ul className="mt-4 space-y-2.5">
                   {NAV.map((n) => <li key={n.label}><a href={n.href} className="text-mist transition-colors hover:text-aqua">{n.label}</a></li>)}
+                  <li><a href="/research" className="text-mist transition-colors hover:text-aqua">All research</a></li>
+                  <li><a href="/literature" className="text-mist transition-colors hover:text-aqua">Literature</a></li>
                 </ul>
               </div>
               <div>

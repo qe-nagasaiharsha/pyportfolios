@@ -159,7 +159,7 @@ export default function StyleTile({ variant }: { variant: Variant }) {
       <main id="top">
         {/* ================================================== HERO ======= */}
         <section className="relative overflow-hidden border-b border-pearl/10">
-          <PhotoBackdrop src="/hero.jpeg" position="50% 42%" />
+          <PhotoBackdrop src="/hero.jpeg" />
           <HeroCurve />
           <div className="vignette pointer-events-none absolute inset-0" aria-hidden="true" />
           <div className="relative mx-auto max-w-6xl px-6 py-24 md:py-32">

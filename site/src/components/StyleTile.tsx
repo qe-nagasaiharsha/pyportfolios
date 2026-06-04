@@ -13,6 +13,7 @@ import { Crest, CrestLockup } from "@/components/brand/Crest";
 import { PhotoPlate } from "@/components/brand/PhotoPlate";
 import { StackCards } from "@/components/brand/StackCards";
 import { WorldMap, EXCHANGES_BY_REGION } from "@/components/brand/WorldMap";
+import { ExchangeRow } from "@/components/brand/ExchangeRow";
 import { SloganBand } from "@/components/brand/SloganBand";
 import { VersionSwitcher } from "@/components/VersionSwitcher";
 import { WorldSphere } from "@/components/WorldSphere";
@@ -35,7 +36,12 @@ import { Tilt } from "@/components/motion/Tilt";
 import { EquityCurve } from "@/components/charts/EquityCurve";
 import { ReturnsHistogram } from "@/components/charts/ReturnsHistogram";
 
-const NAV = ["Focus", "Markets", "Course", "Research"] as const;
+const NAV = [
+  { label: "Finance Fundamentals", href: "/research#finance-fundamentals" },
+  { label: "Portfolio Optimization", href: "/research#portfolio-optimization" },
+  { label: "Risk Management", href: "/research#risk-management" },
+  { label: "Algorithmic Trading", href: "/research#algorithmic-trading" },
+] as const;
 
 const PILLARS = [
   { no: "01", title: "Coding", body: "Structured case studies and ready-to-run snippets — investment-banking style — across the modern Python quant stack." },
@@ -49,7 +55,6 @@ const MARKETS = [
   { label: "Sectors", items: ["Technology", "Financials", "Energy", "Healthcare", "Industrials", "Consumer"] },
 ] as const;
 
-const STACK = ["NumPy", "pandas", "SciPy", "cvxpy", "scikit-learn", "statsmodels", "PyPortfolioOpt", "vectorbt", "QuantLib"] as const;
 
 const MODELS = [
   { group: "Pricing", items: "Black–Scholes · Binomial · Monte Carlo" },
@@ -118,7 +123,6 @@ function FigureCovariance() {
 
 export default function StyleTile({ variant }: { variant: Variant }) {
   const f = variant.flags;
-  const heroEyebrow = f.slogans ? "Get up to speed · Cancel the noise · Find your edge" : "Coding · Trading · Markets";
 
   return (
     <div className="min-h-screen bg-navy text-pearl">
@@ -132,16 +136,15 @@ export default function StyleTile({ variant }: { variant: Variant }) {
               {f.crest ? (
                 <CrestLockup tone="light" />
               ) : (
-                <span className="flex items-baseline gap-1">
-                  <span className="text-lg tracking-tight text-pearl" style={{ fontWeight: 900 }}>pyportfolios</span>
-                  <span className="h-1.5 w-1.5 translate-y-[-2px] rounded-full bg-aqua" aria-hidden="true" />
+                <span className="font-sans text-lg tracking-tight text-pearl" style={{ fontWeight: 900 }}>
+                  pyportfolios<span className="text-aqua">.com</span>
                 </span>
               )}
             </a>
-            <ul className="hidden items-center gap-8 md:flex">
+            <ul className="hidden items-center gap-6 lg:flex">
               {NAV.map((item) => (
-                <li key={item}>
-                  <a href={item === "Research" ? "/research" : `#${item.toLowerCase()}`} className="t-mono text-xs uppercase tracking-[0.18em] text-mist transition-colors duration-200 hover:text-pearl">{item}</a>
+                <li key={item.label}>
+                  <a href={item.href} className="t-mono text-[0.68rem] uppercase tracking-[0.12em] text-mist transition-colors duration-200 hover:text-pearl">{item.label}</a>
                 </li>
               ))}
             </ul>
@@ -160,44 +163,35 @@ export default function StyleTile({ variant }: { variant: Variant }) {
         {/* ================================================== HERO ======= */}
         <section className="relative overflow-hidden border-b border-pearl/10">
           <PhotoBackdrop src="/hero.jpeg" />
-          <HeroCurve />
+          {f.globe ? <HeroCurve /> : null}
           <div className="vignette pointer-events-none absolute inset-0" aria-hidden="true" />
-          <div className="relative mx-auto max-w-6xl px-6 py-24 md:py-32">
-            <div className="grid items-center gap-x-12 gap-y-14 lg:grid-cols-[1.04fr_minmax(0,0.96fr)]">
-              {/* message */}
-              <div>
+          <div className="relative mx-auto max-w-6xl px-6 py-28 md:py-40">
+            <div className={f.globe ? "grid items-center gap-x-12 gap-y-14 lg:grid-cols-[1.04fr_minmax(0,0.96fr)]" : ""}>
+              {/* message — kept spare per brief: image · headline · subtitle · one button */}
+              <div className="max-w-xl">
                 {f.crest ? (
                   <div className="hero-in mb-8" style={{ "--hero-delay": "0ms" } as CSSProperties}><Crest size={56} tone="light" /></div>
                 ) : null}
-                <div className="hero-in flex items-center gap-4" style={{ "--hero-delay": "60ms" } as CSSProperties}>
-                  <span className="h-px w-10 bg-pearl/25" aria-hidden="true" />
-                  <p className="t-eyebrow text-mist">{heroEyebrow}</p>
-                </div>
-                <h1 className="hero-in t-display mt-8 max-w-xl text-pearl" style={{ "--hero-delay": "150ms" } as CSSProperties}>
-                  Where finance theory, coding<br className="hidden sm:block" /> &amp; markets <em className="converge-underline">converge</em><span className="text-aqua">.</span>
+                <h1 className="hero-in t-display text-pearl" style={{ "--hero-delay": "80ms" } as CSSProperties}>
+                  Get up to speed<span className="text-aqua">.</span>
                 </h1>
-                <p className="hero-in mt-9 max-w-lg text-lg leading-relaxed text-mist" style={{ "--hero-delay": "300ms" } as CSSProperties}>
-                  The platform for the sophisticated coder. Academic-level models, ready-to-run
-                  Python, and state-of-the-art frameworks — applied to real data from the world&apos;s major exchanges.
+                <p className="hero-in mt-7 max-w-md text-lg leading-relaxed text-mist" style={{ "--hero-delay": "200ms" } as CSSProperties}>
+                  Coding the markets. Technical depth, real-world context, intellectual clarity — without the noise.
                 </p>
-                <div className="hero-in mt-12 flex flex-wrap items-center gap-8" style={{ "--hero-delay": "430ms" } as CSSProperties}>
-                  <a href="#course" className="group rounded-sm bg-pearl px-8 py-3.5 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua">
-                    Start the course
+                <div className="hero-in mt-10" style={{ "--hero-delay": "320ms" } as CSSProperties}>
+                  <a href="#early-access" className="group inline-flex items-center rounded-sm bg-pearl px-8 py-3.5 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua">
+                    Get started
                     <span className="ml-2 inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
                   </a>
-                  <a href="#research" className="link-fine t-mono text-sm uppercase tracking-[0.16em] text-pearl/90 transition-colors duration-300 hover:text-pearl">Explore research</a>
                 </div>
-                <ul className="hero-in mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 t-mono text-[0.64rem] uppercase tracking-[0.16em] text-steel" style={{ "--hero-delay": "520ms" } as CSSProperties}>
-                  {["Free to start", "8 case studies + notebooks", "Runs on PC & Mac"].map((t) => (
-                    <li key={t} className="flex items-center gap-2"><span className="h-1 w-1 rounded-full bg-aqua" aria-hidden="true" />{t}</li>
-                  ))}
-                </ul>
               </div>
 
-              {/* live world-markets globe — auto-rotating, real coordinates + local time */}
-              <div className="hero-in relative" style={{ "--hero-delay": "320ms" } as CSSProperties}>
-                <WorldSphere />
-              </div>
+              {/* globe lives only on the dedicated "Globe" version (v6) — off the main hero */}
+              {f.globe ? (
+                <div className="hero-in relative" style={{ "--hero-delay": "300ms" } as CSSProperties}>
+                  <WorldSphere />
+                </div>
+              ) : null}
             </div>
           </div>
         </section>
@@ -252,6 +246,12 @@ export default function StyleTile({ variant }: { variant: Variant }) {
                 </div>
               ))}
             </div>
+
+            {/* the world's major venues — real exchange logos */}
+            <div className="mt-14 border-t border-pearl/10 pt-10">
+              <p className="mb-6 t-mono text-xs uppercase tracking-[0.22em] text-aqua/80">Major venues</p>
+              <ExchangeRow />
+            </div>
             {!f.worldMap ? (
               <p className="mt-10 t-mono text-xs uppercase tracking-[0.18em] text-steel">
                 Case studies span the top 15 economies — developed &amp; emerging.
@@ -270,17 +270,7 @@ export default function StyleTile({ variant }: { variant: Variant }) {
             Best-in-class, open-source libraries — composed into clean, reproducible research.
           </p>
           <div className="mt-12">
-            {f.stackCards ? (
-              <StackCards />
-            ) : (
-              <div className="flex flex-wrap gap-3">
-                {STACK.map((lib) => (
-                  <span key={lib} className="rounded-sm border border-pearl/10 bg-navy-elevated/50 px-4 py-2.5 t-mono text-sm text-mist transition-colors duration-300 hover:border-pearl/25 hover:text-pearl">
-                    {lib}
-                  </span>
-                ))}
-              </div>
-            )}
+            <StackCards />
           </div>
           </div>
         </section>
@@ -470,7 +460,7 @@ export default function StyleTile({ variant }: { variant: Variant }) {
               <div>
                 <p className="uppercase tracking-[0.2em] text-steel">Sections</p>
                 <ul className="mt-4 space-y-2.5">
-                  {NAV.map((n) => <li key={n}><a href={`#${n.toLowerCase()}`} className="text-mist transition-colors hover:text-aqua">{n}</a></li>)}
+                  {NAV.map((n) => <li key={n.label}><a href={n.href} className="text-mist transition-colors hover:text-aqua">{n.label}</a></li>)}
                 </ul>
               </div>
               <div>

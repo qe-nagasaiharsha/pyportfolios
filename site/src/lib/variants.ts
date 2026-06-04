@@ -9,6 +9,7 @@ export interface VariantFlags {
   stackCards: boolean; // v3 — deck §06 Iconography (Python stack logo cards)
   worldMap: boolean; // v4 — deck §13/14 Exchanges + Top-15 economies
   slogans: boolean; // v5 — deck §01.1 Slogan voice system
+  globe: boolean; // v6 — live world-markets globe (parked off the main hero)
 }
 
 export interface Variant {
@@ -25,6 +26,7 @@ const NONE: VariantFlags = {
   stackCards: false,
   worldMap: false,
   slogans: false,
+  globe: false,
 };
 
 export const VARIANTS: Record<string, Variant> = {
@@ -70,13 +72,20 @@ export const VARIANTS: Record<string, Variant> = {
     deckRef: "Deck §01.1 — Slogans",
     flags: { ...NONE, slogans: true },
   },
+  v6: {
+    id: "v6",
+    name: "Globe",
+    adds: "The live, auto-rotating world-markets globe — parked here, off the main hero; re-insert anytime.",
+    deckRef: "Bonus — live data",
+    flags: { ...NONE, globe: true },
+  },
   v11: {
     id: "v11",
     name: "The Quarterly",
     adds: "A classic editorial revamp on the brand's dark canvas — serif-led journal, crest masthead, dot-leader contents; all five enhancements distilled into one timeless whole.",
     deckRef: "Deck §01 — Classical × Modern",
     // Editorial layout uses its own component; flags all on for completeness.
-    flags: { crest: true, photography: true, stackCards: true, worldMap: true, slogans: true },
+    flags: { crest: true, photography: true, stackCards: true, worldMap: true, slogans: true, globe: false },
   },
 };
 

@@ -2,7 +2,6 @@
    Code → Test). Gives a first-time visitor a mental model before the catalogue. */
 
 import type { CSSProperties } from "react";
-import { Aurora } from "@/components/brand/Aurora";
 
 const STEPS = [
   {
@@ -25,7 +24,6 @@ const STEPS = [
 export function HowItWorks() {
   return (
     <section className="relative overflow-hidden border-b border-pearl/10">
-      <Aurora />
       <div className="relative mx-auto max-w-6xl px-6 py-24 md:py-28">
         <div data-reveal className="mb-12 flex items-center gap-4 border-b border-pearl/10 pb-4">
           <span className="h-px w-8 bg-aqua/50" aria-hidden="true" />

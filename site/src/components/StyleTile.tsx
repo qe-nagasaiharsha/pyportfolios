@@ -18,11 +18,6 @@ import { SloganBand } from "@/components/brand/SloganBand";
 import { VersionSwitcher } from "@/components/VersionSwitcher";
 import { WorldSphere } from "@/components/WorldSphere";
 import { PhotoBackdrop } from "@/components/brand/PhotoBackdrop";
-import { Aurora } from "@/components/brand/Aurora";
-import { ContourField } from "@/components/brand/ContourField";
-import { MountainScene } from "@/components/brand/MountainScene";
-import { WaveScene } from "@/components/brand/WaveScene";
-import { StarField } from "@/components/brand/StarField";
 import { CountUp } from "@/components/motion/CountUp";
 import { TransitionLink } from "@/components/motion/TransitionLink";
 import { HowItWorks } from "@/components/landing/HowItWorks";
@@ -204,7 +199,6 @@ export default function StyleTile({ variant }: { variant: Variant }) {
 
         {/* ================================================ OUR FOCUS ==== */}
         <section id="focus" className="relative overflow-hidden py-28 md:py-32">
-          <StarField />
           <div className="relative mx-auto max-w-6xl px-6">
           <div data-reveal>
             <SectionLabel title="Our Focus" />
@@ -228,7 +222,6 @@ export default function StyleTile({ variant }: { variant: Variant }) {
 
         {/* ================================================== MARKETS ==== */}
         <section id="markets" className="relative overflow-hidden border-y border-pearl/10 bg-navy-elevated/40">
-          <WaveScene />
           <div data-reveal className="relative mx-auto max-w-6xl px-6 py-28 md:py-32">
             <SectionLabel title="Markets" />
             <div className="grid gap-10 md:grid-cols-3">
@@ -262,7 +255,6 @@ export default function StyleTile({ variant }: { variant: Variant }) {
 
         {/* ================================================ LIBRARIES ==== */}
         <section id="libraries" className="relative overflow-hidden py-28 md:py-32">
-          <Aurora />
           <div data-reveal className="relative mx-auto max-w-6xl px-6">
           <SectionLabel title="Libraries" />
           <h3 className="t-h1 max-w-xl text-pearl">The Python quant stack.</h3>
@@ -280,7 +272,6 @@ export default function StyleTile({ variant }: { variant: Variant }) {
 
         {/* ================================================== MODELS ===== */}
         <section className="relative overflow-hidden border-y border-pearl/10 bg-navy-elevated/40">
-          <ContourField />
           <div className="relative mx-auto grid max-w-6xl items-start gap-12 px-6 py-28 md:py-32 lg:grid-cols-2">
             <div data-reveal>
               <SectionLabel title="Models" />
@@ -351,7 +342,6 @@ export default function StyleTile({ variant }: { variant: Variant }) {
 
         {/* ================================================= RESEARCH ==== */}
         <section id="research" className="relative overflow-hidden py-28 md:py-32">
-          <MountainScene />
           <div className="relative mx-auto max-w-6xl px-6">
           <div data-reveal><SectionLabel title="Featured Research" /></div>
           <div className="grid gap-6 lg:grid-cols-3">

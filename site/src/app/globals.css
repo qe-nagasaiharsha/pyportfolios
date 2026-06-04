@@ -10,7 +10,7 @@
 @theme {
   /* — Brand palette (Edition III) — */
   --color-anthracite: #151515; /* strength · stability */
-  --color-navy: #0a0f1e; /* trust · calm — primary dark canvas */
+  --color-navy: #0a0c14; /* trust · calm — primary dark canvas (framer-dark, less blue) */
   --color-ink: #000000; /* authority */
   --color-pearl: #eeeeee; /* delicate neutral — primary text on dark */
   --color-sisal: #f4f2e8; /* elegance — reading canvas */
@@ -18,8 +18,8 @@
   --color-aqua: #1fffff; /* the single charged accent — used sparingly */
 
   /* — Derived surfaces & ink (dark canvas) — */
-  --color-navy-elevated: #0e152a; /* cards / raised surfaces */
-  --color-navy-sunken: #070b16; /* footer / deepest */
+  --color-navy-elevated: #11141d; /* cards / raised surfaces */
+  --color-navy-sunken: #07080e; /* footer / deepest */
   --color-mist: #98a1b4; /* muted text on dark (lifted for legibility) */
   --color-steel: #5c647c; /* faint text / captions on dark */
 
@@ -72,7 +72,7 @@
     inset: 0;
     z-index: 9999;
     pointer-events: none;
-    opacity: 0.035;
+    opacity: 0.014;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 

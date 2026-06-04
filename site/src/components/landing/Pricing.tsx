@@ -3,7 +3,6 @@
    capture so intent is collected before payments exist. */
 
 import type { CSSProperties } from "react";
-import { Aurora } from "@/components/brand/Aurora";
 
 interface Tier {
   name: string;
@@ -46,7 +45,6 @@ const TIERS: Tier[] = [
 export function Pricing() {
   return (
     <section id="pricing" className="relative scroll-mt-20 overflow-hidden border-b border-pearl/10">
-      <Aurora />
       <div className="relative mx-auto max-w-6xl px-6 py-28 md:py-32">
         <div data-reveal className="mb-12 flex flex-col gap-4 border-b border-pearl/10 pb-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">

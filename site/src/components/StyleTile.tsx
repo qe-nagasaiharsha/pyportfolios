@@ -16,7 +16,7 @@ import { WorldMap, EXCHANGES_BY_REGION } from "@/components/brand/WorldMap";
 import { SloganBand } from "@/components/brand/SloganBand";
 import { VersionSwitcher } from "@/components/VersionSwitcher";
 import { WorldSphere } from "@/components/WorldSphere";
-import { HeroBackdrop } from "@/components/HeroBackdrop";
+import { PhotoBackdrop } from "@/components/brand/PhotoBackdrop";
 import { Aurora } from "@/components/brand/Aurora";
 import { ContourField } from "@/components/brand/ContourField";
 import { MountainScene } from "@/components/brand/MountainScene";
@@ -159,7 +159,7 @@ export default function StyleTile({ variant }: { variant: Variant }) {
       <main id="top">
         {/* ================================================== HERO ======= */}
         <section className="relative overflow-hidden border-b border-pearl/10">
-          <HeroBackdrop />
+          <PhotoBackdrop src="/hero.jpeg" position="50% 42%" />
           <HeroCurve />
           <div className="vignette pointer-events-none absolute inset-0" aria-hidden="true" />
           <div className="relative mx-auto max-w-6xl px-6 py-24 md:py-32">

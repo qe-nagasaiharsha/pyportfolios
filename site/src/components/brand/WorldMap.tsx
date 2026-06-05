@@ -96,7 +96,7 @@ export function WorldMap({ tone = "dark" }: { tone?: "dark" | "light" }) {
 }
 
 export const EXCHANGES_BY_REGION: { region: string; venues: string[] }[] = [
-  { region: "Americas", venues: ["NYSE", "NASDAQ", "CME", "ICE", "CBOE", "TSX"] },
-  { region: "Europe", venues: ["LSE", "EUREX", "Euronext", "SIX", "Xetra"] },
-  { region: "Asia / Australia", venues: ["JPX", "HKEX", "SSE", "NSE", "SGX", "ASX"] },
+  { region: "Americas", venues: ["NYSE", "Nasdaq", "B3", "Bolsa Mexicana", "TSX"] },
+  { region: "Europe", venues: ["Börse Frankfurt", "Deutsche Börse", "Euronext", "Borsa Italiana", "BME", "MOEX", "SIX", "LSE"] },
+  { region: "Asia & Australia", venues: ["JPX", "HKEX", "KRX", "ASX", "SSE", "Shenzhen", "BSE", "NSE"] },
 ];

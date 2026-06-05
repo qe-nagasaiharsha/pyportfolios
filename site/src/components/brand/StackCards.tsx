@@ -46,17 +46,17 @@ export function StackCards() {
             <span className="t-mono text-[0.7rem] uppercase tracking-[0.22em] text-mist">{g.label}</span>
             <span className="h-px flex-1 bg-pearl/10" />
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 lg:grid-cols-5">
             {g.libs.map((lib) => (
               <div
                 key={lib.slug}
-                className="flex h-28 items-center justify-center rounded-sm border border-pearl/10 bg-white px-3 transition-transform duration-300 hover:-translate-y-0.5"
+                className="flex h-16 items-center justify-center rounded-sm border border-pearl/10 bg-white px-3 transition-transform duration-300 hover:-translate-y-0.5"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={`/logos/libraries/${lib.slug}.png`}
                   alt={`${lib.name} logo`}
-                  className="max-h-20 w-auto max-w-[94%] object-contain"
+                  className="max-h-9 w-auto max-w-[88%] object-contain"
                   loading="lazy"
                 />
               </div>

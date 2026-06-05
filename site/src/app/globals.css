@@ -115,8 +115,9 @@ html.lenis body {
 .t-eyebrow {
   font-family: var(--font-mono), ui-monospace, monospace;
   text-transform: uppercase;
-  letter-spacing: 0.32em;
-  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  font-size: 0.74rem;
+  font-weight: 700;
 }
 .t-display {
   font-family: var(--font-serif), Georgia, serif;

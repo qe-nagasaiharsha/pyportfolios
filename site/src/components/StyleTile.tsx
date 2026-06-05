@@ -124,8 +124,8 @@ export default function StyleTile({ variant }: { variant: Variant }) {
       <ScrollReveal />
       {/* ============ STICKY TOP: version toggle row + site nav ========= */}
       <div className="sticky top-0 z-50">
-        {/* dev-only variant switcher — hidden on the built/shared site */}
-        {process.env.NODE_ENV === "development" ? <VersionSwitcher /> : null}
+        {/* variant switcher — lets the client browse all versions (V0–V11) */}
+        <VersionSwitcher />
         <header className="border-b border-pearl/10 bg-navy/80 backdrop-blur-md">
           <nav className="nav-condense mx-auto flex max-w-7xl items-center justify-between gap-8 px-6 py-4">
             <a href="#top" className="group nav-logo">
@@ -140,14 +140,14 @@ export default function StyleTile({ variant }: { variant: Variant }) {
             <ul className="hidden items-center gap-5 lg:flex xl:gap-6">
               {NAV.map((item) => (
                 <li key={item.label}>
-                  <a href={item.href} className="t-mono text-[0.68rem] uppercase tracking-[0.12em] text-mist transition-colors duration-200 hover:text-pearl">{item.label}</a>
+                  <a href={item.href} className="t-mono text-[0.68rem] uppercase tracking-[0.12em] text-pearl/85 transition-colors duration-200 hover:text-pearl">{item.label}</a>
                 </li>
               ))}
               <li>
-                <a href="/course" className="t-mono text-[0.68rem] uppercase tracking-[0.12em] text-mist transition-colors duration-200 hover:text-pearl">Course</a>
+                <a href="/course" className="t-mono text-[0.68rem] uppercase tracking-[0.12em] text-pearl/85 transition-colors duration-200 hover:text-pearl">Course</a>
               </li>
               <li>
-                <a href="/literature" className="t-mono text-[0.68rem] uppercase tracking-[0.12em] text-mist transition-colors duration-200 hover:text-pearl">Literature</a>
+                <a href="/literature" className="t-mono text-[0.68rem] uppercase tracking-[0.12em] text-pearl/85 transition-colors duration-200 hover:text-pearl">Literature</a>
               </li>
             </ul>
             <div className="flex items-center gap-3">

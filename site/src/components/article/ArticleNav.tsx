@@ -18,7 +18,7 @@ export function ArticleNav() {
             <li key={c}>
               <Link
                 href={`/research#${c}`}
-                className="t-mono text-[0.7rem] uppercase tracking-[0.16em] text-mist transition-colors duration-200 hover:text-pearl"
+                className="t-mono text-[0.7rem] uppercase tracking-[0.16em] text-pearl/85 transition-colors duration-200 hover:text-pearl"
               >
                 {CATEGORIES[c].name}
               </Link>
@@ -28,13 +28,13 @@ export function ArticleNav() {
         <div className="flex shrink-0 items-center gap-4">
           <Link
             href="/course"
-            className="hidden t-mono text-[0.7rem] uppercase tracking-[0.16em] text-mist transition-colors duration-200 hover:text-pearl sm:block"
+            className="hidden t-mono text-[0.7rem] uppercase tracking-[0.16em] text-pearl/85 transition-colors duration-200 hover:text-pearl sm:block"
           >
             Course
           </Link>
           <Link
             href="/literature"
-            className="hidden t-mono text-[0.7rem] uppercase tracking-[0.16em] text-mist transition-colors duration-200 hover:text-pearl sm:block"
+            className="hidden t-mono text-[0.7rem] uppercase tracking-[0.16em] text-pearl/85 transition-colors duration-200 hover:text-pearl sm:block"
           >
             Literature
           </Link>

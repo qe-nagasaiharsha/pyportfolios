@@ -41,13 +41,13 @@ export function ExchangeRow() {
       {EXCHANGES.map((e) => (
         <div
           key={e.slug}
-          className="flex h-[4.5rem] items-center justify-center rounded-sm border border-pearl/10 bg-white px-6 transition-transform duration-300 hover:-translate-y-0.5"
+          className="flex h-24 items-center justify-center rounded-sm border border-pearl/10 bg-white px-4 transition-transform duration-300 hover:-translate-y-0.5"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={`/logos/exchanges/${e.slug}.png`}
             alt={`${e.name} logo`}
-            className="max-h-8 w-auto max-w-full object-contain"
+            className="max-h-14 w-auto max-w-[90%] object-contain"
             loading="lazy"
           />
         </div>

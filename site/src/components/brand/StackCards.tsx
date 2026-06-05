@@ -53,12 +53,12 @@ export function StackCards() {
                 key={lib.slug}
                 className="group flex flex-col rounded-sm border border-pearl/10 bg-navy-elevated/50 p-3 transition-colors duration-300 hover:border-pearl/25"
               >
-                <span className="flex h-16 items-center justify-center rounded-sm bg-white px-4">
+                <span className="flex h-24 items-center justify-center rounded-sm bg-white px-3">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={`/logos/libraries/${lib.slug}.png`}
                     alt={`${lib.name} logo`}
-                    className="max-h-9 w-auto max-w-full object-contain"
+                    className="max-h-14 w-auto max-w-[90%] object-contain"
                     loading="lazy"
                   />
                 </span>

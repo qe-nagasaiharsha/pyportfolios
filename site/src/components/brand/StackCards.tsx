@@ -50,13 +50,13 @@ export function StackCards() {
             {g.libs.map((lib) => (
               <div
                 key={lib.slug}
-                className="flex h-24 items-center justify-center rounded-sm border border-pearl/10 bg-white px-4 transition-transform duration-300 hover:-translate-y-0.5"
+                className="flex h-28 items-center justify-center rounded-sm border border-pearl/10 bg-white px-3 transition-transform duration-300 hover:-translate-y-0.5"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={`/logos/libraries/${lib.slug}.png`}
                   alt={`${lib.name} logo`}
-                  className="max-h-14 w-auto max-w-[90%] object-contain"
+                  className="max-h-20 w-auto max-w-[94%] object-contain"
                   loading="lazy"
                 />
               </div>

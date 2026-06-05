@@ -76,7 +76,7 @@ export default function CoursePage() {
                     <p className="mt-1.5 leading-relaxed text-mist">{m.blurb}</p>
                   </div>
                 </div>
-                <span className="shrink-0 t-mono text-xs uppercase tracking-[0.18em] text-steel">{m.lessons.length} lessons</span>
+                <span className="shrink-0 t-mono text-xs uppercase tracking-[0.12em] text-mist">{m.lessons.length} lessons</span>
               </div>
 
               <ol className="mt-2 divide-y divide-pearl/10">
@@ -86,7 +86,7 @@ export default function CoursePage() {
                     <div>
                       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                         <h3 className="font-serif text-lg text-pearl">{lesson.title}</h3>
-                        <span className="t-mono text-[0.66rem] uppercase tracking-[0.14em] text-steel">{lesson.minutes} min</span>
+                        <span className="t-mono text-xs uppercase tracking-[0.1em] text-mist">{lesson.minutes} min</span>
                       </div>
                       <p className="mt-1.5 leading-relaxed text-mist">{lesson.summary}</p>
                       {lesson.article ? (

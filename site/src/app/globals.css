@@ -20,8 +20,8 @@
   /* — Derived surfaces & ink (dark canvas) — */
   --color-navy-elevated: #11141d; /* cards / raised surfaces */
   --color-navy-sunken: #07080e; /* footer / deepest */
-  --color-mist: #a8b0c2; /* muted text on dark (lifted for legibility) */
-  --color-steel: #858da4; /* captions / metadata on dark (lifted for legibility) */
+  --color-mist: #b4bcce; /* muted text on dark (lifted for legibility) */
+  --color-steel: #9ca4ba; /* captions / metadata on dark (lifted for legibility) */
 
   /* — Light-surface ink — */
   --color-graphite: #4a4a42; /* muted text on sisal */

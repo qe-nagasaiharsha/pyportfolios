@@ -74,7 +74,7 @@ export function EarlyAccess() {
         <MountainScene />
         <div className="vignette pointer-events-none absolute inset-0" aria-hidden="true" />
         <div data-reveal className="relative mx-auto max-w-3xl px-6 py-28 text-center md:py-32">
-          <p className="t-eyebrow text-pearl/85">Early access</p>
+          <p className="t-eyebrow text-pearl">Early access</p>
           <h2 className="t-display mt-6 text-pearl" style={{ fontSize: "clamp(2rem, 4vw + 1rem, 3.4rem)" }}>
             Get the first lessons<span className="text-aqua"> free</span>.
           </h2>

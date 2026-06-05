@@ -24,7 +24,7 @@ export default function CoursePage() {
           <div className="relative mx-auto max-w-6xl px-6 py-24 md:py-32 lg:px-8">
             <div className="flex items-center gap-4">
               <span className="h-px w-10 bg-pearl/25" aria-hidden="true" />
-              <p className="t-eyebrow text-pearl/85">Course · Quant Finance Basics</p>
+              <p className="t-eyebrow text-pearl">Course · Quant Finance Basics</p>
             </div>
             <h1 className="t-display mt-8 max-w-3xl text-pearl">
               Quant finance, from the ground up<span className="text-aqua">.</span>

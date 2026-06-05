@@ -12,7 +12,7 @@ import type { Variant } from "@/lib/variants";
 import { Crest, CrestLockup } from "@/components/brand/Crest";
 import { PhotoPlate } from "@/components/brand/PhotoPlate";
 import { StackCards } from "@/components/brand/StackCards";
-import { WorldMap, EXCHANGES_BY_REGION } from "@/components/brand/WorldMap";
+import { EXCHANGES_BY_REGION } from "@/components/brand/WorldMap";
 import { ExchangeRow } from "@/components/brand/ExchangeRow";
 import { SloganBand } from "@/components/brand/SloganBand";
 import { VersionSwitcher } from "@/components/VersionSwitcher";
@@ -245,11 +245,6 @@ export default function StyleTile({ variant }: { variant: Variant }) {
               <p className="mb-6 t-mono text-xs uppercase tracking-[0.22em] text-aqua/80">Major venues</p>
               <ExchangeRow />
             </div>
-            {!f.worldMap ? (
-              <p className="mt-10 t-mono text-xs uppercase tracking-[0.18em] text-steel">
-                Case studies span the top 15 economies — developed &amp; emerging.
-              </p>
-            ) : null}
           </div>
         </section>
 
@@ -316,29 +311,35 @@ export default function StyleTile({ variant }: { variant: Variant }) {
           </section>
         ) : null}
 
-        {/* v4 — market reach (deck §13–14) */}
-        {f.worldMap ? (
-          <section className="border-b border-pearl/10">
-            <div className="mx-auto max-w-6xl px-6 py-28 md:py-32">
-              <SectionLabel title="Geographies" />
-              <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-                <h3 className="t-h1 max-w-md text-pearl">The world&apos;s major venues, in one frame.</h3>
-                <p className="t-mono text-xs uppercase tracking-[0.2em] text-steel">Top 15 economies</p>
-              </div>
-              <div className="mt-12"><WorldMap tone="dark" /></div>
-              <div className="mt-10 grid gap-6 border-t border-pearl/10 pt-8 sm:grid-cols-3">
-                {EXCHANGES_BY_REGION.map((r) => (
-                  <div key={r.region}>
-                    <p className="t-mono text-[0.7rem] uppercase tracking-[0.22em] text-aqua/80">{r.region}</p>
-                    <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5">
-                      {r.venues.map((v) => <span key={v} className="t-mono text-sm text-mist">{v}</span>)}
-                    </div>
-                  </div>
-                ))}
-              </div>
+        {/* market reach (deck §14) — top-15 economies, developed & emerging */}
+        <section id="geographies" className="border-b border-pearl/10">
+          <div data-reveal className="mx-auto max-w-6xl px-6 py-28 md:py-32">
+            <SectionLabel title="Geographies" />
+            <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+              <h3 className="t-h1 max-w-md text-pearl">The top 15 economies, in one frame.</h3>
+              <p className="t-mono text-xs uppercase tracking-[0.2em] text-steel">Developed &amp; emerging markets</p>
             </div>
-          </section>
-        ) : null}
+            {/* the brand map (slide 14) on a soft light card — matches the iconography rule */}
+            <figure className="mt-12 overflow-hidden rounded-sm border border-pearl/10 bg-sisal p-4 sm:p-8">
+              <img
+                src="/world-reach.png"
+                alt="World map highlighting the top fifteen economies — developed and emerging — that pyportfolios case studies draw from."
+                className="mx-auto w-full max-w-4xl"
+                decoding="async"
+              />
+            </figure>
+            <div className="mt-10 grid gap-6 border-t border-pearl/10 pt-8 sm:grid-cols-3">
+              {EXCHANGES_BY_REGION.map((r) => (
+                <div key={r.region}>
+                  <p className="t-mono text-[0.7rem] uppercase tracking-[0.22em] text-aqua/80">{r.region}</p>
+                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5">
+                    {r.venues.map((v) => <span key={v} className="t-mono text-sm text-mist">{v}</span>)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {/* ================================================= RESEARCH ==== */}
         <section id="research" className="relative overflow-hidden py-28 md:py-32">
@@ -431,6 +432,27 @@ export default function StyleTile({ variant }: { variant: Variant }) {
         <FAQ />
         <EarlyAccess />
       </main>
+
+      {/* =========================== FOOTER CTA (framer-style photo band) === */}
+      <section className="relative overflow-hidden border-t border-pearl/10">
+        <PhotoBackdrop src="/hero.jpeg" position="center 70%" />
+        <div className="vignette pointer-events-none absolute inset-0" aria-hidden="true" />
+        <div className="relative mx-auto max-w-3xl px-6 py-32 text-center md:py-44">
+          <p className="t-mono text-xs uppercase tracking-[0.24em] text-aqua/80">Step up the game</p>
+          <h2 className="t-display mt-6 text-pearl">
+            Find your edge<span className="text-aqua">.</span>
+          </h2>
+          <p className="mx-auto mt-7 max-w-md text-lg leading-relaxed text-mist">
+            The path up is difficult; the view from the top is worth it. Start with the free module and climb.
+          </p>
+          <div className="mt-10">
+            <a href="#early-access" className="group inline-flex items-center rounded-sm bg-pearl px-8 py-3.5 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua">
+              Get started
+              <span className="ml-2 inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
+            </a>
+          </div>
+        </div>
+      </section>
 
       {/* ==================================================== FOOTER ===== */}
       <footer className="bg-navy-sunken">

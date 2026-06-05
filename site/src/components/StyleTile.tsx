@@ -124,7 +124,8 @@ export default function StyleTile({ variant }: { variant: Variant }) {
       <ScrollReveal />
       {/* ============ STICKY TOP: version toggle row + site nav ========= */}
       <div className="sticky top-0 z-50">
-        <VersionSwitcher />
+        {/* dev-only variant switcher — hidden on the built/shared site */}
+        {process.env.NODE_ENV === "development" ? <VersionSwitcher /> : null}
         <header className="border-b border-pearl/10 bg-navy/80 backdrop-blur-md">
           <nav className="nav-condense mx-auto flex max-w-7xl items-center justify-between gap-8 px-6 py-4">
             <a href="#top" className="group nav-logo">

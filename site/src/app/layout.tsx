@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Lora, Courier_Prime } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
+import { SmoothScroll } from "@/components/motion/SmoothScroll";
 
 /**
  * Type system (per brand guidelines, Edition III):
@@ -51,7 +52,10 @@ export default function RootLayout({
       lang="en"
       className={`${lora.variable} ${switzer.variable} ${courierPrime.variable} antialiased`}
     >
-      <body>{children}</body>
+      <body>
+        <SmoothScroll />
+        {children}
+      </body>
     </html>
   );
 }

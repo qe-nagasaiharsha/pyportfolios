@@ -27,6 +27,12 @@ export function ArticleNav() {
         </ul>
         <div className="flex shrink-0 items-center gap-4">
           <Link
+            href="/course"
+            className="hidden t-mono text-[0.7rem] uppercase tracking-[0.16em] text-mist transition-colors duration-200 hover:text-pearl sm:block"
+          >
+            Course
+          </Link>
+          <Link
             href="/literature"
             className="hidden t-mono text-[0.7rem] uppercase tracking-[0.16em] text-mist transition-colors duration-200 hover:text-pearl sm:block"
           >

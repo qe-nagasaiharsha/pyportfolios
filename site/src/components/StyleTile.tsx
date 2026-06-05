@@ -420,7 +420,7 @@ export default function StyleTile({ variant }: { variant: Variant }) {
               covariance toward structure, as in <code className="rounded-sm bg-anthracite/[0.06] px-1.5 py-0.5 t-mono text-[0.85em] text-teal">LedoitWolf()</code>,
               and the out-of-sample frontier stops lying to you.
             </p>
-            <a href="#" className="mt-10 inline-flex items-center gap-2 t-mono text-xs uppercase tracking-[0.18em] text-teal">
+            <a href="/course" className="mt-10 inline-flex items-center gap-2 t-mono text-xs uppercase tracking-[0.18em] text-teal">
               Begin the course <span aria-hidden="true">→</span>
             </a>
           </div>
@@ -452,6 +452,7 @@ export default function StyleTile({ variant }: { variant: Variant }) {
                 <ul className="mt-4 space-y-2.5">
                   {NAV.map((n) => <li key={n.label}><a href={n.href} className="text-mist transition-colors hover:text-aqua">{n.label}</a></li>)}
                   <li><a href="/research" className="text-mist transition-colors hover:text-aqua">All research</a></li>
+                  <li><a href="/course" className="text-mist transition-colors hover:text-aqua">Course</a></li>
                   <li><a href="/literature" className="text-mist transition-colors hover:text-aqua">Literature</a></li>
                 </ul>
               </div>

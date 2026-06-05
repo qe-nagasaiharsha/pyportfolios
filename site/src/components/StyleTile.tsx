@@ -126,7 +126,7 @@ export default function StyleTile({ variant }: { variant: Variant }) {
       <div className="sticky top-0 z-50">
         <VersionSwitcher />
         <header className="border-b border-pearl/10 bg-navy/80 backdrop-blur-md">
-          <nav className="nav-condense mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+          <nav className="nav-condense mx-auto flex max-w-7xl items-center justify-between gap-8 px-6 py-4">
             <a href="#top" className="group nav-logo">
               {f.crest ? (
                 <CrestLockup tone="light" />
@@ -136,12 +136,18 @@ export default function StyleTile({ variant }: { variant: Variant }) {
                 </span>
               )}
             </a>
-            <ul className="hidden items-center gap-6 lg:flex">
+            <ul className="hidden items-center gap-5 lg:flex xl:gap-6">
               {NAV.map((item) => (
                 <li key={item.label}>
                   <a href={item.href} className="t-mono text-[0.68rem] uppercase tracking-[0.12em] text-mist transition-colors duration-200 hover:text-pearl">{item.label}</a>
                 </li>
               ))}
+              <li>
+                <a href="/course" className="t-mono text-[0.68rem] uppercase tracking-[0.12em] text-mist transition-colors duration-200 hover:text-pearl">Course</a>
+              </li>
+              <li>
+                <a href="/literature" className="t-mono text-[0.68rem] uppercase tracking-[0.12em] text-mist transition-colors duration-200 hover:text-pearl">Literature</a>
+              </li>
             </ul>
             <div className="flex items-center gap-3">
               <span className="hidden items-center gap-2 sm:flex">

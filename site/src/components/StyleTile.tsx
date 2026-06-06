@@ -8,7 +8,6 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import Link from "next/link";
 import type { CSSProperties } from "react";
 import type { Variant } from "@/lib/variants";
 
@@ -33,17 +32,10 @@ import { WorldClockBand } from "@/components/brand/WorldClockBand";
 import { VersionSwitcher } from "@/components/VersionSwitcher";
 import { WorldSphere } from "@/components/WorldSphere";
 import { PhotoBackdrop } from "@/components/brand/PhotoBackdrop";
-import { CountUp } from "@/components/motion/CountUp";
-import { TransitionLink } from "@/components/motion/TransitionLink";
-import { HowItWorks } from "@/components/landing/HowItWorks";
-import { LessonDemo } from "@/components/landing/LessonDemo";
-import { StatsBand } from "@/components/landing/StatsBand";
 import { Pricing } from "@/components/landing/Pricing";
 import { FAQ } from "@/components/landing/FAQ";
 import { EarlyAccess } from "@/components/landing/EarlyAccess";
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
-import { Tilt } from "@/components/motion/Tilt";
-import { EquityCurve } from "@/components/charts/EquityCurve";
 import { ReturnsHistogram } from "@/components/charts/ReturnsHistogram";
 
 const NAV = [
@@ -75,10 +67,6 @@ const MODELS = [
   { group: "Performance", items: "Sharpe · Sortino · Attribution" },
 ] as const;
 
-const ARTICLES = [
-  { slug: "ledoit-wolf-shrinkage", cat: "Portfolio Optimization", title: "Ledoit-Wolf shrinkage, from scratch", blurb: "Why the sample covariance matrix fails out-of-sample — and how shrinkage repairs it.", meta: ["12 min", "Python", "Notebook ↗"] },
-  { slug: "evt-t-copula-var", cat: "Risk Management", title: "Market risk via EVT + t-copula", blurb: "A faithful Python port of the classic tail-risk pipeline, end to end.", meta: ["14 min", "Python", "Notebook ↗"] },
-] as const;
 
 function SectionLabel({ title, no }: { title: string; no?: string }) {
   return (
@@ -219,9 +207,6 @@ export default function StyleTile({ variant }: { variant: Variant }) {
         {/* world-markets ticker — financial centres + live local times */}
         <WorldClockBand />
 
-        {/* how it works — the learning loop */}
-        <HowItWorks />
-
         {/* ================================================ OUR FOCUS ==== */}
         <section id="focus" className="relative overflow-hidden py-28 md:py-32">
           <div className="relative mx-auto max-w-6xl px-6">
@@ -308,9 +293,6 @@ export default function StyleTile({ variant }: { variant: Variant }) {
           </div>
         </section>
 
-        {/* see a lesson — show, don't tell */}
-        <LessonDemo />
-
         {/* v2 — imagery (deck §05) */}
         {f.photography ? (
           <section className="mx-auto max-w-6xl px-6 py-28 md:py-32">
@@ -387,92 +369,6 @@ export default function StyleTile({ variant }: { variant: Variant }) {
           </div>
         </section>
 
-        {/* ================================================= RESEARCH ==== */}
-        <section id="research" className="relative overflow-hidden py-28 md:py-32">
-          <div className="relative mx-auto max-w-6xl px-6">
-          <div data-reveal><SectionLabel title="Featured Research" /></div>
-          <div className="grid gap-6 lg:grid-cols-3">
-            {ARTICLES.map((a, idx) => (
-              <div key={a.title} data-reveal style={{ "--reveal-delay": `${idx * 90}ms` } as CSSProperties} className="h-full">
-                <Tilt className="h-full">
-                  <TransitionLink href={`/research/${a.slug}`} className="glow-card group flex h-full flex-col rounded-sm border border-pearl/10 bg-navy-elevated/50 p-7 hover:border-aqua/40">
-                    <span className="t-mono text-xs uppercase tracking-[0.18em] text-aqua/80">{a.cat}</span>
-                    <h3 className="t-h2 mt-4 text-pearl">{a.title}</h3>
-                    <p className="mt-3 flex-1 leading-relaxed text-mist">{a.blurb}</p>
-                    <div className="mt-6 flex items-center gap-3 border-t border-pearl/10 pt-4 t-mono text-xs uppercase tracking-[0.14em] text-steel">
-                      {a.meta.map((m, i) => (
-                        <span key={m} className="flex items-center gap-3">
-                          {i > 0 ? <span className="text-aqua/50" aria-hidden="true">·</span> : null}
-                          <span className={i === a.meta.length - 1 ? "text-aqua" : ""}>{m}</span>
-                        </span>
-                      ))}
-                    </div>
-                  </TransitionLink>
-                </Tilt>
-              </div>
-            ))}
-
-            {/* live backtest metric card */}
-            <div data-reveal style={{ "--reveal-delay": "180ms" } as CSSProperties} className="h-full">
-              <Tilt className="h-full">
-                <div className="glow-card corner-ticks flex h-full flex-col justify-between rounded-sm border border-pearl/10 bg-navy-elevated/50 p-6 hover:border-aqua/40">
-                  <div className="flex items-start justify-between">
-                    <span className="t-mono text-xs uppercase tracking-[0.18em] text-mist">Risk-Parity · Backtest</span>
-                    <span className="live-dot inline-block h-2 w-2 rounded-full bg-aqua" aria-hidden="true" />
-                  </div>
-                  <div className="my-6">
-                    <p className="tnum t-mono text-5xl font-bold text-pearl"><CountUp value={1.87} decimals={2} /></p>
-                    <p className="mt-1 t-mono text-xs uppercase tracking-[0.16em] text-steel">Sharpe (net) · 2009—2025</p>
-                  </div>
-                  <EquityCurve />
-                  <div className="mt-4 grid grid-cols-2 gap-3 border-t border-pearl/10 pt-4">
-                    <Metric label="Max DD" value="−12.4%" />
-                    <Metric label="Vol" value="8.9%" tone="aqua" />
-                  </div>
-                </div>
-              </Tilt>
-            </div>
-          </div>
-
-          <div data-reveal className="mt-10">
-            <Link href="/research" className="link-fine t-mono text-sm uppercase tracking-[0.16em] text-pearl/90 transition-colors duration-300 hover:text-pearl">
-              All research &amp; notebooks →
-            </Link>
-          </div>
-          </div>
-        </section>
-
-        {/* by the numbers */}
-        <StatsBand />
-
-        {/* ========================================= COURSE (LIGHT) ====== */}
-        <section id="course" className="bg-sisal text-anthracite">
-          <div data-reveal className="mx-auto max-w-3xl px-6 py-28">
-            <div className="mb-10 flex items-center gap-4 border-b border-anthracite/15 pb-4">
-              <span className="h-px w-8 bg-teal/60" aria-hidden="true" />
-              <span className="t-mono text-sm uppercase tracking-[0.24em] text-graphite">Course · Quant Finance Basics</span>
-            </div>
-            <h3 className="t-h1 mt-4 text-anthracite">Mean-variance, and what it forgets</h3>
-            <p className="dropcap mt-8 text-lg leading-[1.75] text-anthracite/85">
-              Markowitz gave us the efficient frontier in 1952 — a frame so durable it still
-              anchors how institutions think about risk. Yet the moment you estimate inputs from
-              finite data, the optimizer turns into an <em className="font-serif italic">error-maximizing machine</em>.
-              This is the tension every practitioner inherits.
-            </p>
-            <blockquote className="my-10 border-l-2 border-teal pl-6">
-              <p className="font-serif text-2xl italic leading-snug text-anthracite">“The optimizer is exquisitely sensitive to inputs it can never know precisely.”</p>
-            </blockquote>
-            <p className="text-lg leading-[1.75] text-anthracite/85">
-              The fix is rarely a fancier optimizer — it is a humbler estimate. Shrink the
-              covariance toward structure, as in <code className="rounded-sm bg-anthracite/[0.06] px-1.5 py-0.5 t-mono text-[0.85em] text-teal">LedoitWolf()</code>,
-              and the out-of-sample frontier stops lying to you.
-            </p>
-            <a href="/course" className="mt-10 inline-flex items-center gap-2 t-mono text-xs uppercase tracking-[0.18em] text-teal">
-              Begin the course <span aria-hidden="true">→</span>
-            </a>
-          </div>
-        </section>
-
         {/* pricing · faq · early-access capture */}
         <Pricing />
         <FAQ />
@@ -540,17 +436,6 @@ export default function StyleTile({ variant }: { variant: Variant }) {
           </div>
         </div>
       </footer>
-    </div>
-  );
-}
-
-/* ---------------------------------------------------- composite atoms -- */
-
-function Metric({ label, value, tone }: { label: string; value: string; tone?: "aqua" }) {
-  return (
-    <div>
-      <p className="t-mono text-[0.65rem] uppercase tracking-[0.14em] text-steel">{label}</p>
-      <p className={`tnum t-mono text-base ${tone === "aqua" ? "text-aqua" : "text-pearl"}`}>{value}</p>
     </div>
   );
 }

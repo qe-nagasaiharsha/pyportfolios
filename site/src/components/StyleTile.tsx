@@ -39,9 +39,9 @@ const NAV = [
 ] as const;
 
 const PILLARS = [
-  { no: "01", title: "Coding", body: "Structured case studies and ready-to-run snippets — investment-banking style — across the modern Python quant stack." },
-  { no: "02", title: "Trading", body: "Algorithmic trading, portfolio optimization and risk management in a simple, empirical, practical format." },
-  { no: "03", title: "Markets", body: "Academic-level models meet state-of-the-art frameworks, using data from the world's major exchanges." },
+  { no: "01", title: "Coding", img: "coding", body: "Structured case studies and ready-to-run snippets — investment-banking style — across the modern Python quant stack." },
+  { no: "02", title: "Trading", img: "trading", body: "Algorithmic trading, portfolio optimization and risk management in a simple, empirical, practical format." },
+  { no: "03", title: "Markets", img: "markets", body: "Academic-level models meet state-of-the-art frameworks, using data from the world's major exchanges." },
 ] as const;
 
 const MARKETS = [
@@ -219,11 +219,23 @@ export default function StyleTile({ variant }: { variant: Variant }) {
           </div>
           <div data-reveal style={{ "--reveal-delay": "120ms" } as CSSProperties} className="grid gap-px overflow-hidden rounded-sm border border-pearl/10 bg-pearl/10 md:grid-cols-3">
             {PILLARS.map((p) => (
-              <div key={p.no} className="bg-navy px-7 py-9">
-                <span className="font-serif text-4xl text-pearl/20" style={{ fontWeight: 500 }}>{p.no}</span>
-                <h3 className="t-h2 mt-4 text-pearl">{p.title}</h3>
-                <span className="mt-4 block h-px w-10 bg-aqua" />
-                <p className="mt-4 leading-relaxed text-mist">{p.body}</p>
+              <div key={p.no} className="group flex flex-col bg-navy">
+                <div className="overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`/focus/${p.img}.jpg`}
+                    alt=""
+                    className="aspect-[4/3] w-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <div className="px-7 py-9">
+                  <span className="font-serif text-4xl text-pearl/20" style={{ fontWeight: 500 }}>{p.no}</span>
+                  <h3 className="t-h2 mt-4 text-pearl">{p.title}</h3>
+                  <span className="mt-4 block h-px w-10 bg-aqua" />
+                  <p className="mt-4 leading-relaxed text-mist">{p.body}</p>
+                </div>
               </div>
             ))}
           </div>

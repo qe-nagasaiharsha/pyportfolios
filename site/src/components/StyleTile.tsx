@@ -6,9 +6,24 @@
    toggle is client-side.
    ========================================================================== */
 
+import fs from "node:fs";
+import path from "node:path";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import type { Variant } from "@/lib/variants";
+
+/* Our-Focus images are drop-in: place coding/trading/markets.<ext> in
+   public/focus/ (jpg, jpeg, png, webp or avif) and they appear automatically,
+   no code change. Resolved once at build time. */
+const FOCUS_DIR = path.join(process.cwd(), "public", "focus");
+function focusSrc(slug: string): string | null {
+  for (const ext of ["jpg", "jpeg", "png", "webp", "avif"]) {
+    try {
+      if (fs.existsSync(path.join(FOCUS_DIR, `${slug}.${ext}`))) return `/focus/${slug}.${ext}`;
+    } catch {}
+  }
+  return null;
+}
 import { Crest, CrestLockup } from "@/components/brand/Crest";
 import { PhotoPlate } from "@/components/brand/PhotoPlate";
 import { StackCards } from "@/components/brand/StackCards";
@@ -218,17 +233,25 @@ export default function StyleTile({ variant }: { variant: Variant }) {
             </p>
           </div>
           <div data-reveal style={{ "--reveal-delay": "120ms" } as CSSProperties} className="grid gap-px overflow-hidden rounded-sm border border-pearl/10 bg-pearl/10 md:grid-cols-3">
-            {PILLARS.map((p) => (
+            {PILLARS.map((p) => {
+              const src = focusSrc(p.img);
+              return (
               <div key={p.no} className="group flex flex-col bg-navy">
-                <div className="overflow-hidden">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`/focus/${p.img}.jpg`}
-                    alt=""
-                    className="aspect-[4/3] w-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105"
-                    loading="lazy"
-                    decoding="async"
-                  />
+                <div className="aspect-[4/3] w-full overflow-hidden bg-navy-elevated/60">
+                  {src ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={src}
+                      alt=""
+                      className="h-full w-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center t-mono text-[0.62rem] uppercase tracking-[0.18em] text-steel">
+                      {p.title} image
+                    </div>
+                  )}
                 </div>
                 <div className="px-7 py-9">
                   <span className="font-serif text-4xl text-pearl/20" style={{ fontWeight: 500 }}>{p.no}</span>
@@ -237,7 +260,8 @@ export default function StyleTile({ variant }: { variant: Variant }) {
                   <p className="mt-4 leading-relaxed text-mist">{p.body}</p>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
           </div>
         </section>

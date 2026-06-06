@@ -15,7 +15,6 @@ import { StackCards } from "@/components/brand/StackCards";
 import { EXCHANGES_BY_REGION } from "@/components/brand/WorldMap";
 import { ExchangeRow } from "@/components/brand/ExchangeRow";
 import { WorldClockBand } from "@/components/brand/WorldClockBand";
-import { SloganBand } from "@/components/brand/SloganBand";
 import { VersionSwitcher } from "@/components/VersionSwitcher";
 import { WorldSphere } from "@/components/WorldSphere";
 import { PhotoBackdrop } from "@/components/brand/PhotoBackdrop";
@@ -201,9 +200,6 @@ export default function StyleTile({ variant }: { variant: Variant }) {
 
         {/* world-markets ticker — financial centres + live local times */}
         <WorldClockBand />
-
-        {/* v5 — slogan band */}
-        {f.slogans ? <SloganBand /> : null}
 
         {/* how it works — the learning loop */}
         <HowItWorks />

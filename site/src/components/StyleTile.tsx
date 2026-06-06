@@ -65,11 +65,14 @@ const ARTICLES = [
   { slug: "evt-t-copula-var", cat: "Risk Management", title: "Market risk via EVT + t-copula", blurb: "A faithful Python port of the classic tail-risk pipeline, end to end.", meta: ["14 min", "Python", "Notebook ↗"] },
 ] as const;
 
-function SectionLabel({ title }: { title: string }) {
+function SectionLabel({ title, no }: { title: string; no?: string }) {
   return (
     <div className="mb-10 flex items-center gap-4 border-b border-pearl/10 pb-4">
       <span className="h-px w-8 bg-aqua/50" aria-hidden="true" />
-      <h2 className="t-mono text-sm uppercase tracking-[0.24em] text-mist">{title}</h2>
+      <div className="flex items-baseline gap-2.5">
+        {no ? <span className="t-mono text-sm font-bold tabular-nums text-aqua">{no}</span> : null}
+        <h2 className="t-mono text-sm uppercase tracking-[0.24em] text-mist">{title}</h2>
+      </div>
     </div>
   );
 }
@@ -208,7 +211,7 @@ export default function StyleTile({ variant }: { variant: Variant }) {
         <section id="focus" className="relative overflow-hidden py-28 md:py-32">
           <div className="relative mx-auto max-w-6xl px-6">
           <div data-reveal>
-            <SectionLabel title="Our Focus" />
+            <SectionLabel no="01" title="Our Focus" />
             <p className="mb-12 max-w-2xl text-lg leading-relaxed text-mist">
               An educational platform that bridges advanced quantitative finance and practical
               Python implementation — blending technical rigor, real-world application and visual clarity.
@@ -227,10 +230,24 @@ export default function StyleTile({ variant }: { variant: Variant }) {
           </div>
         </section>
 
+        {/* ================================================ LIBRARIES ==== */}
+        <section id="libraries" className="relative overflow-hidden py-28 md:py-32">
+          <div data-reveal className="relative mx-auto max-w-6xl px-6">
+          <SectionLabel no="02" title="Libraries" />
+          <h3 className="t-h1 max-w-xl text-pearl">The Python quant stack.</h3>
+          <p className="mt-5 max-w-md text-lg leading-relaxed text-mist">
+            Best-in-class, open-source libraries — composed into clean, reproducible research.
+          </p>
+          <div className="mt-12">
+            <StackCards />
+          </div>
+          </div>
+        </section>
+
         {/* ================================================== MARKETS ==== */}
         <section id="markets" className="relative overflow-hidden border-y border-pearl/10 bg-navy-elevated/40">
           <div data-reveal className="relative mx-auto max-w-6xl px-6 py-28 md:py-32">
-            <SectionLabel title="Markets" />
+            <SectionLabel no="03" title="Markets" />
             <div className="grid gap-10 md:grid-cols-3">
               {MARKETS.map((m) => (
                 <div key={m.label}>
@@ -255,28 +272,55 @@ export default function StyleTile({ variant }: { variant: Variant }) {
           </div>
         </section>
 
-        {/* ================================================ LIBRARIES ==== */}
-        <section id="libraries" className="relative overflow-hidden py-28 md:py-32">
-          <div data-reveal className="relative mx-auto max-w-6xl px-6">
-          <SectionLabel title="Libraries" />
-          <h3 className="t-h1 max-w-xl text-pearl">The Python quant stack.</h3>
-          <p className="mt-5 max-w-md text-lg leading-relaxed text-mist">
-            Best-in-class, open-source libraries — composed into clean, reproducible research.
-          </p>
-          <div className="mt-12">
-            <StackCards />
-          </div>
-          </div>
-        </section>
-
         {/* see a lesson — show, don't tell */}
         <LessonDemo />
 
-        {/* ================================================== MODELS ===== */}
+        {/* v2 — imagery (deck §05) */}
+        {f.photography ? (
+          <section className="mx-auto max-w-6xl px-6 py-28 md:py-32">
+            <SectionLabel title="Imagery" />
+            <div className="grid gap-6 md:grid-cols-2">
+              <PhotoPlate scene="skyline" caption="Capital markets · NYSE" />
+              <PhotoPlate scene="summit" caption="Out-of-sample · risk surface" />
+            </div>
+          </section>
+        ) : null}
+
+        {/* 04 — market reach (deck §14): top-15 economies, developed & emerging */}
+        <section id="geographies" className="border-b border-pearl/10">
+          <div data-reveal className="mx-auto max-w-6xl px-6 py-28 md:py-32">
+            <SectionLabel no="04" title="Geographies" />
+            <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+              <h3 className="t-h1 max-w-md text-pearl">The top 15 economies, in one frame.</h3>
+              <p className="t-mono text-xs uppercase tracking-[0.2em] text-steel">Developed &amp; emerging markets</p>
+            </div>
+            {/* the brand map (slide 14) on a soft light card — matches the iconography rule */}
+            <figure className="mt-12 overflow-hidden rounded-sm border border-pearl/10 bg-sisal p-4 sm:p-8">
+              <img
+                src="/world-reach.png"
+                alt="World map highlighting the top fifteen economies — developed and emerging — that pyportfolios case studies draw from."
+                className="mx-auto w-full max-w-4xl"
+                decoding="async"
+              />
+            </figure>
+            <div className="mt-10 grid gap-6 border-t border-pearl/10 pt-8 sm:grid-cols-3">
+              {EXCHANGES_BY_REGION.map((r) => (
+                <div key={r.region}>
+                  <p className="t-mono text-[0.7rem] uppercase tracking-[0.22em] text-aqua/80">{r.region}</p>
+                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5">
+                    {r.venues.map((v) => <span key={v} className="t-mono text-sm text-mist">{v}</span>)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ============================================ CONCEPTS / MODELS == */}
         <section className="relative overflow-hidden border-y border-pearl/10 bg-navy-elevated/40">
           <div className="relative mx-auto grid max-w-6xl items-start gap-12 px-6 py-28 md:py-32 lg:grid-cols-2">
             <div data-reveal>
-              <SectionLabel title="Models" />
+              <SectionLabel no="05" title="Concepts" />
               <h3 className="t-h1 text-pearl">Concepts &amp; models, applied.</h3>
               <p className="mt-5 max-w-md text-lg leading-relaxed text-mist">
                 From pricing to portfolio construction to risk — academic models, implemented
@@ -303,47 +347,6 @@ export default function StyleTile({ variant }: { variant: Variant }) {
                   </span>
                 </figcaption>
               </figure>
-            </div>
-          </div>
-        </section>
-
-        {/* v2 — imagery (deck §05) */}
-        {f.photography ? (
-          <section className="mx-auto max-w-6xl px-6 py-28 md:py-32">
-            <SectionLabel title="Imagery" />
-            <div className="grid gap-6 md:grid-cols-2">
-              <PhotoPlate scene="skyline" caption="Capital markets · NYSE" />
-              <PhotoPlate scene="summit" caption="Out-of-sample · risk surface" />
-            </div>
-          </section>
-        ) : null}
-
-        {/* market reach (deck §14) — top-15 economies, developed & emerging */}
-        <section id="geographies" className="border-b border-pearl/10">
-          <div data-reveal className="mx-auto max-w-6xl px-6 py-28 md:py-32">
-            <SectionLabel title="Geographies" />
-            <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-              <h3 className="t-h1 max-w-md text-pearl">The top 15 economies, in one frame.</h3>
-              <p className="t-mono text-xs uppercase tracking-[0.2em] text-steel">Developed &amp; emerging markets</p>
-            </div>
-            {/* the brand map (slide 14) on a soft light card — matches the iconography rule */}
-            <figure className="mt-12 overflow-hidden rounded-sm border border-pearl/10 bg-sisal p-4 sm:p-8">
-              <img
-                src="/world-reach.png"
-                alt="World map highlighting the top fifteen economies — developed and emerging — that pyportfolios case studies draw from."
-                className="mx-auto w-full max-w-4xl"
-                decoding="async"
-              />
-            </figure>
-            <div className="mt-10 grid gap-6 border-t border-pearl/10 pt-8 sm:grid-cols-3">
-              {EXCHANGES_BY_REGION.map((r) => (
-                <div key={r.region}>
-                  <p className="t-mono text-[0.7rem] uppercase tracking-[0.22em] text-aqua/80">{r.region}</p>
-                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5">
-                    {r.venues.map((v) => <span key={v} className="t-mono text-sm text-mist">{v}</span>)}
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </section>

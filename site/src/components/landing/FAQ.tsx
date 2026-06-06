@@ -36,6 +36,7 @@ export function FAQ() {
       <div className="mx-auto max-w-3xl px-6 py-28 md:py-32">
         <div data-reveal className="mb-12 flex items-center gap-4 border-b border-pearl/10 pb-4">
           <span className="h-px w-8 bg-aqua/50" aria-hidden="true" />
+          <span className="t-mono text-sm font-bold tabular-nums text-aqua">07</span>
           <h2 className="t-mono text-sm uppercase tracking-[0.24em] text-mist">Frequently asked</h2>
         </div>
 

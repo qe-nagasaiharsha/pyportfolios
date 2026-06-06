@@ -60,7 +60,7 @@ const PILLARS = [
 ] as const;
 
 const MARKETS = [
-  { label: "Asset Classes", items: ["Equities", "Fixed Income", "FX", "Commodities", "Rates", "Crypto"] },
+  { label: "Asset Classes", items: ["Equities", "Fixed Income", "FX", "Commodities", "Derivatives", "Real Estate", "Crypto"] },
   { label: "Instruments", items: ["Options", "Futures", "Swaps", "ETFs", "Bonds", "Forwards"] },
   { label: "Sectors", items: ["Technology", "Financials", "Energy", "Healthcare", "Industrials", "Consumer"] },
 ] as const;

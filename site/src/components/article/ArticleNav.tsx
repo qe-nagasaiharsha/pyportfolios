@@ -18,7 +18,7 @@ export function ArticleNav() {
             <li key={c}>
               <Link
                 href={`/research#${c}`}
-                className="t-mono text-[0.7rem] uppercase tracking-[0.16em] text-pearl/85 transition-colors duration-200 hover:text-pearl"
+                className="font-sans font-black text-[0.7rem] uppercase tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl"
               >
                 {CATEGORIES[c].name}
               </Link>
@@ -28,19 +28,19 @@ export function ArticleNav() {
         <div className="flex shrink-0 items-center gap-4">
           <Link
             href="/course"
-            className="hidden t-mono text-[0.7rem] uppercase tracking-[0.16em] text-pearl/85 transition-colors duration-200 hover:text-pearl sm:block"
+            className="hidden font-sans font-black text-[0.7rem] uppercase tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl sm:block"
           >
             Course
           </Link>
           <Link
             href="/literature"
-            className="hidden t-mono text-[0.7rem] uppercase tracking-[0.16em] text-pearl/85 transition-colors duration-200 hover:text-pearl sm:block"
+            className="hidden font-sans font-black text-[0.7rem] uppercase tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl sm:block"
           >
             Literature
           </Link>
           <Link
             href="/research"
-            className="rounded-sm border border-pearl/20 px-4 py-1.5 t-mono text-[0.7rem] uppercase tracking-[0.16em] text-pearl transition-colors duration-200 hover:border-aqua hover:text-aqua"
+            className="rounded-sm border border-pearl/20 px-4 py-1.5 font-sans font-black text-[0.7rem] uppercase tracking-[0.1em] text-pearl transition-colors duration-200 hover:border-aqua hover:text-aqua"
           >
             All research
           </Link>

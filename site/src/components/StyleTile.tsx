@@ -146,14 +146,14 @@ export default function StyleTile({ variant }: { variant: Variant }) {
             <ul className="hidden items-center gap-5 lg:flex xl:gap-6">
               {NAV.map((item) => (
                 <li key={item.label}>
-                  <a href={item.href} className="t-mono text-[0.68rem] uppercase tracking-[0.12em] text-pearl/85 transition-colors duration-200 hover:text-pearl">{item.label}</a>
+                  <a href={item.href} className="font-sans font-black text-[0.68rem] uppercase tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl">{item.label}</a>
                 </li>
               ))}
               <li>
-                <a href="/course" className="t-mono text-[0.68rem] uppercase tracking-[0.12em] text-pearl/85 transition-colors duration-200 hover:text-pearl">Course</a>
+                <a href="/course" className="font-sans font-black text-[0.68rem] uppercase tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl">Course</a>
               </li>
               <li>
-                <a href="/literature" className="t-mono text-[0.68rem] uppercase tracking-[0.12em] text-pearl/85 transition-colors duration-200 hover:text-pearl">Literature</a>
+                <a href="/literature" className="font-sans font-black text-[0.68rem] uppercase tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl">Literature</a>
               </li>
             </ul>
             <div className="flex items-center gap-3">

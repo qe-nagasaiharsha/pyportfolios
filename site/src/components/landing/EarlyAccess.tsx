@@ -5,8 +5,7 @@
    Buttondown) or the platform API and it POSTs; until then it confirms
    optimistically so the UX is complete and demoable. */
 
-import { useState, useEffect, useRef, type FormEvent } from "react";
-import { MountainScene } from "@/components/brand/MountainScene";
+import { useState, type FormEvent } from "react";
 
 const ENDPOINT = ""; // ← set to a form endpoint to start collecting for real
 
@@ -15,34 +14,6 @@ type State = "idle" | "loading" | "done" | "error";
 export function EarlyAccess() {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<State>("idle");
-  const sceneRef = useRef<HTMLDivElement>(null);
-
-  // subtle scroll parallax — drives --ms-p (-1..1) on the scene; the ridge
-  // layers translate by different multiples of it. Off under reduced-motion.
-  useEffect(() => {
-    const el = sceneRef.current;
-    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    let raf = 0;
-    const update = () => {
-      raf = 0;
-      const r = el.getBoundingClientRect();
-      const vh = window.innerHeight || 1;
-      const center = r.top + r.height / 2;
-      const p = Math.max(-1, Math.min(1, (vh / 2 - center) / (vh / 2 + r.height / 2)));
-      el.style.setProperty("--ms-p", p.toFixed(3));
-    };
-    const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(update);
-    };
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -70,9 +41,7 @@ export function EarlyAccess() {
 
   return (
     <section id="early-access" className="scroll-mt-20 border-b border-pearl/10">
-      <div ref={sceneRef} className="relative overflow-hidden">
-        <MountainScene />
-        <div className="vignette pointer-events-none absolute inset-0" aria-hidden="true" />
+      <div className="relative">
         <div data-reveal className="relative mx-auto max-w-3xl px-6 py-28 text-center md:py-32">
           <p className="t-eyebrow text-pearl">Early access</p>
           <h2 className="t-display mt-6 text-pearl" style={{ fontSize: "clamp(2rem, 4vw + 1rem, 3.4rem)" }}>

@@ -28,6 +28,7 @@ import { PhotoPlate } from "@/components/brand/PhotoPlate";
 import { StackCards } from "@/components/brand/StackCards";
 import { EXCHANGES_BY_REGION } from "@/components/brand/WorldMap";
 import { ExchangeRow } from "@/components/brand/ExchangeRow";
+import { SectorsIndices } from "@/components/brand/SectorsIndices";
 import { WorldClockBand } from "@/components/brand/WorldClockBand";
 import { VersionSwitcher } from "@/components/VersionSwitcher";
 import { WorldSphere } from "@/components/WorldSphere";
@@ -54,7 +55,6 @@ const PILLARS = [
 const MARKETS = [
   { label: "Asset Classes", items: ["Equities", "Fixed Income", "FX", "Commodities", "Derivatives", "Real Estate", "Crypto"] },
   { label: "Instruments", items: ["Options", "Futures", "Swaps", "ETFs", "Bonds", "Forwards"] },
-  { label: "Sectors", items: ["Technology", "Financials", "Energy", "Healthcare", "Industrials", "Consumer"] },
 ] as const;
 
 
@@ -269,7 +269,7 @@ export default function StyleTile({ variant }: { variant: Variant }) {
         <section id="markets" className="relative overflow-hidden border-y border-pearl/10 bg-navy-elevated/40">
           <div data-reveal className="relative mx-auto max-w-6xl px-6 py-28 md:py-32">
             <SectionLabel no="03" title="Markets" />
-            <div className="grid gap-10 md:grid-cols-3">
+            <div className="grid gap-10 md:grid-cols-2">
               {MARKETS.map((m) => (
                 <div key={m.label}>
                   <p className="t-mono text-xs uppercase tracking-[0.22em] text-aqua/80">{m.label}</p>
@@ -283,6 +283,11 @@ export default function StyleTile({ variant }: { variant: Variant }) {
                   </ul>
                 </div>
               ))}
+            </div>
+
+            {/* sectors · country indices · index providers */}
+            <div className="mt-14 border-t border-pearl/10 pt-10">
+              <SectorsIndices />
             </div>
 
             {/* the world's major venues — real exchange logos */}

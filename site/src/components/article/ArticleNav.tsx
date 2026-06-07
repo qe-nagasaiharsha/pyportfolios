@@ -10,7 +10,7 @@ export function ArticleNav() {
       <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3.5">
         <Link href="/" className="shrink-0">
           <span className="font-sans text-base tracking-tight text-pearl" style={{ fontWeight: 900 }}>
-            pyportfolios<span className="text-aqua">.com</span>
+            pyportfolios<span className="text-aqua">.</span>com
           </span>
         </Link>
         <ul className="hidden items-center gap-7 lg:flex">

@@ -139,7 +139,7 @@ export default function StyleTile({ variant }: { variant: Variant }) {
                 <CrestLockup tone="light" />
               ) : (
                 <span className="font-sans text-lg tracking-tight text-pearl" style={{ fontWeight: 900 }}>
-                  pyportfolios<span className="text-aqua">.com</span>
+                  pyportfolios<span className="text-aqua">.</span>com
                 </span>
               )}
             </a>

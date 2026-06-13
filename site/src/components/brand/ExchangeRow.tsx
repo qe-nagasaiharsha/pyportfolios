@@ -23,7 +23,6 @@ const REGIONS: { region: string; venues: Exch[] }[] = [
     region: "Europe",
     venues: [
       { name: "Börse Frankfurt", slug: "borse-frankfurt" },
-      { name: "Deutsche Börse", slug: "deutsche-borse" },
       { name: "Euronext", slug: "euronext" },
       { name: "Borsa Italiana", slug: "borsa-italiana" },
       { name: "BME (Spain)", slug: "bme" },
@@ -66,8 +65,12 @@ export function ExchangeRow() {
                 <img
                   src={`/logos/exchanges/${e.slug}.png`}
                   alt={`${e.name} logo`}
-                  className="max-h-9 w-auto max-w-[88%] object-contain"
+                  className="max-h-9 w-auto max-w-[88%] cursor-zoom-in object-contain"
                   loading="lazy"
+                  data-zoom
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Enlarge ${e.name} logo`}
                 />
               </div>
             ))}

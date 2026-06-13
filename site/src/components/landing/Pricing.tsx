@@ -48,7 +48,7 @@ export function Pricing() {
       <div className="relative mx-auto max-w-6xl px-6 py-28 md:py-32">
         <div data-reveal className="mb-12 flex flex-col gap-4 border-b border-pearl/10 pb-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-            <span className="h-px w-8 bg-aqua/50" aria-hidden="true" />
+            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-aqua" aria-hidden="true" />
             <span className="t-mono text-sm font-bold tabular-nums text-aqua">06</span>
             <h2 className="t-mono text-sm uppercase tracking-[0.24em] text-mist">Pricing</h2>
           </div>

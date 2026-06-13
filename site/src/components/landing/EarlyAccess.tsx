@@ -6,6 +6,7 @@
    optimistically so the UX is complete and demoable. */
 
 import { useState, type FormEvent } from "react";
+import { PhotoBackdrop } from "@/components/brand/PhotoBackdrop";
 
 const ENDPOINT = ""; // ← set to a form endpoint to start collecting for real
 
@@ -40,25 +41,24 @@ export function EarlyAccess() {
   }
 
   return (
-    <section id="early-access" className="scroll-mt-20 border-b border-pearl/10">
-      <div className="relative">
-        <div data-reveal className="relative mx-auto max-w-3xl px-6 py-28 text-center md:py-32">
-          <p className="t-eyebrow text-pearl">Early access</p>
-          <h2 className="t-display mt-6 text-pearl" style={{ fontSize: "clamp(2rem, 4vw + 1rem, 3.4rem)" }}>
-            Get the first lessons<span className="text-aqua"> free</span>.
+    <section id="early-access" className="relative scroll-mt-20 overflow-hidden border-y border-pearl/10">
+      <PhotoBackdrop src="/hero.jpeg" position="center 70%" />
+      <div className="vignette pointer-events-none absolute inset-0" aria-hidden="true" />
+      <div data-reveal className="relative mx-auto max-w-3xl px-6 py-28 text-center md:py-36">
+          <h2 className="t-display text-pearl">
+            Find your edge<span className="text-aqua">.</span>
           </h2>
-          <p className="mx-auto mt-6 max-w-lg text-lg leading-relaxed text-mist">
-            Join the early list — we&apos;ll send new case studies as they ship and let you in first when the
-            full platform goes live. No noise.
+          <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-pearl/70">
+            Get your first lesson for free.
           </p>
 
           {state === "done" ? (
-            <div className="mx-auto mt-10 flex max-w-md items-center justify-center gap-3 rounded-sm border border-aqua/40 bg-navy-elevated/60 px-6 py-4">
+            <div className="mx-auto mt-8 flex max-w-md items-center justify-center gap-3 rounded-sm border border-aqua/40 bg-navy/70 backdrop-blur-sm px-6 py-4">
               <span className="live-dot inline-block h-2 w-2 rounded-full bg-aqua" aria-hidden="true" />
               <p className="t-mono text-sm uppercase tracking-[0.14em] text-pearl">You&apos;re on the list — talk soon.</p>
             </div>
           ) : (
-            <form onSubmit={onSubmit} noValidate className="mx-auto mt-10 flex max-w-md flex-col gap-3 sm:flex-row">
+            <form onSubmit={onSubmit} noValidate className="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row">
               <label htmlFor="ea-email" className="sr-only">Email address</label>
               <input
                 id="ea-email"
@@ -72,7 +72,7 @@ export function EarlyAccess() {
                   if (state === "error") setState("idle");
                 }}
                 aria-invalid={state === "error"}
-                className="min-w-0 flex-1 rounded-sm border border-pearl/15 bg-navy-elevated/60 px-4 py-3 text-pearl placeholder:text-steel focus:border-aqua focus:outline-none"
+                className="min-w-0 flex-1 rounded-sm border border-pearl/15 bg-navy/70 backdrop-blur-sm px-4 py-3 text-pearl placeholder:text-steel focus:border-aqua focus:outline-none"
               />
               <button
                 type="submit"
@@ -87,7 +87,6 @@ export function EarlyAccess() {
           <p aria-live="polite" className="mt-3 h-4 t-mono text-xs text-mist">
             {state === "error" ? "Please enter a valid email address." : ""}
           </p>
-        </div>
       </div>
     </section>
   );

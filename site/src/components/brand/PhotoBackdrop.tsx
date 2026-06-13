@@ -16,10 +16,12 @@ export function PhotoBackdrop({
   src,
   className = "",
   position = "center",
+  overlay = true,
 }: {
   src: string;
   className?: string;
   position?: string;
+  overlay?: boolean; // false → show the photo in its true colour, no navy washes
 }) {
   return (
     <div className={`pointer-events-none absolute inset-0 overflow-hidden bg-navy ${className}`} aria-hidden="true">
@@ -31,16 +33,20 @@ export function PhotoBackdrop({
         className="absolute inset-0 h-full w-full object-cover"
         style={{ objectPosition: position }}
       />
-      {/* readability wash — weighted to the left (behind the headline); right stays clear */}
-      <div
-        className="absolute inset-0"
-        style={{ background: `linear-gradient(90deg, rgba(${NAVY},0.74) 0%, rgba(${NAVY},0.34) 32%, rgba(${NAVY},0.05) 60%)` }}
-      />
-      {/* dissolve into the section below */}
-      <div
-        className="absolute inset-x-0 bottom-0 h-1/3"
-        style={{ background: `linear-gradient(to bottom, transparent, rgba(${NAVY},1))` }}
-      />
+      {overlay ? (
+        <>
+          {/* readability wash — weighted to the left (behind the headline); right stays clear */}
+          <div
+            className="absolute inset-0"
+            style={{ background: `linear-gradient(90deg, rgba(${NAVY},0.74) 0%, rgba(${NAVY},0.34) 32%, rgba(${NAVY},0.05) 60%)` }}
+          />
+          {/* dissolve into the section below */}
+          <div
+            className="absolute inset-x-0 bottom-0 h-1/3"
+            style={{ background: `linear-gradient(to bottom, transparent, rgba(${NAVY},1))` }}
+          />
+        </>
+      ) : null}
     </div>
   );
 }

@@ -35,12 +35,12 @@ export function FAQ() {
     <section id="faq" className="scroll-mt-20 border-b border-pearl/10 bg-navy-elevated/40">
       <div className="mx-auto max-w-3xl px-6 py-28 md:py-32">
         <div data-reveal className="mb-12 flex items-center gap-4 border-b border-pearl/10 pb-4">
-          <span className="h-px w-8 bg-aqua/50" aria-hidden="true" />
+          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-aqua" aria-hidden="true" />
           <span className="t-mono text-sm font-bold tabular-nums text-aqua">07</span>
           <h2 className="t-mono text-sm uppercase tracking-[0.24em] text-mist">Frequently asked</h2>
         </div>
 
-        <div data-reveal className="divide-y divide-pearl/10 border-y border-pearl/10">
+        <div id="faq-list" data-reveal className="divide-y divide-pearl/10 border-y border-pearl/10">
           {FAQS.map((f, i) => (
             <details key={f.q} className="faq-item group" style={{ "--reveal-delay": `${i * 40}ms` } as CSSProperties}>
               <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-left">

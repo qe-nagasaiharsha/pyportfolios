@@ -98,7 +98,7 @@ export function SectorsIndices() {
               >
                 {logo ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
-                  <img src={logo} alt={`${p.name} logo`} className="max-h-9 w-auto max-w-[88%] object-contain" loading="lazy" />
+                  <img src={logo} alt={`${p.name} logo`} className="max-h-9 w-auto max-w-[88%] cursor-zoom-in object-contain" loading="lazy" data-zoom role="button" tabIndex={0} aria-label={`Enlarge ${p.name} logo`} />
                 ) : (
                   <span className="text-sm font-semibold tracking-tight text-anthracite">{p.name}</span>
                 )}

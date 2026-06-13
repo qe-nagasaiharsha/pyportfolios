@@ -75,8 +75,8 @@ function Item({ c, now }: { c: Centre; now: Date | null }) {
     <span className="flex shrink-0 items-center gap-2.5 px-6">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={`/flags/${c.flag}.svg`} alt="" className="h-3 w-[1.15rem] shrink-0 rounded-[1px] object-cover opacity-90" />
-      <span className="t-mono text-[0.7rem] uppercase tracking-[0.14em] text-pearl/70">{c.city}</span>
-      <span className="tnum t-mono text-[0.78rem] text-pearl">{time}</span>
+      <span className="t-mono text-[0.7rem] uppercase leading-none tracking-[0.14em] text-pearl/70">{c.city}</span>
+      <span className="tnum t-mono text-[0.78rem] leading-none text-pearl">{time}</span>
       {open !== null ? (
         <span
           className={`inline-block h-1.5 w-1.5 rounded-full ${open ? "live-dot bg-aqua" : "bg-steel/60"}`}
@@ -89,23 +89,36 @@ function Item({ c, now }: { c: Centre; now: Date | null }) {
   );
 }
 
+// Minutes east of UTC for an IANA zone at a given instant (DST-aware).
+function zoneOffset(tz: string, at: Date): number {
+  const utc = new Date(at.toLocaleString("en-US", { timeZone: "UTC" }));
+  const local = new Date(at.toLocaleString("en-US", { timeZone: tz }));
+  return Math.round((local.getTime() - utc.getTime()) / 60000);
+}
+
 export function WorldClockBand() {
   const [now, setNow] = useState<Date | null>(null);
+  // Ordered by current UTC offset (latest local time first) so the ticker reads
+  // cleanly East→West; sorted on mount so DST is always respected.
+  const [order, setOrder] = useState<Centre[]>(CENTRES);
   useEffect(() => {
-    setNow(new Date());
+    const n = new Date();
+    setNow(n);
+    setOrder([...CENTRES].sort((a, b) => zoneOffset(b.tz, n) - zoneOffset(a.tz, n)));
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
 
   return (
     <section
-      className="ticker-mask overflow-hidden border-y border-pearl/10 bg-navy-sunken/40 py-3.5"
+      id="world-clock"
+      className="ticker-mask relative overflow-hidden border-t border-pearl/15 bg-navy-sunken/55 py-3 backdrop-blur-md"
       aria-label="Major financial centres and their local times"
     >
       <div className="marquee items-center">
         {[0, 1].map((dup) => (
           <span key={dup} className="flex shrink-0 items-center" aria-hidden={dup === 1}>
-            {CENTRES.map((c) => (
+            {order.map((c) => (
               <Item key={`${dup}-${c.city}`} c={c} now={now} />
             ))}
           </span>

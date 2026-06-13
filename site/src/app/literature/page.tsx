@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BOOK_GROUPS, PAPERS, BOOK_COUNT, PAPER_COUNT } from "@/lib/literature";
+import { BookShelf } from "@/components/landing/BookShelf";
 import { ArticleNav } from "@/components/article/ArticleNav";
 import { TransitionLink } from "@/components/motion/TransitionLink";
 
@@ -57,33 +58,7 @@ export default function LiteraturePage() {
         <section id="books" className="scroll-mt-20">
           <div className="mx-auto max-w-6xl px-6 py-20 md:py-28 lg:px-8">
             <Label title="Essential books" />
-            <div className="space-y-16">
-              {BOOK_GROUPS.map((group, gi) => (
-                <div key={group.theme}>
-                  <div className="flex items-baseline gap-4">
-                    <span className="font-serif text-3xl text-pearl/20">{String(gi + 1).padStart(2, "0")}</span>
-                    <div>
-                      <h3 className="t-h2 text-pearl">{group.theme}</h3>
-                      <p className="mt-1.5 leading-relaxed text-mist">{group.blurb}</p>
-                    </div>
-                  </div>
-                  <div className="mt-7 grid gap-4 md:grid-cols-2">
-                    {group.books.map((book) => (
-                      <div
-                        key={book.title}
-                        className="rounded-sm border border-pearl/10 bg-navy-elevated/40 p-5 transition-colors duration-300 hover:border-pearl/25"
-                      >
-                        <h4 className="font-serif text-lg leading-snug text-pearl">{book.title}</h4>
-                        <p className="mt-1.5 t-mono text-[0.64rem] uppercase tracking-[0.14em] text-aqua/70">
-                          {book.author} · {book.year}
-                        </p>
-                        <p className="mt-3 text-sm leading-relaxed text-mist">{book.note}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <BookShelf groups={BOOK_GROUPS} />
           </div>
         </section>
 

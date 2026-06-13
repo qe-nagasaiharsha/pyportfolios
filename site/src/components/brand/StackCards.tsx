@@ -56,8 +56,12 @@ export function StackCards() {
                 <img
                   src={`/logos/libraries/${lib.slug}.png`}
                   alt={`${lib.name} logo`}
-                  className="max-h-9 w-auto max-w-[88%] object-contain"
+                  className="max-h-9 w-auto max-w-[88%] cursor-zoom-in object-contain"
                   loading="lazy"
+                  data-zoom
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Enlarge ${lib.name} logo`}
                 />
               </div>
             ))}

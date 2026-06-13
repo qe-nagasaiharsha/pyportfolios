@@ -30,12 +30,13 @@ import { EXCHANGES_BY_REGION } from "@/components/brand/WorldMap";
 import { ExchangeRow } from "@/components/brand/ExchangeRow";
 import { SectorsIndices } from "@/components/brand/SectorsIndices";
 import { WorldClockBand } from "@/components/brand/WorldClockBand";
-import { VersionSwitcher } from "@/components/VersionSwitcher";
 import { WorldSphere } from "@/components/WorldSphere";
 import { PhotoBackdrop } from "@/components/brand/PhotoBackdrop";
 import { Pricing } from "@/components/landing/Pricing";
 import { FAQ } from "@/components/landing/FAQ";
 import { EarlyAccess } from "@/components/landing/EarlyAccess";
+import { PageTOC } from "@/components/landing/PageTOC";
+import { Lightbox } from "@/components/landing/Lightbox";
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
 import { ReturnsHistogram } from "@/components/charts/ReturnsHistogram";
 
@@ -71,7 +72,7 @@ const MODELS = [
 function SectionLabel({ title, no }: { title: string; no?: string }) {
   return (
     <div className="mb-10 flex items-center gap-4 border-b border-pearl/10 pb-4">
-      <span className="h-px w-8 bg-aqua/50" aria-hidden="true" />
+      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-aqua" aria-hidden="true" />
       <div className="flex items-baseline gap-2.5">
         {no ? <span className="t-mono text-sm font-bold tabular-nums text-aqua">{no}</span> : null}
         <h2 className="t-mono text-sm uppercase tracking-[0.24em] text-mist">{title}</h2>
@@ -100,7 +101,13 @@ function FigureCovariance() {
   const gridY = [40, 90, 140, 190];
   const gridX = [120, 240, 360, 480];
   return (
-    <figure className="corner-ticks rounded-sm border border-pearl/10 bg-navy-sunken/60 p-7">
+    <figure
+      className="corner-ticks cursor-zoom-in rounded-sm border border-pearl/10 bg-navy-sunken/60 p-7 transition-colors duration-200 hover:border-aqua/40"
+      data-zoom
+      role="button"
+      tabIndex={0}
+      aria-label="Enlarge chart: out-of-sample volatility"
+    >
       <svg viewBox="0 0 600 240" className="w-full" role="img"
         aria-label="Out-of-sample volatility: sample covariance versus Ledoit-Wolf shrinkage across portfolios.">
         {gridY.map((y) => <line key={`y${y}`} x1="0" y1={y} x2="600" y2={y} stroke="#EEEEEE" strokeOpacity="0.06" strokeWidth="1" />)}
@@ -122,19 +129,32 @@ function FigureCovariance() {
   );
 }
 
-export default function StyleTile({ variant }: { variant: Variant }) {
+export default function StyleTile({
+  variant,
+  heroAlign = "left",
+}: {
+  variant: Variant;
+  heroAlign?: "left" | "center" | "right";
+}) {
   const f = variant.flags;
+  // Hero text alignment — three versions: left (default), centre, right.
+  const heroWrap =
+    heroAlign === "center"
+      ? "mx-auto text-center"
+      : heroAlign === "right"
+        ? "ml-auto max-w-xl text-right"
+        : "max-w-xl";
+  const heroSub = heroAlign === "center" ? "mx-auto" : heroAlign === "right" ? "ml-auto" : "";
 
   return (
     <div className="min-h-screen bg-navy text-pearl">
       <ScrollReveal />
+      <Lightbox />
       {/* ============ STICKY TOP: version toggle row + site nav ========= */}
       <div className="sticky top-0 z-50">
-        {/* variant switcher — lets the client browse all versions (V0–V11) */}
-        <VersionSwitcher />
         <header className="border-b border-pearl/10 bg-navy/80 backdrop-blur-md">
-          <nav className="nav-condense mx-auto flex max-w-7xl items-center justify-between gap-8 px-6 py-4">
-            <a href="#top" className="group nav-logo">
+          <nav className="nav-condense mx-auto flex max-w-7xl items-center gap-8 px-6 py-4">
+            <a href="#top" className="group nav-logo shrink-0">
               {f.crest ? (
                 <CrestLockup tone="light" />
               ) : (
@@ -143,48 +163,60 @@ export default function StyleTile({ variant }: { variant: Variant }) {
                 </span>
               )}
             </a>
-            <ul className="hidden items-center gap-5 lg:flex xl:gap-6">
+            <ul className="hidden flex-1 items-center justify-between gap-4 lg:flex">
               {NAV.map((item) => (
                 <li key={item.label}>
-                  <a href={item.href} className="font-sans font-black text-[0.68rem] uppercase tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl">{item.label}</a>
+                  <a href={item.href} className="block text-center font-sans font-black text-[0.68rem] leading-[1.05] tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl">
+                    {item.label.split(" ").map((word) => (
+                      <span key={word} className="block">{word}</span>
+                    ))}
+                  </a>
                 </li>
               ))}
               <li>
-                <a href="/course" className="font-sans font-black text-[0.68rem] uppercase tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl">Course</a>
+                <a href="/course" className="font-sans font-black text-[0.68rem] tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl">Course</a>
               </li>
               <li>
-                <a href="/literature" className="font-sans font-black text-[0.68rem] uppercase tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl">Literature</a>
+                <a href="/literature" className="font-sans font-black text-[0.68rem] tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl">Literature</a>
               </li>
             </ul>
-            <div className="flex items-center gap-3">
-              <span className="hidden items-center gap-2 sm:flex">
-                <span className="live-dot inline-block h-1.5 w-1.5 rounded-full bg-aqua" aria-hidden="true" />
-                <span className="t-mono text-[0.65rem] uppercase tracking-[0.18em] text-steel">Markets open</span>
-              </span>
+            <div className="flex shrink-0 items-center gap-3">
               <a href="#course" className="rounded-sm border border-pearl/20 px-4 py-2 t-mono text-xs uppercase tracking-[0.16em] text-pearl transition-colors duration-200 hover:border-aqua hover:text-aqua">Sign in</a>
             </div>
           </nav>
         </header>
       </div>
 
+      {/* on-this-page table of contents — vertical rail, fixed at the left edge,
+          centred in the viewport. Hidden until the first section is active, so it
+          only appears once you've scrolled past the hero + world-clock ribbon. */}
+      <PageTOC />
+
       <main id="top">
         {/* ================================================== HERO ======= */}
-        <section className="relative overflow-hidden border-b border-pearl/10">
-          <PhotoBackdrop src="/hero.jpeg" />
+        {/* Hero sized to fill the viewport below the nav (nav ≈ 67px) so the
+            ribbon always lands at the bottom of the fold — CONSISTENT on every
+            screen, no leftover space. Full photo with object-cover, so the crop
+            flexes top/bottom with screen height; object-position keeps the peaks
+            + valley in view. Content is bottom-anchored so the button stays above
+            the ticker. min-h floor for very short screens. */}
+        <section className="relative h-[calc(100svh-67px)] min-h-[440px] w-full overflow-hidden border-b border-pearl/10">
+          <PhotoBackdrop src="/hero-framed.png" overlay={false} position="center top" />
           {f.globe ? <HeroCurve /> : null}
-          <div className="vignette pointer-events-none absolute inset-0" aria-hidden="true" />
-          <div className="relative mx-auto max-w-6xl px-6 py-28 md:py-40">
+          <div className="absolute inset-x-0 top-[63%] z-10 mx-auto w-full max-w-6xl -translate-y-1/2 px-6">
             <div className={f.globe ? "grid items-center gap-x-12 gap-y-14 lg:grid-cols-[1.04fr_minmax(0,0.96fr)]" : ""}>
               {/* message — kept spare per brief: image · headline · subtitle · one button */}
-              <div className="max-w-xl">
+              <div className={heroWrap}>
                 {f.crest ? (
                   <div className="hero-in mb-8" style={{ "--hero-delay": "0ms" } as CSSProperties}><Crest size={56} tone="light" /></div>
                 ) : null}
-                <h1 className="hero-in t-display text-pearl" style={{ "--hero-delay": "80ms" } as CSSProperties}>
+                <h1 className="hero-in t-display text-pearl" style={{ "--hero-delay": "80ms", lineHeight: 1.08 } as CSSProperties}>
                   Get up to speed<span className="text-aqua">.</span>
                 </h1>
-                <p className="hero-in mt-7 max-w-md text-lg leading-relaxed text-mist" style={{ "--hero-delay": "200ms" } as CSSProperties}>
-                  Coding the markets. Technical depth, real-world context, intellectual clarity — without the noise.
+                <p className={`hero-in mt-7 max-w-xl ${heroSub} text-lg leading-relaxed text-pearl/70`} style={{ "--hero-delay": "200ms" } as CSSProperties}>
+                  Coding the markets.<br />
+                  Technical depth, real-world context, intellectual clarity<br />
+                  — without the noise.
                 </p>
                 <div className="hero-in mt-10" style={{ "--hero-delay": "320ms" } as CSSProperties}>
                   <a href="#early-access" className="group inline-flex items-center rounded-sm bg-pearl px-8 py-3.5 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua">
@@ -202,26 +234,32 @@ export default function StyleTile({ variant }: { variant: Variant }) {
               ) : null}
             </div>
           </div>
+          {/* markets-open indicator — bottom-right, just above the ticker */}
+          <div className="absolute bottom-[3.5rem] right-6 z-20 hidden items-center gap-2 sm:flex">
+            <span className="live-dot inline-block h-1.5 w-1.5 rounded-full bg-aqua" aria-hidden="true" />
+            <span className="t-mono text-[0.65rem] uppercase tracking-[0.18em] text-pearl/80">Markets open</span>
+          </div>
+          {/* world-markets ticker — overlaid on the bottom edge of the hero photo */}
+          <div className="absolute inset-x-0 bottom-0 z-20">
+            <WorldClockBand />
+          </div>
         </section>
 
-        {/* world-markets ticker — financial centres + live local times */}
-        <WorldClockBand />
-
         {/* ================================================ OUR FOCUS ==== */}
-        <section id="focus" className="relative overflow-hidden py-28 md:py-32">
+        <section id="focus" className="relative scroll-mt-24 overflow-hidden py-28 md:py-32">
           <div className="relative mx-auto max-w-6xl px-6">
           <div data-reveal>
             <SectionLabel no="01" title="Our Focus" />
-            <p className="mb-12 max-w-2xl text-lg leading-relaxed text-mist">
-              An educational platform that bridges advanced quantitative finance and practical
-              Python implementation — blending technical rigor, real-world application and visual clarity.
+            <p className="mb-12 max-w-5xl text-lg leading-relaxed text-mist">
+              An educational platform that bridges advanced quantitative finance and practical Python implementation
+              <br />— blending technical rigor, real-world application and visual clarity.
             </p>
           </div>
-          <div data-reveal style={{ "--reveal-delay": "120ms" } as CSSProperties} className="grid gap-px overflow-hidden rounded-sm border border-pearl/10 bg-pearl/10 md:grid-cols-3">
+          <div data-reveal style={{ "--reveal-delay": "120ms" } as CSSProperties} className="grid gap-6 md:grid-cols-3 lg:gap-8">
             {PILLARS.map((p) => {
               const src = focusSrc(p.img);
               return (
-              <div key={p.no} className="group flex flex-col bg-navy">
+              <div key={p.no} className="group flex flex-col overflow-hidden rounded-sm border border-pearl/10 bg-navy transition-colors duration-300 hover:border-pearl/25">
                 <div className="aspect-[4/3] w-full overflow-hidden bg-navy-elevated/60">
                   {src ? (
                     /* eslint-disable-next-line @next/next/no-img-element */
@@ -240,7 +278,7 @@ export default function StyleTile({ variant }: { variant: Variant }) {
                 </div>
                 <div className="px-7 py-9">
                   <span className="font-serif text-4xl text-pearl/20" style={{ fontWeight: 500 }}>{p.no}</span>
-                  <h3 className="t-h2 mt-4 text-pearl">{p.title}</h3>
+                  <h3 className="t-h2 mt-4 text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>{p.title}</h3>
                   <span className="mt-4 block h-px w-10 bg-aqua" />
                   <p className="mt-4 leading-relaxed text-mist">{p.body}</p>
                 </div>
@@ -252,11 +290,11 @@ export default function StyleTile({ variant }: { variant: Variant }) {
         </section>
 
         {/* ================================================ LIBRARIES ==== */}
-        <section id="libraries" className="relative overflow-hidden py-28 md:py-32">
+        <section id="libraries" className="relative scroll-mt-24 overflow-hidden py-28 md:py-32">
           <div data-reveal className="relative mx-auto max-w-6xl px-6">
           <SectionLabel no="02" title="Libraries" />
-          <h3 className="t-h1 max-w-xl text-pearl">The Python quant stack.</h3>
-          <p className="mt-5 max-w-md text-lg leading-relaxed text-mist">
+          <h3 className="t-h1 max-w-3xl text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>The Python quant stack.</h3>
+          <p className="mt-5 max-w-3xl text-lg leading-relaxed text-mist">
             Best-in-class, open-source libraries — composed into clean, reproducible research.
           </p>
           <div className="mt-12">
@@ -266,7 +304,7 @@ export default function StyleTile({ variant }: { variant: Variant }) {
         </section>
 
         {/* ================================================== MARKETS ==== */}
-        <section id="markets" className="relative overflow-hidden border-y border-pearl/10 bg-navy-elevated/40">
+        <section id="markets" className="relative scroll-mt-24 overflow-hidden border-y border-pearl/10 bg-navy-elevated/40">
           <div data-reveal className="relative mx-auto max-w-6xl px-6 py-28 md:py-32">
             <SectionLabel no="03" title="Markets" />
             <div className="grid gap-10 md:grid-cols-2">
@@ -310,11 +348,11 @@ export default function StyleTile({ variant }: { variant: Variant }) {
         ) : null}
 
         {/* 04 — market reach (deck §14): top-15 economies, developed & emerging */}
-        <section id="geographies" className="border-b border-pearl/10">
+        <section id="geographies" className="scroll-mt-24 border-b border-pearl/10">
           <div data-reveal className="mx-auto max-w-6xl px-6 py-28 md:py-32">
             <SectionLabel no="04" title="Geographies" />
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-              <h3 className="t-h1 max-w-md text-pearl">The top 15 economies, in one frame.</h3>
+              <h3 className="t-h1 whitespace-nowrap text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: "clamp(0.95rem, 3vw, 2.5rem)" }}>The top 15 economies, in one frame.</h3>
               <p className="t-mono text-xs uppercase tracking-[0.2em] text-steel">Developed &amp; emerging markets</p>
             </div>
             {/* the brand map (slide 14) on a soft light card — matches the iconography rule */}
@@ -322,8 +360,12 @@ export default function StyleTile({ variant }: { variant: Variant }) {
               <img
                 src="/world-reach.png"
                 alt="World map highlighting the top fifteen economies — developed and emerging — that pyportfolios case studies draw from."
-                className="mx-auto w-full max-w-4xl"
+                className="mx-auto w-full max-w-4xl cursor-zoom-in transition-opacity duration-200 hover:opacity-90"
                 decoding="async"
+                data-zoom
+                role="button"
+                tabIndex={0}
+                aria-label="Enlarge map"
               />
             </figure>
             <div className="mt-10 grid gap-6 border-t border-pearl/10 pt-8 sm:grid-cols-3">
@@ -340,7 +382,7 @@ export default function StyleTile({ variant }: { variant: Variant }) {
         </section>
 
         {/* ============================================ CONCEPTS / MODELS == */}
-        <section className="relative overflow-hidden border-y border-pearl/10 bg-navy-elevated/40">
+        <section id="concepts" className="relative scroll-mt-24 overflow-hidden border-y border-pearl/10 bg-navy-elevated/40">
           <div className="relative mx-auto grid max-w-6xl items-start gap-12 px-6 py-28 md:py-32 lg:grid-cols-2">
             <div data-reveal>
               <SectionLabel no="05" title="Concepts" />
@@ -360,7 +402,13 @@ export default function StyleTile({ variant }: { variant: Variant }) {
             </div>
             <div data-reveal style={{ "--reveal-delay": "120ms" } as CSSProperties} className="space-y-6 lg:pt-16">
               <FigureCovariance />
-              <figure className="corner-ticks rounded-sm border border-pearl/10 bg-navy-sunken/60 p-7">
+              <figure
+                className="corner-ticks cursor-zoom-in rounded-sm border border-pearl/10 bg-navy-sunken/60 p-7 transition-colors duration-200 hover:border-aqua/40"
+                data-zoom
+                role="button"
+                tabIndex={0}
+                aria-label="Enlarge chart: daily returns and VaR tail"
+              >
                 <ReturnsHistogram />
                 <figcaption className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-pearl/10 pt-3">
                   <span className="t-mono text-xs uppercase tracking-[0.18em] text-steel">Daily returns · VaR tail</span>
@@ -380,65 +428,22 @@ export default function StyleTile({ variant }: { variant: Variant }) {
         <EarlyAccess />
       </main>
 
-      {/* =========================== FOOTER CTA (framer-style photo band) === */}
-      <section className="relative overflow-hidden border-t border-pearl/10">
-        <PhotoBackdrop src="/hero.jpeg" position="center 70%" />
-        <div className="vignette pointer-events-none absolute inset-0" aria-hidden="true" />
-        <div className="relative mx-auto max-w-3xl px-6 py-32 text-center md:py-44">
-          <p className="t-mono text-xs uppercase tracking-[0.24em] text-aqua/80">Step up the game</p>
-          <h2 className="t-display mt-6 text-pearl">
-            Find your edge<span className="text-aqua">.</span>
-          </h2>
-          <p className="mx-auto mt-7 max-w-md text-lg leading-relaxed text-mist">
-            The path up is difficult; the view from the top is worth it. Start with the free module and climb.
-          </p>
-          <div className="mt-10">
-            <a href="#early-access" className="group inline-flex items-center rounded-sm bg-pearl px-8 py-3.5 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua">
-              Get started
-              <span className="ml-2 inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
-            </a>
-          </div>
-        </div>
-      </section>
-
       {/* ==================================================== FOOTER ===== */}
       <footer className="bg-navy-sunken">
-        <div className="mx-auto max-w-6xl px-6 py-16">
-          <div className="flex flex-col justify-between gap-10 md:flex-row">
-            <div className="max-w-sm">
-              {f.crest ? <CrestLockup tone="light" /> : (
-                <div className="flex items-baseline gap-1">
-                  <span className="text-lg text-pearl" style={{ fontWeight: 900 }}>pyportfolios</span>
-                  <span className="h-1.5 w-1.5 translate-y-[-2px] rounded-full bg-aqua" aria-hidden="true" />
-                </div>
-              )}
-              <p className="mt-4 font-serif text-lg italic leading-snug text-mist">Where finance theory, coding &amp; markets converge into your path of growth.</p>
-              <p className="mt-5 t-mono text-xs italic text-steel">Diligam te, Domine, fortitudo mea.</p>
-            </div>
-            <div className="grid grid-cols-2 gap-10 t-mono text-xs">
-              <div>
-                <p className="uppercase tracking-[0.2em] text-steel">Sections</p>
-                <ul className="mt-4 space-y-2.5">
-                  {NAV.map((n) => <li key={n.label}><a href={n.href} className="text-mist transition-colors hover:text-aqua">{n.label}</a></li>)}
-                  <li><a href="/research" className="text-mist transition-colors hover:text-aqua">All research</a></li>
-                  <li><a href="/course" className="text-mist transition-colors hover:text-aqua">Course</a></li>
-                  <li><a href="/literature" className="text-mist transition-colors hover:text-aqua">Literature</a></li>
-                </ul>
-              </div>
-              <div>
-                <p className="uppercase tracking-[0.2em] text-steel">Contact</p>
-                <ul className="mt-4 space-y-2.5 text-mist">
-                  <li>pyportfolios@protonmail.com</li>
-                  <li>Albuquerque, NM</li>
-                  <li className="text-aqua">pyportfolios.com</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div className="mt-14 flex flex-col justify-between gap-3 border-t border-pearl/10 pt-6 t-mono text-xs uppercase tracking-[0.16em] text-steel sm:flex-row">
-            <span>© 2026 pyportfolios. All rights reserved.</span>
-            <span className="text-aqua">pyportfolios.com</span>
-          </div>
+        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-4 px-6 py-12 sm:flex-row sm:items-center">
+          {/* company logo — horizontal Fortitudo lockup, sized to roughly match
+              the top-nav wordmark */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logos/fortitudo-horizontal.png"
+            alt="Fortitudo Research LLC"
+            className="h-12 w-auto select-none"
+            loading="lazy"
+            decoding="async"
+          />
+          <span className="t-mono text-xs text-steel">
+            Copyright © 2026, Fortitudo Research LLC, All rights reserved.
+          </span>
         </div>
       </footer>
     </div>

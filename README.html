@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>pyportfolios.com — Setup &amp; Replication Guide</title>
+<style>
+  :root {
+    --navy: #0c1420; --navy-2: #111c2b; --pearl: #eef1f4;
+    --steel: #8a97a6; --aqua: #2bd4c4; --line: rgba(238,241,244,.12);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--navy); color: var(--pearl);
+    font: 16px/1.65 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 56px 24px 96px; }
+  h1 { font-size: 2rem; margin: 0 0 .25rem; letter-spacing: -.01em; }
+  h1 .dot { color: var(--aqua); }
+  .sub { color: var(--steel); margin: 0 0 2.5rem; }
+  h2 {
+    font-size: 1.05rem; text-transform: uppercase; letter-spacing: .12em;
+    margin: 2.5rem 0 1rem; padding-bottom: .5rem; border-bottom: 1px solid var(--line);
+  }
+  h2 .n { color: var(--aqua); font-family: ui-monospace, monospace; margin-right: .6rem; }
+  p { color: #cdd5de; }
+  code, pre { font-family: ui-monospace, "Courier New", monospace; }
+  code { background: var(--navy-2); padding: .1rem .4rem; border-radius: 4px; color: var(--aqua); font-size: .9em; }
+  pre {
+    background: var(--navy-2); border: 1px solid var(--line); border-radius: 8px;
+    padding: 16px 18px; overflow-x: auto; color: #d7e0ea; font-size: .9rem; line-height: 1.6;
+  }
+  pre code { background: none; padding: 0; color: inherit; }
+  ul { padding-left: 1.2rem; }
+  li { margin: .4rem 0; color: #cdd5de; }
+  .pill {
+    display: inline-block; font-family: ui-monospace, monospace; font-size: .75rem;
+    color: var(--aqua); border: 1px solid var(--line); border-radius: 999px;
+    padding: .2rem .7rem; margin: 0 .4rem .4rem 0;
+  }
+  .note {
+    background: rgba(43,212,196,.07); border: 1px solid rgba(43,212,196,.25);
+    border-radius: 8px; padding: 14px 16px; margin: 1rem 0; color: #cdd5de; font-size: .92rem;
+  }
+  .note b { color: var(--pearl); }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .92rem; }
+  td, th { text-align: left; padding: .55rem .6rem; border-bottom: 1px solid var(--line); }
+  th { color: var(--steel); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; font-size: .72rem; }
+  td:first-child { color: var(--aqua); font-family: ui-monospace, monospace; white-space: nowrap; }
+  footer { margin-top: 3rem; color: var(--steel); font-size: .82rem; border-top: 1px solid var(--line); padding-top: 1.2rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>pyportfolios<span class="dot">.</span>com</h1>
+  <p class="sub">Setup &amp; replication guide · Fortitudo Research LLC</p>
+
+  <div>
+    <span class="pill">Next.js 16.2.6</span>
+    <span class="pill">React 19.2.4</span>
+    <span class="pill">Tailwind CSS v4</span>
+    <span class="pill">TypeScript</span>
+    <span class="pill">Static export</span>
+  </div>
+
+  <p>
+    This is the marketing/education site for pyportfolios.com. It is a <b>Next.js static-export</b>
+    project: <code>next build</code> emits a fully static site to <code>site/out/</code>, which is
+    then served by any static web server (we use nginx).
+  </p>
+
+  <div class="note">
+    <b>Read this first.</b> The active branch is <code>Bhavya</code> — that is where all current work
+    lives. The default branch (<code>main</code>) is intentionally behind. Always check out
+    <code>Bhavya</code> before building.
+  </div>
+
+  <h2><span class="n">01</span>Get the code (right branch)</h2>
+  <pre><code>git clone &lt;repo-url&gt; pyportfolios
+cd pyportfolios
+git checkout Bhavya
+git pull origin Bhavya</code></pre>
+
+  <h2><span class="n">02</span>Install dependencies</h2>
+  <p>Requires <b>Node.js 18.18+</b> (Node 20 LTS recommended). From the <code>site/</code> folder:</p>
+  <pre><code>cd site
+npm ci          # clean, lockfile-exact install (recommended)
+# or: npm install</code></pre>
+
+  <h2><span class="n">03</span>Build the static site</h2>
+  <pre><code>npm run build   # generates site/out/  (the full themed site + assets)</code></pre>
+  <p>The complete deployable site now lives in <code>site/out/</code>.</p>
+
+  <h2><span class="n">04</span>Run it</h2>
+  <table>
+    <tr><th>Goal</th><th>Command / action</th></tr>
+    <tr><td>Local dev</td><td><code>npm run dev</code> → http://localhost:3000 (hot reload)</td></tr>
+    <tr><td>Production</td><td>Point your web server's web root at <code>site/out/</code></td></tr>
+  </table>
+  <p>
+    For nginx, set the server block's <code>root</code> to the absolute path of <code>…/site/out</code>,
+    serve <code>index.html</code>, then <code>nginx -s reload</code> (or start nginx). Our local
+    reference config is in <code>deploy/</code>.
+  </p>
+
+  <h2><span class="n">05</span>What is &amp; isn't in the repo</h2>
+  <table>
+    <tr><th>Item</th><th>Status</th></tr>
+    <tr><td>Source, configs, fonts (Switzer), images, logos</td><td>Committed ✓</td></tr>
+    <tr><td>package-lock.json</td><td>Committed ✓ (reproducible installs)</td></tr>
+    <tr><td>node_modules/</td><td>Ignored — regenerate with <code>npm ci</code></td></tr>
+    <tr><td>site/out/ and .next/</td><td>Ignored — regenerate with <code>npm run build</code></td></tr>
+  </table>
+  <div class="note">
+    <b>"Theme / images missing" after a pull?</b> Two usual causes: (1) you're on <code>main</code>
+    instead of <code>Bhavya</code>, or (2) you haven't run <code>npm ci &amp;&amp; npm run build</code>,
+    so <code>site/out/</code> doesn't exist yet. Do both and it will render fully.
+  </div>
+
+  <footer>
+    Stack note: this project uses Next.js 16 (App Router) with <code>output: "export"</code> in
+    <code>next.config.ts</code>. Fonts: Switzer (self-hosted woff2), Lora &amp; Courier Prime
+    (next/font/google). © Fortitudo Research LLC.
+  </footer>
+
+</div>
+</body>
+</html>

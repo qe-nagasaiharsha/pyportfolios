@@ -77,7 +77,7 @@ export function EarlyAccess() {
               <button
                 type="submit"
                 disabled={state === "loading"}
-                className="shrink-0 rounded-sm bg-pearl px-7 py-3 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua disabled:opacity-60"
+                className="shrink-0 rounded-sm bg-pearl px-8 py-3.5 t-mono text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua disabled:opacity-60"
               >
                 {state === "loading" ? "Joining…" : "Join free"}
               </button>

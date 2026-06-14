@@ -174,14 +174,14 @@ export default function StyleTile({
                 </li>
               ))}
               <li>
-                <a href="/course" className="font-sans font-black text-[0.68rem] tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl">Course</a>
+                <a href="/course" className="block text-center font-sans font-black text-[0.68rem] leading-[1.05] tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl"><span className="block">Course</span><span className="block">Structure</span></a>
               </li>
               <li>
-                <a href="/literature" className="font-sans font-black text-[0.68rem] tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl">Literature</a>
+                <a href="/literature" className="block text-center font-sans font-black text-[0.68rem] leading-[1.05] tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl"><span className="block">Literature</span><span className="block">Recommendations</span></a>
               </li>
             </ul>
             <div className="flex shrink-0 items-center gap-3">
-              <a href="#course" className="rounded-sm border border-pearl/20 px-4 py-2 t-mono text-xs uppercase tracking-[0.16em] text-pearl transition-colors duration-200 hover:border-aqua hover:text-aqua">Sign in</a>
+              <a href="#course" className="inline-flex w-[183px] items-center justify-center rounded-sm border border-pearl/30 py-2 t-mono text-xs font-semibold text-pearl transition-colors duration-300 hover:border-aqua hover:text-aqua">Sign in</a>
             </div>
           </nav>
         </header>
@@ -219,7 +219,7 @@ export default function StyleTile({
                   — without the noise.
                 </p>
                 <div className="hero-in mt-10" style={{ "--hero-delay": "320ms" } as CSSProperties}>
-                  <a href="#early-access" className="group inline-flex items-center rounded-sm bg-pearl px-8 py-3.5 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua">
+                  <a href="#early-access" className="group inline-flex items-center rounded-sm bg-pearl px-8 py-3.5 t-mono text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua">
                     Get started
                     <span className="ml-2 inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
                   </a>

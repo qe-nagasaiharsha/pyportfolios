@@ -12,6 +12,7 @@ out/
 
 # nginx runtime prefix (logs/temp/pid generated when serving locally)
 /deploy/nginx-runtime/
+/deploy/nginx-runtime-5500/
 
 # Dev capture artifacts — regenerable via site/shoot*.mjs
 /screenshots/

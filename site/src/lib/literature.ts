@@ -15,6 +15,8 @@ export interface Book {
   note: string;       // one-line tagline (teaser / first "why" point)
   why: string[];      // 2–3 bullets revealed in "Why it matters"
   cover?: string;     // optional /covers/<file>; falls back to a typographic cover
+  coverW?: number;    // intrinsic cover width  (px) — reserves true aspect ratio
+  coverH?: number;    // intrinsic cover height (px)
   citation?: string;  // full APA citation, shown in the hover detail layer
 }
 
@@ -53,6 +55,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Authors: Martin Baxter and Andrew Rennie, industry derivatives quants.",
         ],
         cover: "baxter-financial-calculus.jpg",
+        coverW: 855,
+        coverH: 1360,
       },
       {
         title: "The concepts and practice of mathematical finance",
@@ -67,6 +71,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Mark Joshi, former bank quant (RBS) and professor at the University of Melbourne.",
         ],
         cover: "joshi-the-concepts-and-practice-of-mathematical-.jpg",
+        coverW: 897,
+        coverH: 1360,
       },
       {
         title: "Stochastic calculus for finance II: Continuous-time models",
@@ -81,6 +87,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Steven Shreve, Carnegie Mellon professor and co-founder of its computational-finance master’s.",
         ],
         cover: "shreve-stochastic-calculus-for-finance-ii.jpg",
+        coverW: 827,
+        coverH: 1245,
       },
       {
         title: "Arbitrage theory in continuous time",
@@ -95,6 +103,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Tomas Björk, professor at the Stockholm School of Economics.",
         ],
         cover: "bj-rk-arbitrage-theory-in-continuous-time.jpg",
+        coverW: 856,
+        coverH: 1360,
       },
       {
         title: "Brownian motion and stochastic calculus",
@@ -109,6 +119,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Authors: Ioannis Karatzas (Columbia) and Steven Shreve (Carnegie Mellon), leading probabilists.",
         ],
         cover: "karatzas-brownian-motion-and-stochastic-calculus.jpg",
+        coverW: 827,
+        coverH: 1254,
       },
       {
         title: "Statistical inference",
@@ -123,6 +135,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Authors: George Casella and Roger Berger, eminent academic statisticians.",
         ],
         cover: "casella-statistical-inference.jpg",
+        coverW: 350,
+        coverH: 514,
       },
       {
         title: "Analysis of financial time series",
@@ -137,6 +151,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Ruey Tsay, professor of econometrics and statistics at Chicago Booth.",
         ],
         cover: "tsay-analysis-of-financial-time-series.jpg",
+        coverW: 978,
+        coverH: 1500,
       },
       {
         title: "Time series analysis",
@@ -151,6 +167,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: James Hamilton, professor at UC San Diego; a leading time-series econometrician.",
         ],
         cover: "hamilton-time-series-analysis.jpg",
+        coverW: 956,
+        coverH: 1500,
       },
       {
         title: "A first course in probability",
@@ -165,6 +183,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Sheldon Ross, professor at USC and a prolific applied-probability author.",
         ],
         cover: "ross-a-first-course-in-probability.jpg",
+        coverW: 370,
+        coverH: 474,
       },
       {
         title: "Introduction to probability",
@@ -179,6 +199,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Authors: Joe Blitzstein (Harvard, Stat 110) and Jessica Hwang (Stanford).",
         ],
         cover: "blitzstein-introduction-to-probability.jpg",
+        coverW: 949,
+        coverH: 1400,
       },
       {
         title: "The econometrics of financial markets",
@@ -193,6 +215,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Authors: John Campbell (Harvard), Andrew Lo (MIT Sloan), and Craig MacKinlay (Wharton).",
         ],
         cover: "campbell-the-econometrics-of-financial-markets.jpg",
+        coverW: 856,
+        coverH: 1360,
       },
       {
         title: "Econometric analysis",
@@ -207,6 +231,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: William Greene, professor at NYU Stern.",
         ],
         cover: "greene-econometric-analysis.jpg",
+        coverW: 332,
+        coverH: 400,
       },
     ],
   },
@@ -227,6 +253,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Frank Fabozzi, editor of the CFA fixed-income curriculum and the most prolific fixed-income author.",
         ],
         cover: "fabozzi-fixed-income-analysis.jpg",
+        coverW: 345,
+        coverH: 500,
       },
       {
         title: "Fixed income securities: Tools for today’s markets",
@@ -241,6 +269,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Authors: Bruce Tuckman (NYU Stern; ex-Lehman/CME) and Angel Serrat (ex-JPMorgan PM).",
         ],
         cover: "tuckman-fixed-income-securities.jpg",
+        coverW: 333,
+        coverH: 500,
       },
       {
         title: "Fixed income securities: Valuation, risk, and risk management",
@@ -255,6 +285,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Pietro Veronesi, professor of finance at Chicago Booth.",
         ],
         cover: "veronesi-fixed-income-securities.jpg",
+        coverW: 347,
+        coverH: 500,
       },
       {
         title: "Bond pricing and yield curve modeling: A structural approach",
@@ -269,6 +301,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Riccardo Rebonato, EDHEC professor; former head of rates/FX quant research at PIMCO and RBS.",
         ],
         cover: "rebonato-bond-pricing-and-yield-curve-modeling.jpg",
+        coverW: 334,
+        coverH: 500,
       },
       {
         title: "Interest rate models—Theory and practice: With smile, inflation and credit",
@@ -283,6 +317,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Authors: Damiano Brigo (Imperial College) and Fabio Mercurio (head of quant analytics, Bloomberg).",
         ],
         cover: "brigo-interest-rate-models.jpg",
+        coverW: 329,
+        coverH: 500,
       },
     ],
   },
@@ -303,6 +339,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: John Hull, professor at the University of Toronto’s Rotman School.",
         ],
         cover: "hull-options-futures-and-other-derivatives.jpg",
+        coverW: 380,
+        coverH: 500,
       },
       {
         title: "Option volatility and pricing: Advanced trading strategies and techniques",
@@ -317,6 +355,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Sheldon Natenberg, veteran options trader and educator (Chicago).",
         ],
         cover: "natenberg-option-volatility-and-pricing.jpg",
+        coverW: 305,
+        coverH: 500,
       },
       {
         title: "Dynamic hedging: Managing vanilla and exotic options",
@@ -331,6 +371,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Nassim Nicholas Taleb, former options trader and risk theorist (NYU Tandon).",
         ],
         cover: "taleb-dynamic-hedging.jpg",
+        coverW: 333,
+        coverH: 475,
       },
       {
         title: "Paul Wilmott on quantitative finance",
@@ -345,6 +387,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Paul Wilmott, founder of the CQF and the Wilmott quant community.",
         ],
         cover: "wilmott-paul-wilmott-on-quantitative-finance.jpg",
+        coverW: 363,
+        coverH: 475,
       },
       {
         title: "The volatility surface: A practitioner’s guide",
@@ -359,6 +403,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Jim Gatheral, ex-head of equity-derivatives quant at Merrill Lynch; now Baruch College professor.",
         ],
         cover: "gatheral-the-volatility-surface.jpg",
+        coverW: 331,
+        coverH: 500,
       },
       {
         title: "Stochastic volatility modeling",
@@ -373,6 +419,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Lorenzo Bergomi, head of quantitative research at Société Générale.",
         ],
         cover: "bergomi-stochastic-volatility-modeling.jpg",
+        coverW: 315,
+        coverH: 500,
       },
       {
         title: "Monte Carlo methods in financial engineering",
@@ -387,6 +435,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Paul Glasserman, professor at Columbia Business School.",
         ],
         cover: "glasserman-monte-carlo-methods-in-financial-engi.jpg",
+        coverW: 295,
+        coverH: 475,
       },
     ],
   },
@@ -407,6 +457,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Authors: Zvi Bodie, Alex Kane, and Alan Marcus, leading finance academics.",
         ],
         cover: "bodie-investments.jpg",
+        coverW: 500,
+        coverH: 500,
       },
       {
         title: "Investment science",
@@ -421,6 +473,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: David Luenberger, professor of engineering and operations research at Stanford.",
         ],
         cover: "luenberger-investment-science.jpg",
+        coverW: 400,
+        coverH: 500,
       },
       {
         title: "Asset management: A systematic approach to factor investing",
@@ -435,6 +489,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Andrew Ang, former Columbia professor; head of factor investing at BlackRock.",
         ],
         cover: "ang-asset-management.jpg",
+        coverW: 308,
+        coverH: 500,
       },
       {
         title: "Active portfolio management: A quantitative approach for producing superior returns and controlling risk",
@@ -449,6 +505,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Authors: Richard Grinold and Ronald Kahn, longtime heads of research at BARRA/BlackRock.",
         ],
         cover: "grinold-active-portfolio-management.jpg",
+        coverW: 332,
+        coverH: 500,
       },
       {
         title: "Introduction to risk parity and budgeting",
@@ -463,6 +521,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Thierry Roncalli, head of quant research at Amundi and a risk-parity authority.",
         ],
         cover: "roncalli-introduction-to-risk-parity-and-budgeti.jpg",
+        coverW: 262,
+        coverH: 400,
       },
       {
         title: "Risk and asset allocation",
@@ -477,6 +537,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Attilio Meucci, buy-side quant and creator of the ARPM Bootcamp.",
         ],
         cover: "meucci-risk-and-asset-allocation.jpg",
+        coverW: 312,
+        coverH: 500,
       },
       {
         title: "Robust portfolio optimization and management",
@@ -491,6 +553,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Authors: Frank Fabozzi with quant academics Petter Kolm (NYU), Dessislava Pachamanova, and Sergio Focardi.",
         ],
         cover: "fabozzi-robust-portfolio-optimization-and-manage.jpg",
+        coverW: 311,
+        coverH: 500,
       },
     ],
   },
@@ -511,6 +575,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: John Hull, University of Toronto, Rotman School.",
         ],
         cover: "hull-risk-management-and-financial-institutions.jpg",
+        coverW: 350,
+        coverH: 499,
       },
       {
         title: "The essentials of risk management",
@@ -525,6 +591,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Authors: Michel Crouhy (head of R&D, Natixis), Dan Galai (Hebrew University), and Robert Mark (former bank CRO).",
         ],
         cover: "crouhy-the-essentials-of-risk-management.jpg",
+        coverW: 313,
+        coverH: 500,
       },
       {
         title: "Quantitative risk management: Concepts, techniques and tools",
@@ -539,6 +607,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Authors: Alexander McNeil, Rüdiger Frey, and Paul Embrechts (ETH Zurich), leaders in quantitative risk.",
         ],
         cover: "mcneil-quantitative-risk-management.jpg",
+        coverW: 331,
+        coverH: 500,
       },
       {
         title: "Copula methods in finance",
@@ -553,6 +623,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Authors: Umberto Cherubini and Elisa Luciano, Italian financial-mathematics academics.",
         ],
         cover: "cherubini-copula-methods-in-finance.jpg",
+        coverW: 317,
+        coverH: 475,
       },
       {
         title: "Market risk analysis",
@@ -567,6 +639,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Carol Alexander, University of Sussex professor; a leading market-risk academic and former editor of the Journal of Banking & Finance.",
         ],
         cover: "alexander-market-risk-analysis.jpg",
+        coverW: 337,
+        coverH: 500,
       },
     ],
   },
@@ -587,6 +661,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Larry Harris, USC Marshall professor and former Chief Economist of the SEC.",
         ],
         cover: "harris-trading-and-exchanges.jpg",
+        coverW: 364,
+        coverH: 500,
       },
       {
         title: "Market microstructure theory",
@@ -601,6 +677,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Maureen O’Hara, Cornell professor and a founder of market-microstructure theory.",
         ],
         cover: "o-hara-market-microstructure-theory.jpg",
+        coverW: 340,
+        coverH: 475,
       },
       {
         title: "Market liquidity: Theory, evidence, and policy",
@@ -615,6 +693,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Authors: Thierry Foucault (HEC Paris), Marco Pagano (Naples), and Ailsa Röell (Columbia).",
         ],
         cover: "foucault-market-liquidity.jpg",
+        coverW: 282,
+        coverH: 500,
       },
     ],
   },
@@ -635,6 +715,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Ernest Chan, former quant at Morgan Stanley and Credit Suisse; founder of QTS Capital.",
         ],
         cover: "chan-quantitative-trading.jpg",
+        coverW: 375,
+        coverH: 500,
       },
       {
         title: "Algorithmic trading: Winning strategies and their rationale",
@@ -662,6 +744,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Robert Carver, former systematic portfolio manager at AHL / Man Group.",
         ],
         cover: "carver-systematic-trading.jpg",
+        coverW: 333,
+        coverH: 500,
       },
       {
         title: "Algorithmic trading methods: Applications using advanced statistics, optimization, and machine learning techniques",
@@ -689,6 +773,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Yves Hilpisch, founder of The Python Quants and the Certificate in Python for Finance.",
         ],
         cover: "hilpisch-python-for-finance.jpg",
+        coverW: 381,
+        coverH: 500,
       },
       {
         title: "Python for algorithmic trading: From idea to cloud deployment",
@@ -729,6 +815,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Stefan Jansen, founder of Applied AI; former fund manager and data scientist.",
         ],
         cover: "jansen-machine-learning-for-algorithmic-trading.jpg",
+        coverW: 406,
+        coverH: 500,
       },
       {
         title: "Machine learning in finance: From theory to practice",
@@ -743,6 +831,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Authors: Matthew Dixon (Illinois Tech), Igor Halperin (ex-Fidelity/JPMorgan quant), and Paul Bilokon (ex-Deutsche Bank; Imperial College; Thalesians founder).",
         ],
         cover: "dixon-machine-learning-in-finance.jpg",
+        coverW: 332,
+        coverH: 500,
       },
       {
         title: "Advances in financial machine learning",
@@ -757,6 +847,8 @@ export const BOOK_GROUPS: BookGroup[] = [
           "Author: Marcos López de Prado, ex-AQR/Guggenheim quant; now at ADIA Lab and Cornell.",
         ],
         cover: "l-pez-de-prado-advances-in-financial-machine-lea.jpg",
+        coverW: 500,
+        coverH: 500,
       },
       {
         title: "Machine learning for asset managers",

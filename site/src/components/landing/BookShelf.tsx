@@ -16,7 +16,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { BookGroup, Book } from "@/lib/literature";
 
-type FlatBook = Book & { theme: string; catNo: string; index: number; shortTitle: string };
+type FlatBook = Book & { theme: string; catNo: string; index: number; mainTitle: string; subTitle: string };
 
 /* Styled typographic cover — used when a book has no real cover image. */
 function FallbackCover({ index, theme, title }: { index: number; theme: string; title: string }) {
@@ -38,101 +38,100 @@ function FallbackCover({ index, theme, title }: { index: number; theme: string; 
   );
 }
 
-function BookCard({ book }: { book: FlatBook }) {
+function Chevron({ open }: { open: boolean }) {
   return (
-    <article
-      tabIndex={0}
-      aria-label={`${book.title} by ${book.author}, ${book.year}`}
-      className="group relative aspect-[3/4] overflow-hidden rounded-md border border-pearl/10 bg-navy-elevated outline-none transition-[transform,border-color,box-shadow] duration-500 ease-out hover:-translate-y-2 hover:border-aqua/40 hover:shadow-[0_26px_60px_-28px_rgba(0,0,0,0.85)] focus-visible:-translate-y-2 focus-visible:border-aqua/50"
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      className={`transition-transform duration-300 ${open ? "rotate-180" : ""}`}
     >
-      {/* cover */}
-      {book.cover ? (
-        /* eslint-disable-next-line @next/next/no-img-element */
-        <img
-          src={`/covers/${book.cover}`}
-          alt={`${book.title} — book cover`}
-          loading="lazy"
-          decoding="async"
-          className="absolute inset-0 h-full w-full object-cover transition-[transform,filter] duration-700 ease-out group-hover:scale-[1.06] group-hover:brightness-[0.45] group-focus-within:scale-[1.06] group-focus-within:brightness-[0.45]"
-        />
-      ) : (
-        <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-[1.05] group-focus-within:scale-[1.05]">
-          <FallbackCover index={book.index} theme={book.theme} title={book.shortTitle} />
-        </div>
-      )}
-
-      {/* sheen sweep on hover */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-30 -translate-x-full bg-gradient-to-r from-transparent via-pearl/15 to-transparent transition-transform duration-[900ms] ease-out group-hover:translate-x-full"
-      />
-
-      {/* corner index — fades out as detail comes in */}
-      <span
-        aria-hidden="true"
-        className="absolute right-3 top-3 z-10 t-mono text-[0.6rem] tabular-nums text-pearl/45 transition-opacity duration-300 group-hover:opacity-0 group-focus-within:opacity-0"
-      >
-        {String(book.index).padStart(2, "0")}
-      </span>
-
-      {/* always-visible base caption */}
-      <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-navy via-navy/85 to-transparent p-4 pt-12 transition-opacity duration-300 group-hover:opacity-0 group-focus-within:opacity-0">
-        <p className="t-mono text-[0.55rem] uppercase tracking-[0.18em] text-aqua/80">{book.catNo} · {book.theme}</p>
-        <h4 className="mt-1.5 line-clamp-2 font-serif text-[0.95rem] leading-snug text-pearl">{book.shortTitle}</h4>
-        <p className="mt-1 t-mono text-[0.58rem] uppercase tracking-[0.1em] text-steel">{book.author} · {book.year}</p>
-      </div>
-
-      {/* hover / focus detail overlay */}
-      <div className="absolute inset-0 z-20 flex flex-col bg-navy/85 p-5 opacity-0 backdrop-blur-[3px] transition-opacity duration-300 ease-out group-hover:opacity-100 group-focus-within:opacity-100">
-        <p className="t-mono text-[0.55rem] uppercase tracking-[0.2em] text-aqua">{book.catNo} · {book.theme}</p>
-        <h4 className="mt-3 font-serif text-[1.05rem] leading-snug text-pearl">{book.shortTitle}</h4>
-        <p className="mt-1.5 t-mono text-[0.6rem] uppercase tracking-[0.1em] text-steel">{book.author} · {book.year}</p>
-        <span className="my-3 h-px w-10 shrink-0 bg-aqua/40" aria-hidden="true" />
-        <ul className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
-          {book.why.map((point, i) => (
-            <li
-              key={point}
-              style={{ transitionDelay: `${130 + i * 70}ms` }}
-              className="flex translate-y-2 gap-2 text-[0.8rem] leading-relaxed text-mist opacity-0 transition-[opacity,transform] duration-500 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100"
-            >
-              <span className="mt-[0.42rem] h-1 w-1 shrink-0 rounded-full bg-aqua/80" aria-hidden="true" />
-              <span>{point}</span>
-            </li>
-          ))}
-        </ul>
-        {book.citation ? (
-          <p className="mt-3 line-clamp-3 shrink-0 border-t border-pearl/10 pt-2.5 text-[0.58rem] leading-snug text-steel/70">
-            {book.citation}
-          </p>
-        ) : null}
-      </div>
-    </article>
+      <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
 
-export function BookShelf({ groups }: { groups: BookGroup[] }) {
-  // Flatten with category number + a global running index (for cover numerals).
-  let running = 0;
-  const all: FlatBook[] = groups.flatMap((g, gi) =>
-    g.books.map((b) => {
-      running += 1;
-      const shortTitle = b.title.split(/\s*[:—–]\s*/)[0];
-      return { ...b, theme: g.theme, catNo: String(gi + 1).padStart(2, "0"), index: running, shortTitle };
-    }),
+function BookCard({ book }: { book: FlatBook }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="flex h-full flex-col">
+      {/* the card (box) — centred text */}
+      <article className="group flex flex-col rounded-md border border-pearl/10 bg-navy-elevated p-3 text-center transition-[transform,border-color,box-shadow] duration-500 ease-out hover:-translate-y-1.5 hover:border-pearl/25 hover:shadow-[0_24px_55px_-30px_rgba(0,0,0,0.85)]">
+        {/* category */}
+        <p className="t-mono text-[0.56rem] uppercase tracking-[0.18em] text-aqua/80">{book.catNo} {book.theme}</p>
+
+        {/* cover frame — fixed 3:4 box (aqua frame) so every title starts at the same place;
+            the book sits contained & centred, a touch smaller than the box; never stretched */}
+        <div className="mt-3 aspect-[100/178] w-full overflow-hidden">
+          <div className="flex h-full w-full items-start justify-center">
+            {book.cover ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={`/covers/${book.cover}`}
+                alt={`${book.title} — book cover`}
+                width={book.coverW}
+                height={book.coverH}
+                loading="lazy"
+                decoding="async"
+                className="block max-h-full w-full rounded-sm border border-aqua/40 object-contain shadow-[0_8px_22px_-12px_rgba(0,0,0,0.85)] transition-colors duration-300 group-hover:border-aqua/70"
+              />
+            ) : (
+              <div className="relative aspect-[2/3] w-full overflow-hidden rounded-sm border border-aqua/40 transition-colors duration-300 group-hover:border-aqua/70">
+                <FallbackCover index={book.index} theme={book.theme} title={book.mainTitle} />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* title / subtitle / author — centred, identical position on every card */}
+        <h4 className="mt-4 line-clamp-2 min-h-[2.75rem] font-sans text-[1rem] leading-snug text-pearl" style={{ fontWeight: 700 }}>{book.mainTitle}</h4>
+        <p className="mt-1 line-clamp-2 min-h-[2.2rem] font-sans text-[0.8rem] font-normal leading-snug text-pearl/60">{book.subTitle || " "}</p>
+        <p className="mt-1 line-clamp-1 min-h-[1.25rem] font-serif text-[0.85rem] leading-snug text-steel">{book.author} · {book.year}</p>
+
+        {/* unlabelled, subtle toggle — just a chevron, centred */}
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-label={open ? "Hide details" : "Show details"}
+          className="mx-auto mt-3 flex items-center justify-center px-6 pt-1 text-steel/55 transition-colors duration-200 hover:text-aqua"
+        >
+          <Chevron open={open} />
+        </button>
+      </article>
+
+      {/* why-it-matters — below the card, left-aligned bullets */}
+      <div className={`grid transition-[grid-template-rows] duration-[400ms] ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+        <div className="overflow-hidden">
+          <ul className="space-y-2.5 px-1 pt-4">
+            {book.why.map((point) => (
+              <li key={point} className="flex gap-1.5 font-serif text-[0.85rem] leading-relaxed text-mist">
+                <span className="shrink-0 text-aqua/80" aria-hidden="true">•</span>
+                <span>{point}</span>
+              </li>
+            ))}
+          </ul>
+          {book.citation ? (
+            <p className="mt-3 px-1 font-serif text-[0.74rem] leading-snug text-steel/70">{book.citation}</p>
+          ) : null}
+        </div>
+      </div>
+    </div>
   );
+}
 
-  const tabs = ["All", ...groups.map((g) => g.theme)];
-  const [active, setActive] = useState<string>("All");
-  const visible = active === "All" ? all : all.filter((b) => b.theme === active);
+type GroupView = { theme: string; blurb: string; catNo: string; books: FlatBook[] };
 
-  // Scroll-triggered entrance. `armed` is only set once JS confirms motion is on,
-  // so the server / no-JS render leaves every card visible (no hidden content).
+/* One category bucket: a headline + its grid of covers. Reveals on its own scroll. */
+function CategorySection({ group }: { group: GroupView }) {
   const [armed, setArmed] = useState(false);
   const [inView, setInView] = useState(false);
-  const shelfRef = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLElement>(null);
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return; // stay visible, no motion
-    const el = shelfRef.current;
+    const el = ref.current;
     if (!el || !("IntersectionObserver" in window)) return;
     setArmed(true);
     const io = new IntersectionObserver(
@@ -142,19 +141,67 @@ export function BookShelf({ groups }: { groups: BookGroup[] }) {
           io.disconnect();
         }
       },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.04 },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.03 },
     );
     io.observe(el);
     return () => io.disconnect();
   }, []);
 
   return (
-    <div ref={shelfRef}>
-      {/* tabs */}
-      <div className="toc-scroll -mx-2 mb-4 flex gap-1.5 overflow-x-auto px-2 pb-2">
+    <section ref={ref} id={`cat-${group.catNo}`} className="scroll-mt-24">
+      {/* category headline */}
+      <div className="mb-5 flex items-baseline gap-4 border-b border-pearl/10 pb-3">
+        <span className="t-mono text-sm tabular-nums text-aqua/80">{group.catNo}</span>
+        <h3 className="font-serif text-xl leading-tight text-pearl md:text-2xl">{group.theme}</h3>
+        <span className="ml-auto shrink-0 t-mono text-[0.6rem] uppercase tracking-[0.14em] text-steel">
+          {group.books.length} books
+        </span>
+      </div>
+      {group.blurb ? <p className="mb-7 max-w-2xl text-sm leading-relaxed text-mist">{group.blurb}</p> : null}
+
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
+        {group.books.map((book, i) => (
+          <div
+            key={`${book.theme}-${book.title}`}
+            className={!armed ? "" : inView ? "book-in" : "opacity-0"}
+            style={armed && inView ? { animationDelay: `${Math.min(i, 12) * 50}ms` } : undefined}
+          >
+            <BookCard book={book} />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function BookShelf({ groups }: { groups: BookGroup[] }) {
+  // Build per-category views, preserving a global running index for the cover numerals.
+  let running = 0;
+  const grouped: GroupView[] = groups.map((g, gi) => ({
+    theme: g.theme,
+    blurb: g.blurb,
+    catNo: String(gi + 1).padStart(2, "0"),
+    books: g.books.map((b) => {
+      running += 1;
+      const m = b.title.match(/^(.*?)\s*[:—–]\s*(.+)$/);
+      const mainTitle = m ? m[1] : b.title;
+      const subTitle = m ? m[2] : "";
+      return { ...b, theme: g.theme, catNo: String(gi + 1).padStart(2, "0"), index: running, mainTitle, subTitle };
+    }),
+  }));
+  const total = running;
+
+  const tabs = ["All", ...groups.map((g) => g.theme)];
+  const [active, setActive] = useState<string>("All");
+  const visibleGroups = active === "All" ? grouped : grouped.filter((g) => g.theme === active);
+
+  return (
+    <div>
+      {/* category tabs — select a single bucket, or All */}
+      <div className="mb-9 flex flex-wrap gap-1.5">
         {tabs.map((t) => {
           const on = active === t;
-          const count = t === "All" ? all.length : all.filter((b) => b.theme === t).length;
+          const count = t === "All" ? total : grouped.find((g) => g.theme === t)?.books.length ?? 0;
           return (
             <button
               key={t}
@@ -174,24 +221,10 @@ export function BookShelf({ groups }: { groups: BookGroup[] }) {
         })}
       </div>
 
-      <p className="mb-9 flex items-center gap-2 t-mono text-[0.62rem] uppercase tracking-[0.16em] text-steel/70">
-        <span className="inline-block h-1 w-1 rounded-full bg-aqua/60" aria-hidden="true" />
-        Hover a cover for why it matters
-      </p>
-
-      {/* grid — re-keyed by active tab so cards re-stagger in */}
-      <div
-        key={active}
-        className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 2xl:grid-cols-5"
-      >
-        {visible.map((book, i) => (
-          <div
-            key={`${book.theme}-${book.title}`}
-            className={!armed ? "" : inView ? "book-in" : "opacity-0"}
-            style={armed && inView ? { animationDelay: `${Math.min(i, 14) * 50}ms` } : undefined}
-          >
-            <BookCard book={book} />
-          </div>
+      {/* sections — re-keyed by active tab so the view re-staggers in */}
+      <div key={active} className="space-y-16 md:space-y-20">
+        {visibleGroups.map((g) => (
+          <CategorySection key={g.theme} group={g} />
         ))}
       </div>
     </div>

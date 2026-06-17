@@ -34,17 +34,22 @@ export function FAQ() {
   return (
     <section id="faq" className="scroll-mt-20 border-b border-pearl/10 bg-navy-elevated/40">
       <div className="mx-auto max-w-3xl px-6 py-28 md:py-32">
-        <div data-reveal className="mb-12 flex items-center gap-4 border-b border-pearl/10 pb-4">
-          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-aqua" aria-hidden="true" />
-          <span className="t-mono text-sm font-bold tabular-nums text-aqua">07</span>
-          <h2 className="t-mono text-sm uppercase tracking-[0.24em] text-mist">Frequently asked</h2>
+        <div data-reveal className="mb-12">
+          <div className="flex items-center gap-4">
+            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-aqua" aria-hidden="true" />
+            <span className="t-mono text-sm font-bold tabular-nums text-aqua">07</span>
+            <h2 className="t-mono text-sm uppercase tracking-[0.24em] text-mist">Frequently asked</h2>
+          </div>
+          <h3 className="mt-7 t-h1 text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: "clamp(1.5rem, 3.4vw, 2.4rem)" }}>
+            Your questions, our answers
+          </h3>
         </div>
 
         <div id="faq-list" data-reveal className="divide-y divide-pearl/10 border-y border-pearl/10">
           {FAQS.map((f, i) => (
             <details key={f.q} className="faq-item group" style={{ "--reveal-delay": `${i * 40}ms` } as CSSProperties}>
               <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-left">
-                <span className="font-serif text-lg text-pearl transition-colors group-open:text-aqua md:text-xl">{f.q}</span>
+                <span className="font-serif text-lg text-aqua md:text-xl">{f.q}</span>
                 <span className="faq-mark relative h-4 w-4 shrink-0 text-mist" aria-hidden="true" />
               </summary>
               <p className="pb-6 pr-10 leading-relaxed text-mist">{f.a}</p>

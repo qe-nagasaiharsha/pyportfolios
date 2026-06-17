@@ -1,105 +1,193 @@
-/* Pricing — present and aspirational, but honestly marked "coming soon"
-   (subscription mechanics are a later milestone). CTAs route to the early-access
-   capture so intent is collected before payments exist. */
+"use client";
 
+/* Pricing — three tiers with a monthly/yearly billing toggle. Plans are still
+   aspirational while subscription mechanics are a later milestone, so every CTA
+   routes to the early-access capture. */
+
+import { useState } from "react";
 import type { CSSProperties } from "react";
 
 interface Tier {
   name: string;
-  price: string;
-  cadence: string;
+  monthly: { price: string; cadence: string };
+  yearly: { price: string; cadence: string };
   blurb: string;
   features: string[];
   cta: string;
   featured?: boolean;
+  badge?: string;
 }
 
 const TIERS: Tier[] = [
   {
     name: "Starter",
-    price: "Free",
-    cadence: "",
-    blurb: "The fundamentals and every notebook — yours to run, from day one.",
-    features: ["Finance-fundamentals lessons", "Selected case studies", "All notebooks, fully runnable", "Community access"],
-    cta: "Start free",
+    monthly: { price: "$0", cadence: "/ month" },
+    yearly: { price: "$0", cadence: "/ year" },
+    blurb: "Perfect for exploring the curriculum with foundational lessons and starter notebooks.",
+    features: ["Foundations & Data Layer module", "5 backtests per month", "Community forum access"],
+    cta: "Start for Free",
   },
   {
     name: "Pro",
-    price: "$20",
-    cadence: "/ month",
-    blurb: "The full research library — every category, kept current.",
-    features: ["Everything in Starter", "All four categories, in depth", "New case studies monthly", "Quant-finance-basics course", "Priority support"],
-    cta: "Go Pro",
+    monthly: { price: "$20", cadence: "/ month" },
+    yearly: { price: "$199", cadence: "/ year" },
+    blurb: "Full curriculum access with unlimited backtests, live model libraries, and priority support.",
+    features: [
+      "All 6 model modules unlocked",
+      "Unlimited backtests & simulations",
+      "Full library & tooling access",
+      "Priority support & live Q&A",
+    ],
+    cta: "Upgrade to Pro",
     featured: true,
+    badge: "Popular",
   },
   {
-    name: "Enterprise",
-    price: "$950",
-    cadence: "lifetime",
-    blurb: "Lifetime access for serious practitioners and small teams.",
-    features: ["Everything in Pro", "Lifetime updates", "Team licences", "A direct line to the author"],
-    cta: "Talk to us",
+    name: "Lifetime",
+    monthly: { price: "$950", cadence: "one-time" },
+    yearly: { price: "$790", cadence: "one-time" },
+    blurb: "A single payment for lifetime access to every module, plus all future updates and mentorship.",
+    features: [
+      "Lifetime access & all future updates",
+      "1:1 mentorship sessions",
+      "Dedicated support & private community",
+      "Certificate of completion",
+    ],
+    cta: "Get Lifetime Access",
   },
 ];
 
 export function Pricing() {
+  const [yearly, setYearly] = useState(false);
+  const [selected, setSelected] = useState<string | null>(null);
+
   return (
     <section id="pricing" className="relative scroll-mt-20 overflow-hidden border-b border-pearl/10">
       <div className="relative mx-auto max-w-6xl px-6 py-28 md:py-32">
-        <div data-reveal className="mb-12 flex flex-col gap-4 border-b border-pearl/10 pb-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-aqua" aria-hidden="true" />
-            <span className="t-mono text-sm font-bold tabular-nums text-aqua">06</span>
-            <h2 className="t-mono text-sm uppercase tracking-[0.24em] text-mist">Pricing</h2>
-          </div>
-          <span className="inline-flex w-fit items-center gap-2 rounded-full border border-aqua/40 px-3 py-1 t-mono text-[0.6rem] uppercase tracking-[0.18em] text-aqua">
-            <span className="live-dot inline-block h-1.5 w-1.5 rounded-full bg-aqua" aria-hidden="true" />
-            Coming soon
+        {/* label */}
+        <div data-reveal className="mb-8 flex items-center gap-4">
+          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-aqua" aria-hidden="true" />
+          <span className="t-mono text-sm font-bold tabular-nums text-aqua">06</span>
+          <h2 className="t-mono text-sm uppercase tracking-[0.24em] text-mist">Pricing</h2>
+          <span className="h-px flex-1 bg-pearl/10" />
+        </div>
+
+        {/* headline + subtext */}
+        <h3 data-reveal className="t-h1 max-w-3xl text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>
+          Choose the plan <span className="text-pearl/35">that matches</span> your ambition
+        </h3>
+        <p data-reveal className="mt-5 max-w-2xl text-lg leading-relaxed text-mist">
+          Flexible pricing for every stage of your quant journey — from your first model to a lifetime of research.
+        </p>
+
+        {/* billing toggle */}
+        <div data-reveal className="mt-8 flex items-center gap-3">
+          <span className={`t-mono text-xs uppercase tracking-[0.16em] transition-colors ${yearly ? "text-steel" : "text-pearl"}`}>
+            Monthly
+          </span>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={yearly}
+            aria-label="Toggle yearly billing"
+            onClick={() => setYearly((v) => !v)}
+            className={`relative h-6 w-11 shrink-0 rounded-full border transition-colors duration-300 ${
+              yearly ? "border-aqua/60 bg-aqua/20" : "border-pearl/20 bg-navy-elevated"
+            }`}
+          >
+            <span
+              className={`absolute left-0.5 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-pearl transition-transform duration-300 ${
+                yearly ? "translate-x-5" : "translate-x-0"
+              }`}
+            />
+          </button>
+          <span className={`t-mono text-xs uppercase tracking-[0.16em] transition-colors ${yearly ? "text-pearl" : "text-steel"}`}>
+            Yearly
+          </span>
+          <span className="ml-1 inline-flex items-center rounded-full border border-aqua/40 px-2.5 py-1 t-mono text-[0.58rem] uppercase tracking-[0.14em] text-aqua">
+            17% off
           </span>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
-          {TIERS.map((t, i) => (
-            <div
-              key={t.name}
-              data-reveal
-              style={{ "--reveal-delay": `${i * 90}ms` } as CSSProperties}
-              className={`relative flex flex-col rounded-sm border bg-navy-elevated/50 p-7 transition-all duration-500 hover:-translate-y-0.5 ${
-                t.featured ? "border-aqua/40" : "border-pearl/10 hover:border-pearl/25"
-              }`}
-            >
-              {t.featured ? (
-                <span className="absolute -top-3 left-7 rounded-full bg-aqua px-3 py-1 t-mono text-[0.58rem] uppercase tracking-[0.16em] text-navy" style={{ fontWeight: 700 }}>
-                  Most popular
-                </span>
-              ) : null}
-              <h3 className="t-mono text-sm uppercase tracking-[0.2em] text-pearl">{t.name}</h3>
-              <div className="mt-5 flex items-baseline gap-2">
-                <span className="font-serif text-5xl text-pearl" style={{ fontWeight: 500 }}>{t.price}</span>
-                {t.cadence ? <span className="t-mono text-xs uppercase tracking-[0.14em] text-steel">{t.cadence}</span> : null}
-              </div>
-              <p className="mt-4 min-h-[3rem] leading-relaxed text-mist">{t.blurb}</p>
-              <ul className="mt-6 flex-1 space-y-3 border-t border-pearl/10 pt-6">
-                {t.features.map((f) => (
-                  <li key={f} className="flex items-baseline gap-3 text-sm text-pearl">
-                    <span className="mt-0.5 text-aqua" aria-hidden="true">✓</span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <a
-                href="#early-access"
-                className={`mt-8 inline-flex items-center justify-center rounded-sm px-6 py-3 text-sm font-semibold transition-colors duration-300 ${
-                  t.featured
-                    ? "bg-pearl text-navy hover:bg-aqua"
-                    : "border border-pearl/20 text-pearl hover:border-aqua hover:text-aqua"
+        {/* cards */}
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {TIERS.map((t, i) => {
+            const p = yearly ? t.yearly : t.monthly;
+            return (
+              <div
+                key={t.name}
+                data-reveal
+                style={{ "--reveal-delay": `${i * 90}ms` } as CSSProperties}
+                className="flex"
+              >
+              <div
+                role="button"
+                tabIndex={0}
+                aria-pressed={selected === t.name}
+                onClick={() => setSelected(t.name)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setSelected(t.name);
+                  }
+                }}
+                className={`relative flex flex-1 cursor-pointer flex-col rounded-lg border bg-navy-elevated/50 p-7 outline-none transition-all duration-300 hover:-translate-y-0.5 focus-visible:border-aqua/40 ${
+                  selected === t.name
+                    ? "border-aqua/60 shadow-[0_0_44px_-20px_rgba(43,212,196,0.6)]"
+                    : "border-pearl/10 hover:border-pearl/25"
                 }`}
               >
-                {t.cta}
-              </a>
-            </div>
-          ))}
+                {/* name + badge */}
+                <div className="flex items-center justify-between gap-3">
+                  <h4 className="text-2xl text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>{t.name}</h4>
+                  {t.badge ? (
+                    <span className="inline-flex items-center rounded-full border border-aqua/50 px-2.5 py-1 t-mono text-[0.55rem] uppercase tracking-[0.16em] text-aqua">
+                      {t.badge}
+                    </span>
+                  ) : null}
+                </div>
+
+                {/* price */}
+                <div className="mt-5 flex items-baseline gap-2">
+                  <span className="text-5xl text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>{p.price}</span>
+                  <span className="t-mono text-xs uppercase tracking-[0.14em] text-steel">{p.cadence}</span>
+                </div>
+
+                {/* blurb */}
+                <p className="mt-4 min-h-[4.5rem] leading-relaxed text-mist">{t.blurb}</p>
+
+                {/* cta */}
+                <a
+                  href="#early-access"
+                  onClick={() => setSelected(t.name)}
+                  className={`mt-1 inline-flex items-center justify-center rounded-sm px-6 py-3 text-sm font-semibold transition-colors duration-300 ${
+                    selected === t.name
+                      ? "bg-pearl text-navy hover:bg-aqua"
+                      : "border border-pearl/20 text-pearl hover:border-aqua hover:text-aqua"
+                  }`}
+                >
+                  {t.cta}
+                </a>
+
+                {/* features */}
+                <div className="mt-7 flex items-center gap-3">
+                  <span className="t-mono text-[0.6rem] uppercase tracking-[0.22em] text-steel">Features</span>
+                  <span className="h-px flex-1 bg-pearl/10" />
+                </div>
+                <ul className="mt-5 space-y-3">
+                  {t.features.map((f) => (
+                    <li key={f} className="flex items-baseline gap-3 t-mono text-[0.76rem] leading-relaxed text-mist">
+                      <span className="text-aqua" aria-hidden="true">✓</span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              </div>
+            );
+          })}
         </div>
+
         <p className="mt-8 t-mono text-xs text-steel">
           Plans are indicative while the platform is in build — join early access and you&apos;ll be first to know when they go live.
         </p>

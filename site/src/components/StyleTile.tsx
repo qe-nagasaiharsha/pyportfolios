@@ -29,6 +29,7 @@ import { StackCards } from "@/components/brand/StackCards";
 import { EXCHANGES_BY_REGION } from "@/components/brand/WorldMap";
 import { ExchangeRow } from "@/components/brand/ExchangeRow";
 import { SectorsIndices } from "@/components/brand/SectorsIndices";
+import { EtfProviders } from "@/components/brand/EtfProviders";
 import { WorldClockBand } from "@/components/brand/WorldClockBand";
 import { WorldSphere } from "@/components/WorldSphere";
 import { PhotoBackdrop } from "@/components/brand/PhotoBackdrop";
@@ -38,7 +39,7 @@ import { EarlyAccess } from "@/components/landing/EarlyAccess";
 import { PageTOC } from "@/components/landing/PageTOC";
 import { Lightbox } from "@/components/landing/Lightbox";
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
-import { ReturnsHistogram } from "@/components/charts/ReturnsHistogram";
+import { CapabilityCards } from "@/components/brand/CapabilityCards";
 
 const NAV = [
   { label: "Finance Fundamentals", href: "/research#finance-fundamentals" },
@@ -48,25 +49,30 @@ const NAV = [
 ] as const;
 
 const PILLARS = [
-  { no: "01", title: "Coding", img: "coding", body: "Structured case studies and ready-to-run snippets — investment-banking style — across the modern Python quant stack." },
-  { no: "02", title: "Trading", img: "trading", body: "Algorithmic trading, portfolio optimization and risk management in a simple, empirical, practical format." },
-  { no: "03", title: "Markets", img: "markets", body: "Academic-level models meet state-of-the-art frameworks, using data from the world's major exchanges." },
+  { no: "01", title: "Coding", img: "coding", bullets: ["High-level concepts & academic rigor", "Top-notch Python codes", "Latest ML and LLM AI engines"] },
+  { no: "02", title: "Trading", img: "trading", bullets: ["Portfolio diversification & rebalancing", "Linking quant finance & markets", "Algorithmic execution & backtesting"] },
+  { no: "03", title: "Markets", img: "markets", bullets: ["Real world market data across assets", "Proven trading ideas & strategies", "Advanced portfolio optimizations"] },
 ] as const;
 
-const MARKETS = [
-  { label: "Asset Classes", items: ["Equities", "Fixed Income", "FX", "Commodities", "Derivatives", "Real Estate", "Crypto"] },
-  { label: "Instruments", items: ["Options", "Futures", "Swaps", "ETFs", "Bonds", "Forwards"] },
+const ASSET_CLASSES = [
+  { name: "Equities", desc: "Stocks & ETFs" },
+  { name: "Fixed Income", desc: "Bonds & treasuries" },
+  { name: "FX", desc: "Currency pairs" },
+  { name: "Commodities", desc: "Metals, energy, ag" },
+  { name: "Derivatives", desc: "Futures & options" },
+  { name: "Real Estate", desc: "REITs & infrastructure" },
+  { name: "Crypto", desc: "Digital assets" },
 ] as const;
 
-
-const MODELS = [
-  { group: "Pricing", items: "Black–Scholes · Binomial · Monte Carlo" },
-  { group: "Portfolio", items: "Markowitz · Black–Litterman · Risk Parity · HRP" },
-  { group: "Risk", items: "VaR / CVaR · GARCH · Extreme Value · Drawdown" },
-  { group: "Machine Learning", items: "Shrinkage · Trees · Clustering" },
-  { group: "Signals", items: "Momentum · Mean-reversion · Factor models" },
-  { group: "Performance", items: "Sharpe · Sortino · Attribution" },
+const INSTRUMENTS = [
+  { name: "Options", desc: "Calls & puts" },
+  { name: "Futures", desc: "Listed contracts" },
+  { name: "Swaps", desc: "Rates, credit, FX" },
+  { name: "ETFs", desc: "Funds & baskets" },
+  { name: "Bonds", desc: "Govt & corporate" },
+  { name: "Forwards", desc: "Bespoke OTC" },
 ] as const;
+
 
 
 function SectionLabel({ title, no }: { title: string; no?: string }) {
@@ -94,38 +100,6 @@ function HeroCurve() {
       <path d="M0,300 C120,288 190,250 280,256 C380,262 430,205 540,188 C650,171 690,150 790,118 C880,90 940,98 1040,64 C1110,40 1150,42 1200,28 L1200,320 L0,320 Z" fill="url(#curveFill)" />
       <path className="draw-line" d="M0,300 C120,288 190,250 280,256 C380,262 430,205 540,188 C650,171 690,150 790,118 C880,90 940,98 1040,64 C1110,40 1150,42 1200,28" fill="none" stroke="#1FFFFF" strokeOpacity="0.32" strokeWidth="1.25" />
     </svg>
-  );
-}
-
-function FigureCovariance() {
-  const gridY = [40, 90, 140, 190];
-  const gridX = [120, 240, 360, 480];
-  return (
-    <figure
-      className="corner-ticks cursor-zoom-in rounded-sm border border-pearl/10 bg-navy-sunken/60 p-7 transition-colors duration-200 hover:border-aqua/40"
-      data-zoom
-      role="button"
-      tabIndex={0}
-      aria-label="Enlarge chart: out-of-sample volatility"
-    >
-      <svg viewBox="0 0 600 240" className="w-full" role="img"
-        aria-label="Out-of-sample volatility: sample covariance versus Ledoit-Wolf shrinkage across portfolios.">
-        {gridY.map((y) => <line key={`y${y}`} x1="0" y1={y} x2="600" y2={y} stroke="#EEEEEE" strokeOpacity="0.06" strokeWidth="1" />)}
-        {gridX.map((x) => <line key={`x${x}`} x1={x} y1="0" x2={x} y2="210" stroke="#EEEEEE" strokeOpacity="0.06" strokeWidth="1" />)}
-        <polyline points="0,70 60,96 120,58 180,120 240,78 300,150 360,96 420,170 480,120 540,196 600,150"
-          fill="none" stroke="#59617A" strokeWidth="1.5" strokeLinejoin="round" />
-        <path className="draw-path" style={{ "--len": "760" } as CSSProperties} d="M0,110 C90,108 130,118 200,126 C280,135 320,150 400,156 C470,161 520,172 600,178"
-          fill="none" stroke="#1FFFFF" strokeWidth="2.25" strokeLinecap="round" />
-        <circle cx="600" cy="178" r="3.5" fill="#1FFFFF" />
-      </svg>
-      <figcaption className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-pearl/10 pt-3">
-        <span className="t-mono text-xs uppercase tracking-[0.18em] text-steel">Out-of-sample volatility</span>
-        <span className="flex items-center gap-4 t-mono text-xs">
-          <span className="flex items-center gap-1.5 text-mist"><span className="inline-block h-px w-4 bg-steel" /> Sample</span>
-          <span className="flex items-center gap-1.5 text-aqua"><span className="inline-block h-px w-4 bg-aqua" /> Shrinkage</span>
-        </span>
-      </figcaption>
-    </figure>
   );
 }
 
@@ -213,7 +187,7 @@ export default function StyleTile({
                 <h1 className="hero-in t-display text-pearl" style={{ "--hero-delay": "80ms", lineHeight: 1.08 } as CSSProperties}>
                   Get up to speed<span className="text-aqua">.</span>
                 </h1>
-                <p className={`hero-in mt-7 max-w-xl ${heroSub} text-lg leading-relaxed text-pearl/70`} style={{ "--hero-delay": "200ms" } as CSSProperties}>
+                <p className={`hero-in mt-7 max-w-xl ${heroSub} text-lg font-semibold leading-relaxed text-pearl/70`} style={{ "--hero-delay": "200ms" } as CSSProperties}>
                   Coding the markets.<br />
                   Technical depth, real-world context, intellectual clarity<br />
                   — without the noise.
@@ -250,7 +224,11 @@ export default function StyleTile({
           <div className="relative mx-auto max-w-6xl px-6">
           <div data-reveal>
             <SectionLabel no="01" title="Our Focus" />
-            <p className="mb-12 max-w-5xl text-lg leading-relaxed text-mist">
+            <h3 className="t-h1 text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: "clamp(1.5rem, 3.2vw, 2.2rem)" }}>
+              Quant Theory / Python Practice / Trading Implementation<br />
+              <span className="text-pearl/35">Harness coding · implement strategies · stay on top.</span>
+            </h3>
+            <p className="mt-5 mb-12 max-w-5xl text-lg leading-relaxed text-mist">
               An educational platform that bridges advanced quantitative finance and practical Python implementation
               <br />— blending technical rigor, real-world application and visual clarity.
             </p>
@@ -277,10 +255,16 @@ export default function StyleTile({
                   )}
                 </div>
                 <div className="px-7 py-9">
-                  <span className="font-serif text-4xl text-pearl/20" style={{ fontWeight: 500 }}>{p.no}</span>
-                  <h3 className="t-h2 mt-4 text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>{p.title}</h3>
+                  <h3 className="t-h2 text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>{p.title}<span aria-hidden="true" className="ml-1 inline-block h-[0.3em] w-[0.3em] rounded-full bg-pearl align-baseline" /></h3>
                   <span className="mt-4 block h-px w-10 bg-aqua" />
-                  <p className="mt-4 leading-relaxed text-mist">{p.body}</p>
+                  <ul className="mt-4 space-y-1.5">
+                    {p.bullets.map((b) => (
+                      <li key={b} className="flex gap-2 text-sm leading-relaxed text-mist">
+                        <span className="shrink-0 text-aqua" aria-hidden="true">•</span>
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
               );
@@ -293,9 +277,12 @@ export default function StyleTile({
         <section id="libraries" className="relative scroll-mt-24 overflow-hidden py-28 md:py-32">
           <div data-reveal className="relative mx-auto max-w-6xl px-6">
           <SectionLabel no="02" title="Libraries" />
-          <h3 className="t-h1 max-w-3xl text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>The Python quant stack.</h3>
+          <h3 className="t-h1 max-w-3xl text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>
+            Best in Class Libraries<br />
+            <span className="text-pearl/35">The Python Quant Stack.</span>
+          </h3>
           <p className="mt-5 max-w-3xl text-lg leading-relaxed text-mist">
-            Best-in-class, open-source libraries — composed into clean, reproducible research.
+            Open-source libraries composed into clean, reproducible research.
           </p>
           <div className="mt-12">
             <StackCards />
@@ -307,31 +294,90 @@ export default function StyleTile({
         <section id="markets" className="relative scroll-mt-24 overflow-hidden border-y border-pearl/10 bg-navy-elevated/40">
           <div data-reveal className="relative mx-auto max-w-6xl px-6 py-28 md:py-32">
             <SectionLabel no="03" title="Markets" />
-            <div className="grid gap-10 md:grid-cols-2">
-              {MARKETS.map((m) => (
-                <div key={m.label}>
-                  <p className="t-mono text-xs uppercase tracking-[0.22em] text-aqua/80">{m.label}</p>
-                  <ul className="mt-5 space-y-2.5">
-                    {m.items.map((it) => (
-                      <li key={it} className="flex items-baseline gap-3 border-b border-pearl/10 pb-2.5 text-pearl">
-                        <span className="h-1 w-1 shrink-0 rounded-full bg-aqua/60" aria-hidden="true" />
-                        {it}
-                      </li>
-                    ))}
-                  </ul>
+            <div className="mb-12 max-w-4xl">
+              <h3 className="t-h1 text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>
+                Exchanges, Instruments, Asset Classes &amp; Sectors<br />
+                <span className="text-pearl/35">Global Capital Markets and unlimited Data.</span>
+              </h3>
+              <p className="mt-4 max-w-2xl text-lg leading-relaxed text-mist">Equities, indices, and sectors from the largest and most liquid stock exchanges worldwide.</p>
+            </div>
+            {/* 1 — stock exchanges */}
+            <div>
+              <p className="t-mono text-xs uppercase tracking-[0.22em] text-aqua/80">Global Stock Exchanges</p>
+              <h3 className="mt-4 t-h1 text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: "clamp(1.5rem, 3.2vw, 2.2rem)" }}>
+                Stock Exchanges<br />
+                <span className="text-pearl/35">Global coverage across major listing venues</span>
+              </h3>
+              <p className="mt-4 max-w-3xl text-lg leading-relaxed text-mist">
+                Our case studies draw on equities, indices, and sectors from the largest and most liquid stock exchanges worldwide.
+              </p>
+              <div className="mt-10">
+                <ExchangeRow />
+              </div>
+            </div>
+
+            {/* 3 — asset classes & ETF providers */}
+            <div className="mt-14 border-t border-pearl/10 pt-10">
+              <p className="t-mono text-xs uppercase tracking-[0.22em] text-aqua/80">Diverse Asset Classes &amp; ETFs</p>
+              <h3 className="mt-4 t-h1 text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: "clamp(1.5rem, 3.2vw, 2.2rem)" }}>
+                Asset Classes &amp; ETF Providers<br />
+                <span className="text-pearl/35">Instruments and the funds that wrap them</span>
+              </h3>
+              <p className="mt-4 max-w-3xl text-lg leading-relaxed text-mist">
+                Analyze traditional and alternative asset classes, including real assets and digital assets, with institutional-grade ETF market data.
+              </p>
+
+              {/* asset class cards */}
+              <div className="mt-10">
+                <div className="mb-4 flex items-center gap-3">
+                  <span className="t-mono text-[0.68rem] uppercase tracking-[0.22em] text-aqua/80">Asset Classes</span>
+                  <span className="h-px flex-1 bg-pearl/10" />
                 </div>
-              ))}
+                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-7">
+                  {ASSET_CLASSES.map((a) => (
+                    <div key={a.name} className="rounded-sm border border-pearl/10 bg-navy-elevated/40 px-3 py-5 text-center transition-colors duration-300 hover:border-pearl/25">
+                      <p className="font-sans text-[0.92rem] leading-tight text-pearl" style={{ fontWeight: 700 }}>{a.name}</p>
+                      <p className="mt-1.5 text-[0.7rem] leading-snug text-steel">{a.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* etf main providers */}
+              <div className="mt-10">
+                <EtfProviders />
+              </div>
+
+              {/* instruments cards */}
+              <div className="mt-10">
+                <div className="mb-4 flex items-center gap-3">
+                  <span className="t-mono text-[0.68rem] uppercase tracking-[0.22em] text-aqua/80">Instruments</span>
+                  <span className="h-px flex-1 bg-pearl/10" />
+                </div>
+                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6">
+                  {INSTRUMENTS.map((a) => (
+                    <div key={a.name} className="rounded-sm border border-pearl/10 bg-navy-elevated/40 px-3 py-5 text-center transition-colors duration-300 hover:border-pearl/25">
+                      <p className="font-sans text-[0.92rem] leading-tight text-pearl" style={{ fontWeight: 700 }}>{a.name}</p>
+                      <p className="mt-1.5 text-[0.7rem] leading-snug text-steel">{a.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            {/* sectors · country indices · index providers */}
+            {/* 4 — indices and sectors */}
             <div className="mt-14 border-t border-pearl/10 pt-10">
-              <SectorsIndices />
-            </div>
-
-            {/* the world's major venues — real exchange logos */}
-            <div className="mt-14 border-t border-pearl/10 pt-10">
-              <p className="mb-6 t-mono text-xs uppercase tracking-[0.22em] text-aqua/80">Major venues</p>
-              <ExchangeRow />
+              <p className="t-mono text-xs uppercase tracking-[0.22em] text-aqua/80">Country and Sector Focus</p>
+              <h3 className="mt-4 t-h1 text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: "clamp(1.5rem, 3.2vw, 2.2rem)" }}>
+                Index Providers, Sectors &amp; Country Indices<br />
+                <span className="text-pearl/35">Benchmarks, GICS sectors and the headline indices we cover</span>
+              </h3>
+              <p className="mt-4 max-w-3xl text-lg leading-relaxed text-mist">
+                Comprehensive coverage across industries, sectors, and country indices for the world&apos;s top 15 economies — powered by leading global index providers.
+              </p>
+              <div className="mt-10">
+                <SectorsIndices />
+              </div>
             </div>
           </div>
         </section>
@@ -351,15 +397,15 @@ export default function StyleTile({
         <section id="geographies" className="scroll-mt-24 border-b border-pearl/10">
           <div data-reveal className="mx-auto max-w-6xl px-6 py-28 md:py-32">
             <SectionLabel no="04" title="Geographies" />
-            <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-              <h3 className="t-h1 whitespace-nowrap text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: "clamp(0.95rem, 3vw, 2.5rem)" }}>The top 15 economies, in one frame.</h3>
-              <p className="t-mono text-xs uppercase tracking-[0.2em] text-steel">Developed &amp; emerging markets</p>
-            </div>
+            <h3 className="t-h1 text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: "clamp(1.5rem, 3.4vw, 2.4rem)" }}>
+              Top 15 Economies<br />
+              <span className="text-pearl/35">Assets &amp; securities from key developed and emerging markets</span>
+            </h3>
             {/* the brand map (slide 14) on a soft light card — matches the iconography rule */}
             <figure className="mt-12 overflow-hidden rounded-sm border border-pearl/10 bg-sisal p-4 sm:p-8">
               <img
                 src="/world-reach.png"
-                alt="World map highlighting the top fifteen economies — developed and emerging — that pyportfolios case studies draw from."
+                alt=""
                 className="mx-auto w-full max-w-4xl cursor-zoom-in transition-opacity duration-200 hover:opacity-90"
                 decoding="async"
                 data-zoom
@@ -383,41 +429,17 @@ export default function StyleTile({
 
         {/* ============================================ CONCEPTS / MODELS == */}
         <section id="concepts" className="relative scroll-mt-24 overflow-hidden border-y border-pearl/10 bg-navy-elevated/40">
-          <div className="relative mx-auto grid max-w-6xl items-start gap-12 px-6 py-28 md:py-32 lg:grid-cols-2">
-            <div data-reveal>
-              <SectionLabel no="05" title="Concepts" />
-              <h3 className="t-h1 text-pearl">Concepts &amp; models, applied.</h3>
-              <p className="mt-5 max-w-md text-lg leading-relaxed text-mist">
-                From pricing to portfolio construction to risk — academic models, implemented
-                empirically and stress-tested on real data.
-              </p>
-              <dl className="mt-8 space-y-3">
-                {MODELS.map((m) => (
-                  <div key={m.group} className="flex flex-col gap-1 border-b border-pearl/10 pb-3 sm:flex-row sm:items-baseline sm:gap-4">
-                    <dt className="t-mono text-xs uppercase tracking-[0.18em] text-aqua/80 sm:w-40 sm:shrink-0">{m.group}</dt>
-                    <dd className="text-pearl">{m.items}</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-            <div data-reveal style={{ "--reveal-delay": "120ms" } as CSSProperties} className="space-y-6 lg:pt-16">
-              <FigureCovariance />
-              <figure
-                className="corner-ticks cursor-zoom-in rounded-sm border border-pearl/10 bg-navy-sunken/60 p-7 transition-colors duration-200 hover:border-aqua/40"
-                data-zoom
-                role="button"
-                tabIndex={0}
-                aria-label="Enlarge chart: daily returns and VaR tail"
-              >
-                <ReturnsHistogram />
-                <figcaption className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-pearl/10 pt-3">
-                  <span className="t-mono text-xs uppercase tracking-[0.18em] text-steel">Daily returns · VaR tail</span>
-                  <span className="flex items-center gap-4 t-mono text-xs">
-                    <span className="flex items-center gap-1.5 text-aqua"><span className="inline-block h-2 w-2 bg-aqua/80" aria-hidden="true" /> Loss tail</span>
-                    <span className="flex items-center gap-1.5 text-mist"><span className="inline-block h-2 w-2 bg-steel/70" aria-hidden="true" /> Returns</span>
-                  </span>
-                </figcaption>
-              </figure>
+          <div data-reveal className="relative mx-auto max-w-6xl px-6 py-28 md:py-32">
+            <SectionLabel no="05" title="Concepts" />
+            <h3 className="t-h1 text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>
+              Applied Science / Empirical Studies.<br />
+              <span className="text-pearl/35">Programming and delivering results.</span>
+            </h3>
+            <p className="mt-5 max-w-3xl text-lg leading-relaxed text-mist">
+              From asset pricing to portfolio construction to risk management — academic models, implemented empirically and stress-tested on real data.
+            </p>
+            <div className="mt-12">
+              <CapabilityCards />
             </div>
           </div>
         </section>

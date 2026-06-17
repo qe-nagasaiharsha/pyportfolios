@@ -9,9 +9,10 @@ interface Lib {
   slug: string; // → /public/logos/libraries/<slug>.png
 }
 
-const GROUPS: { label: string; libs: Lib[] }[] = [
+const GROUPS: { label: string; blurb: string; libs: Lib[] }[] = [
   {
     label: "Machine Learning & Deep Learning",
+    blurb: "Powered by state-of-the-art neural networks for predictive signal generation and forecasting",
     libs: [
       { name: "scikit-learn", slug: "scikit-learn" },
       { name: "PyTorch", slug: "pytorch" },
@@ -21,6 +22,7 @@ const GROUPS: { label: string; libs: Lib[] }[] = [
   },
   {
     label: "Backtesting & Pricing",
+    blurb: "Battle-tested simulation engines for realistic strategy validation and derivatives pricing",
     libs: [
       { name: "Zipline", slug: "zipline" },
       { name: "vectorbt", slug: "vectorbt" },
@@ -29,6 +31,7 @@ const GROUPS: { label: string; libs: Lib[] }[] = [
   },
   {
     label: "Portfolio & Performance",
+    blurb: "Seamless access to advanced allocation, risk decomposition and performance attribution tools",
     libs: [
       { name: "Riskfolio-Lib", slug: "riskfolio-lib" },
       { name: "Pyfolio", slug: "pyfolio" },
@@ -42,9 +45,12 @@ export function StackCards() {
     <div className="space-y-10">
       {GROUPS.map((g) => (
         <div key={g.label}>
-          <div className="mb-4 flex items-center gap-3">
-            <span className="t-mono text-[0.7rem] uppercase tracking-[0.22em] text-mist">{g.label}</span>
-            <span className="h-px flex-1 bg-pearl/10" />
+          <div className="mb-4">
+            <div className="flex items-center gap-3">
+              <span className="t-mono text-[0.7rem] uppercase tracking-[0.22em] text-steel">{g.label}</span>
+              <span className="h-px flex-1 bg-pearl/10" />
+            </div>
+            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-mist">{g.blurb}</p>
           </div>
           <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 lg:grid-cols-5">
             {g.libs.map((lib) => (

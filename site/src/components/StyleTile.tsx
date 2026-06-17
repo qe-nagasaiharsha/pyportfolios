@@ -255,12 +255,11 @@ export default function StyleTile({
                   )}
                 </div>
                 <div className="px-7 py-9">
-                  <h3 className="t-h2 text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>{p.title}<span aria-hidden="true" className="ml-1 inline-block h-[0.3em] w-[0.3em] rounded-full bg-pearl align-baseline" /></h3>
-                  <span className="mt-4 block h-px w-10 bg-aqua" />
+                  <h3 className="t-h2 text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>{p.title}<span aria-hidden="true" className="ml-1 inline-block h-[0.3em] w-[0.3em] bg-pearl align-baseline" /></h3>
                   <ul className="mt-4 space-y-1.5">
                     {p.bullets.map((b) => (
                       <li key={b} className="flex gap-2 text-sm leading-relaxed text-mist">
-                        <span className="shrink-0 text-aqua" aria-hidden="true">•</span>
+                        <span className="shrink-0" aria-hidden="true">•</span>
                         <span>{b}</span>
                       </li>
                     ))}

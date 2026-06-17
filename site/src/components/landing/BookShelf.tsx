@@ -58,7 +58,7 @@ function BookCard({ book }: { book: FlatBook }) {
   return (
     <div className="flex h-full flex-col">
       {/* the card (box) — centred text */}
-      <article className="group flex flex-col rounded-md border border-pearl/10 bg-navy-elevated p-3 text-center transition-[transform,border-color,box-shadow] duration-500 ease-out hover:-translate-y-1.5 hover:border-pearl/25 hover:shadow-[0_24px_55px_-30px_rgba(0,0,0,0.85)]">
+      <article className="group flex flex-col rounded-md border border-pearl/10 bg-navy-elevated p-6 text-center transition-[transform,border-color,box-shadow] duration-500 ease-out hover:-translate-y-1.5 hover:border-pearl/25 hover:shadow-[0_24px_55px_-30px_rgba(0,0,0,0.85)]">
         {/* category */}
         <p className="t-mono text-[0.56rem] uppercase tracking-[0.18em] text-aqua/80">{book.catNo} {book.theme}</p>
 
@@ -87,8 +87,8 @@ function BookCard({ book }: { book: FlatBook }) {
 
         {/* title / subtitle / author — centred, identical position on every card */}
         <h4 className="mt-4 line-clamp-2 min-h-[2.75rem] font-sans text-[1rem] leading-snug text-pearl" style={{ fontWeight: 700 }}>{book.mainTitle}</h4>
-        <p className="mt-1 line-clamp-2 min-h-[2.2rem] font-sans text-[0.8rem] font-normal leading-snug text-pearl/60">{book.subTitle || " "}</p>
-        <p className="mt-1 line-clamp-1 min-h-[1.25rem] font-serif text-[0.85rem] leading-snug text-steel">{book.author} · {book.year}</p>
+        <p className="mt-1 line-clamp-2 min-h-[2.2rem] font-sans text-[0.8rem] font-normal leading-snug text-pearl/60">{book.subTitle}</p>
+        <p className="mt-1 line-clamp-1 min-h-[1.25rem] font-serif text-[0.85rem] leading-snug text-steel"><span className="font-bold text-pearl/90">{book.author}</span> · {book.year}</p>
 
         {/* unlabelled, subtle toggle — just a chevron, centred */}
         <button
@@ -100,12 +100,11 @@ function BookCard({ book }: { book: FlatBook }) {
         >
           <Chevron open={open} />
         </button>
-      </article>
 
       {/* why-it-matters — below the card, left-aligned bullets */}
       <div className={`grid transition-[grid-template-rows] duration-[400ms] ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
         <div className="overflow-hidden">
-          <ul className="space-y-2.5 px-1 pt-4">
+          <ul className="space-y-2.5 px-1 pt-4 text-left">
             {book.why.map((point) => (
               <li key={point} className="flex gap-1.5 font-serif text-[0.85rem] leading-relaxed text-mist">
                 <span className="shrink-0 text-aqua/80" aria-hidden="true">•</span>
@@ -114,10 +113,11 @@ function BookCard({ book }: { book: FlatBook }) {
             ))}
           </ul>
           {book.citation ? (
-            <p className="mt-3 px-1 font-serif text-[0.74rem] leading-snug text-steel/70">{book.citation}</p>
+            <p className="mt-3 px-1 text-left font-serif text-[0.74rem] leading-snug text-steel/70">{book.citation}</p>
           ) : null}
         </div>
       </div>
+      </article>
     </div>
   );
 }

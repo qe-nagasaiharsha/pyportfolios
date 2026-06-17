@@ -53,7 +53,7 @@ const TIERS: Tier[] = [
       "Dedicated support & private community",
       "Certificate of completion",
     ],
-    cta: "Get Lifetime Access",
+    cta: "Contact Sales",
   },
 ];
 
@@ -141,7 +141,7 @@ export function Pricing() {
                 <div className="flex items-center justify-between gap-3">
                   <h4 className="text-2xl text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>{t.name}</h4>
                   {t.badge ? (
-                    <span className="inline-flex items-center rounded-full border border-aqua/50 px-2.5 py-1 t-mono text-[0.55rem] uppercase tracking-[0.16em] text-aqua">
+                    <span className="inline-flex items-center rounded-full border border-pearl/40 px-2.5 py-1 t-mono text-[0.55rem] uppercase tracking-[0.16em] text-pearl">
                       {t.badge}
                     </span>
                   ) : null}
@@ -157,28 +157,34 @@ export function Pricing() {
                 <p className="mt-4 min-h-[4.5rem] leading-relaxed text-mist">{t.blurb}</p>
 
                 {/* cta */}
-                <a
-                  href="#early-access"
-                  onClick={() => setSelected(t.name)}
-                  className={`mt-1 inline-flex items-center justify-center rounded-sm px-6 py-3 text-sm font-semibold transition-colors duration-300 ${
-                    selected === t.name
-                      ? "bg-pearl text-navy hover:bg-aqua"
-                      : "border border-pearl/20 text-pearl hover:border-aqua hover:text-aqua"
-                  }`}
-                >
-                  {t.cta}
-                </a>
+                <div className="mt-1 flex h-12 items-center">
+                  <a
+                    href="#early-access"
+                    onClick={() => setSelected(t.name)}
+                    className={`transition-colors duration-300 ${
+                      t.featured
+                        ? "inline-flex items-center justify-center rounded-full bg-pearl px-7 py-3 text-sm font-semibold text-navy hover:bg-aqua"
+                        : "text-sm font-semibold text-pearl hover:text-aqua"
+                    }`}
+                  >
+                    {t.cta}
+                  </a>
+                </div>
 
                 {/* features */}
                 <div className="mt-7 flex items-center gap-3">
+                  <span className="h-px flex-1 bg-pearl/10" />
                   <span className="t-mono text-[0.6rem] uppercase tracking-[0.22em] text-steel">Features</span>
                   <span className="h-px flex-1 bg-pearl/10" />
                 </div>
                 <ul className="mt-5 space-y-3">
                   {t.features.map((f) => (
-                    <li key={f} className="flex items-baseline gap-3 t-mono text-[0.76rem] leading-relaxed text-mist">
-                      <span className="text-aqua" aria-hidden="true">✓</span>
-                      {f}
+                    <li key={f} className="flex items-start gap-2.5 t-mono text-[0.76rem] leading-relaxed text-mist">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="mt-px shrink-0 text-steel" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M8.5 12.4l2.4 2.4 4.6-5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                      <span>{f}</span>
                     </li>
                   ))}
                 </ul>

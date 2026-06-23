@@ -62,23 +62,27 @@ function BookCard({ book }: { book: FlatBook }) {
         {/* category */}
         <p className="t-mono text-[0.56rem] uppercase tracking-[0.18em] text-aqua/80">{book.catNo} {book.theme}</p>
 
-        {/* cover frame — fixed 3:4 box (aqua frame) so every title starts at the same place;
-            the book sits contained & centred, a touch smaller than the box; never stretched */}
-        <div className="mt-3 aspect-[100/178] w-full overflow-hidden">
-          <div className="flex h-full w-full items-start justify-center">
+        {/* cover frame — fixed 4:3 portrait box (aqua frame) so every title starts at the
+            same place; the full cover sits contained & centred inside, never stretched/cropped */}
+        <div className="mt-3 aspect-[3/4] w-full overflow-hidden rounded-sm border border-aqua/40 bg-navy-sunken/20 transition-colors duration-300 group-hover:border-aqua/70">
+          <div className="flex h-full w-full items-center justify-center p-2">
             {book.cover ? (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img
                 src={`/covers/${book.cover}`}
-                alt={`${book.title} — book cover`}
+                alt={book.title}
                 width={book.coverW}
                 height={book.coverH}
                 loading="lazy"
                 decoding="async"
-                className="block max-h-full w-full rounded-sm border border-aqua/40 object-contain shadow-[0_8px_22px_-12px_rgba(0,0,0,0.85)] transition-colors duration-300 group-hover:border-aqua/70"
+                data-zoom
+                role="button"
+                tabIndex={0}
+                aria-label={`Enlarge ${book.title} cover`}
+                className="block max-h-full max-w-full cursor-zoom-in rounded-sm object-contain shadow-[0_8px_22px_-12px_rgba(0,0,0,0.85)]"
               />
             ) : (
-              <div className="relative aspect-[2/3] w-full overflow-hidden rounded-sm border border-aqua/40 transition-colors duration-300 group-hover:border-aqua/70">
+              <div className="relative h-full w-full overflow-hidden">
                 <FallbackCover index={book.index} theme={book.theme} title={book.mainTitle} />
               </div>
             )}
@@ -159,7 +163,7 @@ function CategorySection({ group }: { group: GroupView }) {
       </div>
       {group.blurb ? <p className="mb-7 max-w-2xl text-sm leading-relaxed text-mist">{group.blurb}</p> : null}
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
         {group.books.map((book, i) => (
           <div
             key={`${book.theme}-${book.title}`}

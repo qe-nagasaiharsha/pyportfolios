@@ -40,7 +40,7 @@ export function FAQ() {
             <span className="t-mono text-sm font-bold tabular-nums text-aqua">07</span>
             <h2 className="t-mono text-sm uppercase tracking-[0.24em] text-mist">Frequently asked</h2>
           </div>
-          <h3 className="mt-7 t-h1 text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: "clamp(1.5rem, 3.4vw, 2.4rem)" }}>
+          <h3 className="mt-7 t-h1 text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: "clamp(1.5rem, 3.2vw, 2.2rem)" }}>
             Your questions, our answers
           </h3>
         </div>
@@ -49,8 +49,8 @@ export function FAQ() {
           {FAQS.map((f, i) => (
             <details key={f.q} className="faq-item group" style={{ "--reveal-delay": `${i * 40}ms` } as CSSProperties}>
               <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-left">
-                <span className="font-serif text-lg text-aqua md:text-xl">{f.q}</span>
-                <span className="faq-mark relative h-4 w-4 shrink-0 text-mist" aria-hidden="true" />
+                <span className="font-serif text-lg text-pearl md:text-xl">{f.q}</span>
+                <span className="faq-mark relative h-4 w-4 shrink-0 text-aqua" aria-hidden="true" />
               </summary>
               <p className="pb-6 pr-10 leading-relaxed text-mist">{f.a}</p>
             </details>

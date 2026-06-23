@@ -1,48 +1,50 @@
-/* Global top nav for article pages — the brand's dark bar above the light
-   reading surface. Server Component; links only. */
+/* Global top nav for article pages — kept visually identical to the landing
+   page header (StyleTile) so navigation is consistent across the site.
+   Server Component; links only. */
 
 import Link from "next/link";
-import { CATEGORY_ORDER, CATEGORIES } from "@/lib/articles";
+
+const NAV = [
+  { label: "Finance Fundamentals", href: "/research#finance-fundamentals" },
+  { label: "Portfolio Optimization", href: "/research#portfolio-optimization" },
+  { label: "Risk Management", href: "/research#risk-management" },
+  { label: "Algorithmic Trading", href: "/research#algorithmic-trading" },
+] as const;
+
+const EXTRA = [
+  { label: "Course Structure", href: "/course" },
+  { label: "Literature Recommendations", href: "/literature" },
+] as const;
 
 export function ArticleNav() {
   return (
     <header className="sticky top-0 z-50 border-b border-pearl/10 bg-navy/85 backdrop-blur-md">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3.5">
+      <nav className="mx-auto flex max-w-7xl items-center gap-8 px-6 py-4">
         <Link href="/" className="shrink-0">
-          <span className="font-sans text-base tracking-tight text-pearl" style={{ fontWeight: 900 }}>
+          <span className="font-sans text-lg tracking-tight text-pearl" style={{ fontWeight: 900 }}>
             pyportfolios<span className="text-aqua">.</span>com
           </span>
         </Link>
-        <ul className="hidden items-center gap-7 lg:flex">
-          {CATEGORY_ORDER.map((c) => (
-            <li key={c}>
+        <ul className="hidden flex-1 items-center justify-between gap-4 lg:flex">
+          {[...NAV, ...EXTRA].map((item) => (
+            <li key={item.label}>
               <Link
-                href={`/research#${c}`}
-                className="font-sans font-black text-[0.7rem] uppercase tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl"
+                href={item.href}
+                className="block text-center font-sans font-black text-[0.68rem] leading-[1.05] tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl"
               >
-                {CATEGORIES[c].name}
+                {item.label.split(" ").map((word) => (
+                  <span key={word} className="block">{word}</span>
+                ))}
               </Link>
             </li>
           ))}
         </ul>
-        <div className="flex shrink-0 items-center gap-4">
+        <div className="flex shrink-0 items-center gap-3">
           <Link
-            href="/course"
-            className="hidden font-sans font-black text-[0.7rem] uppercase tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl sm:block"
+            href="/#course"
+            className="inline-flex w-[183px] items-center justify-center rounded-sm border border-pearl/30 py-2 t-mono text-xs font-semibold text-pearl transition-colors duration-300 hover:border-aqua hover:text-aqua"
           >
-            Course
-          </Link>
-          <Link
-            href="/literature"
-            className="hidden font-sans font-black text-[0.7rem] uppercase tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl sm:block"
-          >
-            Literature
-          </Link>
-          <Link
-            href="/research"
-            className="rounded-sm border border-pearl/20 px-4 py-1.5 font-sans font-black text-[0.7rem] uppercase tracking-[0.1em] text-pearl transition-colors duration-200 hover:border-aqua hover:text-aqua"
-          >
-            All research
+            Sign in
           </Link>
         </div>
       </nav>

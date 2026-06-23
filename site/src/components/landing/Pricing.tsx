@@ -73,7 +73,7 @@ export function Pricing() {
         </div>
 
         {/* headline + subtext */}
-        <h3 data-reveal className="t-h1 max-w-3xl text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>
+        <h3 data-reveal className="t-h1 max-w-3xl text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: "clamp(1.5rem, 3.2vw, 2.2rem)" }}>
           Choose the plan <span className="text-pearl/35">that matches</span> your ambition
         </h3>
         <p data-reveal className="mt-5 max-w-2xl text-lg leading-relaxed text-mist">

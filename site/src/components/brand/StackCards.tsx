@@ -7,9 +7,29 @@
 interface Lib {
   name: string; // for alt text only
   slug: string; // → /public/logos/libraries/<slug>.png
+  imgClass?: string; // optional per-logo size override (default max-h-9 max-w-[88%])
 }
 
 const GROUPS: { label: string; blurb: string; libs: Lib[] }[] = [
+  {
+    label: "Portfolio & Performance",
+    blurb: "Seamless access to advanced allocation, risk decomposition and performance attribution tools",
+    libs: [
+      { name: "PyPortfolioOpt", slug: "pyportfolioopt", imgClass: "max-h-[3.25rem] max-w-[96%]" },
+      { name: "Riskfolio-Lib", slug: "riskfolio-lib" },
+    ],
+  },
+  {
+    label: "Backtesting & Pricing",
+    blurb: "Battle-tested simulation engines for realistic strategy validation and derivatives pricing",
+    libs: [
+      { name: "Zipline", slug: "zipline" },
+      { name: "Alphalens", slug: "alphalens" },
+      { name: "Pyfolio", slug: "pyfolio" },
+      { name: "vectorbt", slug: "vectorbt" },
+      { name: "QuantLib", slug: "quantlib" },
+    ],
+  },
   {
     label: "Machine Learning & Deep Learning",
     blurb: "Powered by state-of-the-art neural networks for predictive signal generation and forecasting",
@@ -18,24 +38,36 @@ const GROUPS: { label: string; blurb: string; libs: Lib[] }[] = [
       { name: "PyTorch", slug: "pytorch" },
       { name: "TensorFlow", slug: "tensorflow" },
       { name: "Keras", slug: "keras" },
+      { name: "XGBoost", slug: "xgboost" },
+    ],
+  },
+];
+
+/* Supporting libraries — shown as a quiet footnote, grouped by skill level,
+   each with its primary use. */
+const ADDITIONAL_TIERS: { level: string; libs: { name: string; use: string }[] }[] = [
+  {
+    level: "Basic",
+    libs: [
+      { name: "NumPy", use: "Numerical arrays, linear algebra, vectorized computation" },
+      { name: "Pandas", use: "Data manipulation and analysis" },
+      { name: "Matplotlib", use: "Plotting and visualization" },
+      { name: "SciPy", use: "Scientific computing, optimization, statistics, interpolation" },
     ],
   },
   {
-    label: "Backtesting & Pricing",
-    blurb: "Battle-tested simulation engines for realistic strategy validation and derivatives pricing",
+    level: "Intermediate",
     libs: [
-      { name: "Zipline", slug: "zipline" },
-      { name: "vectorbt", slug: "vectorbt" },
-      { name: "QuantLib", slug: "quantlib" },
+      { name: "Statsmodels", use: "Statistical modeling, econometrics, hypothesis testing" },
+      { name: "Seaborn", use: "Statistical visualization built on Matplotlib" },
     ],
   },
   {
-    label: "Portfolio & Performance",
-    blurb: "Seamless access to advanced allocation, risk decomposition and performance attribution tools",
+    level: "Advanced",
     libs: [
-      { name: "Riskfolio-Lib", slug: "riskfolio-lib" },
-      { name: "Pyfolio", slug: "pyfolio" },
-      { name: "Alphalens", slug: "alphalens" },
+      { name: "Arch", use: "ARCH/GARCH volatility models for financial time series" },
+      { name: "Transformers (HuggingFace)", use: "Large language models (LLMs), NLP, generative AI" },
+      { name: "SHAP", use: "Explainable AI (interpreting machine-learning models)" },
     ],
   },
 ];
@@ -62,7 +94,7 @@ export function StackCards() {
                 <img
                   src={`/logos/libraries/${lib.slug}.png`}
                   alt={`${lib.name} logo`}
-                  className="max-h-9 w-auto max-w-[88%] cursor-zoom-in object-contain"
+                  className={`${lib.imgClass ?? "max-h-9 max-w-[88%]"} w-auto cursor-zoom-in object-contain`}
                   loading="lazy"
                   data-zoom
                   role="button"
@@ -74,6 +106,25 @@ export function StackCards() {
           </div>
         </div>
       ))}
+
+      {/* footnote — supporting libraries with their uses, grouped by skill level */}
+      <div className="border-t border-pearl/10 pt-6">
+        <p className="text-sm font-semibold text-mist">Additional libraries used on the platform:</p>
+        <div className="mt-4 space-y-5">
+          {ADDITIONAL_TIERS.map((t) => (
+            <div key={t.level}>
+              <p className="t-mono text-[0.62rem] uppercase tracking-[0.16em] text-aqua/70">{t.level}</p>
+              <ul className="mt-2 space-y-1">
+                {t.libs.map((l) => (
+                  <li key={l.name} className="text-sm leading-relaxed text-steel">
+                    <span className="font-medium text-mist">{l.name}</span> — {l.use}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

@@ -64,7 +64,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 1360,
       },
       {
-        title: "The concepts and practice of mathematical finance",
+        title: "The concepts and practice of mathematical finance (2nd ed.)",
         author: "Joshi",
         year: 2008,
         note: "A highly respected guide to quantitative finance.",
@@ -96,7 +96,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 1245,
       },
       {
-        title: "Arbitrage theory in continuous time",
+        title: "Arbitrage theory in continuous time (4th ed.)",
         author: "Björk",
         year: 2020,
         note: "The standard graduate text on arbitrage pricing in continuous time.",
@@ -112,7 +112,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 1360,
       },
       {
-        title: "Brownian motion and stochastic calculus",
+        title: "Brownian motion and stochastic calculus (2nd ed.)",
         author: "Karatzas & Shreve",
         year: 1991,
         note: "The definitive mathematical reference on Brownian motion and stochastic calculus.",
@@ -128,7 +128,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 1254,
       },
       {
-        title: "Statistical inference",
+        title: "Statistical inference (2nd ed.)",
         author: "Casella & Berger",
         year: 2002,
         note: "The standard graduate text on mathematical statistics and inference.",
@@ -144,7 +144,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 514,
       },
       {
-        title: "Analysis of financial time series",
+        title: "Analysis of financial time series (3rd ed.)",
         author: "Tsay",
         year: 2010,
         note: "The standard applied text on financial time series.",
@@ -176,7 +176,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 1500,
       },
       {
-        title: "A first course in probability",
+        title: "A first course in probability (10th ed.)",
         author: "Ross",
         year: 2019,
         note: "A classic first course in probability used worldwide.",
@@ -192,7 +192,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 474,
       },
       {
-        title: "Introduction to probability",
+        title: "Introduction to probability (2nd ed.)",
         author: "Blitzstein & Hwang",
         year: 2019,
         note: "Modern, intuition-first text from Harvard’s popular Stat 110 course.",
@@ -224,7 +224,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 1360,
       },
       {
-        title: "Econometric analysis",
+        title: "Econometric analysis (8th ed.)",
         author: "Greene",
         year: 2018,
         note: "The encyclopedic graduate reference in econometrics.",
@@ -246,7 +246,7 @@ export const BOOK_GROUPS: BookGroup[] = [
     blurb: "Bonds, the yield curve, and the models that price interest-rate risk.",
     books: [
       {
-        title: "Fixed income analysis",
+        title: "Fixed income analysis (5th ed.)",
         author: "Fabozzi",
         year: 2022,
         note: "The CFA-series standard on fixed income.",
@@ -262,7 +262,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 900,
       },
       {
-        title: "Fixed income securities: Tools for today’s markets",
+        title: "Fixed income securities (4th ed.): Tools for today’s markets",
         author: "Tuckman & Serrat",
         year: 2022,
         note: "Modern, practitioner-oriented bestseller on fixed income.",
@@ -310,7 +310,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 1500,
       },
       {
-        title: "Interest rate models—Theory and practice: With smile, inflation and credit",
+        title: "Interest rate models (2nd ed.)—Theory and practice: With smile, inflation and credit",
         author: "Brigo & Mercurio",
         year: 2006,
         note: "The definitive practitioner reference for interest-rate models.",
@@ -332,7 +332,7 @@ export const BOOK_GROUPS: BookGroup[] = [
     blurb: "Options, futures and the volatility surface — how derivatives are priced and hedged.",
     books: [
       {
-        title: "Options, futures, and other derivatives",
+        title: "Options, futures, and other derivatives (11th ed.)",
         author: "Hull",
         year: 2021,
         note: "The most widely used derivatives textbook in the world.",
@@ -348,7 +348,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 613,
       },
       {
-        title: "Option volatility and pricing: Advanced trading strategies and techniques",
+        title: "Option volatility and pricing (2nd ed.): Advanced trading strategies and techniques",
         author: "Natenberg",
         year: 2015,
         note: "The classic on options from a trader’s perspective.",
@@ -380,7 +380,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 1360,
       },
       {
-        title: "Paul Wilmott on quantitative finance",
+        title: "Paul Wilmott on quantitative finance (2nd ed.)",
         author: "Wilmott",
         year: 2006,
         note: "An intuition-rich tour of quantitative finance.",
@@ -450,7 +450,7 @@ export const BOOK_GROUPS: BookGroup[] = [
     blurb: "From the mean–variance frontier to factor investing and robust allocation.",
     books: [
       {
-        title: "Investments",
+        title: "Investments (13th ed.)",
         author: "Bodie & Marcus",
         year: 2024,
         note: "The leading university textbook on investments.",
@@ -466,7 +466,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 1207,
       },
       {
-        title: "Investment science",
+        title: "Investment science (2nd ed.)",
         author: "Luenberger",
         year: 2013,
         note: "A clear, elegant introduction to investment mathematics.",
@@ -498,7 +498,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 1500,
       },
       {
-        title: "Active portfolio management: A quantitative approach for producing superior returns and controlling risk",
+        title: "Active portfolio management (2nd ed.): A quantitative approach for producing superior returns and controlling risk",
         author: "Grinold & Kahn",
         year: 1999,
         note: "The definitive institutional text on quantitative active management.",
@@ -568,7 +568,7 @@ export const BOOK_GROUPS: BookGroup[] = [
     blurb: "Measuring, stress-testing and surviving the tails.",
     books: [
       {
-        title: "Risk management and financial institutions",
+        title: "Risk management and financial institutions (6th ed.)",
         author: "Hull",
         year: 2023,
         note: "A broad, accessible survey of financial risk management.",
@@ -584,7 +584,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 1500,
       },
       {
-        title: "The essentials of risk management",
+        title: "The essentials of risk management (2nd ed.)",
         author: "Crouhy & Mark",
         year: 2014,
         note: "A practitioner overview of enterprise risk management.",
@@ -600,7 +600,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 1500,
       },
       {
-        title: "Quantitative risk management: Concepts, techniques and tools",
+        title: "Quantitative risk management (Rev. ed.): Concepts, techniques and tools",
         author: "McNeil & Embrechts",
         year: 2015,
         note: "The rigorous graduate text on quantitative risk management.",
@@ -686,7 +686,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 1360,
       },
       {
-        title: "Market liquidity: Theory, evidence, and policy",
+        title: "Market liquidity (2nd ed.): Theory, evidence, and policy",
         author: "Foucault & Röell",
         year: 2024,
         note: "A modern graduate synthesis of market-liquidity research.",
@@ -708,7 +708,7 @@ export const BOOK_GROUPS: BookGroup[] = [
     blurb: "Systematic strategies and machine learning applied to live markets.",
     books: [
       {
-        title: "Quantitative trading: How to build your own algorithmic trading business",
+        title: "Quantitative trading (2nd ed.): How to build your own algorithmic trading business",
         author: "Chan",
         year: 2021,
         note: "An accessible, hands-on intro to building a retail quant trading business.",
@@ -756,7 +756,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 1500,
       },
       {
-        title: "Algorithmic trading methods: Applications using advanced statistics, optimization, and machine learning techniques",
+        title: "Algorithmic trading methods (2nd ed.): Applications using advanced statistics, optimization, and machine learning techniques",
         author: "Kissell",
         year: 2021,
         note: "The leading applied reference on trading costs and execution.",
@@ -772,7 +772,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 1360,
       },
       {
-        title: "Python for finance: Mastering data-driven finance",
+        title: "Python for finance (2nd ed.): Mastering data-driven finance",
         author: "Hilpisch",
         year: 2018,
         note: "The standard reference for doing finance with Python.",
@@ -820,7 +820,7 @@ export const BOOK_GROUPS: BookGroup[] = [
         coverH: 1500,
       },
       {
-        title: "Machine learning for algorithmic trading",
+        title: "Machine learning for algorithmic trading (2nd ed.)",
         author: "Jansen",
         year: 2020,
         note: "A comprehensive, code-rich guide to ML for trading.",

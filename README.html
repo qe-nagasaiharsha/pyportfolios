@@ -78,13 +78,13 @@
   </div>
 
   <h2><span class="n">01</span>Get the code (right branch)</h2>
-  <pre><code>git clone &lt;repo-url&gt; pyportfolios
+  <pre><code>git clone -b Bhavya https://github.com/qe-nagasaiharsha/pyportfolios.git
 cd pyportfolios
-git checkout Bhavya
-git pull origin Bhavya</code></pre>
+# -b Bhavya checks out the right branch immediately.
+# To update later:  git pull origin Bhavya</code></pre>
 
   <h2><span class="n">02</span>Install dependencies</h2>
-  <p>Requires <b>Node.js 18.18+</b> (Node 20 LTS recommended). From the <code>site/</code> folder:</p>
+  <p>Requires <b>Node.js 20+</b> (tested on Node 22 — v22.16.0). From the <code>site/</code> folder:</p>
   <pre><code>cd site
 npm ci          # clean, lockfile-exact install (recommended)
 # or: npm install</code></pre>

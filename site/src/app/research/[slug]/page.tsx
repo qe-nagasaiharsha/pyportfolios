@@ -14,6 +14,9 @@ import EvtTCopulaVar from "@/content/articles/evt-t-copula-var";
 import VarCvarThreeWays from "@/content/articles/var-cvar-three-ways";
 import CrossSectionalMomentum from "@/content/articles/cross-sectional-momentum";
 import PairsTrading from "@/content/articles/pairs-trading-cointegration";
+import KellyCriterion from "@/content/articles/kelly-criterion-position-sizing";
+import GamestopShortSqueeze from "@/content/articles/gamestop-short-squeeze";
+import GoldWarAndInflation from "@/content/articles/gold-war-and-inflation";
 
 const BODIES: Record<string, () => ReactElement> = {
   "black-scholes-from-first-principles": BlackScholes,
@@ -24,6 +27,9 @@ const BODIES: Record<string, () => ReactElement> = {
   "var-cvar-three-ways": VarCvarThreeWays,
   "cross-sectional-momentum": CrossSectionalMomentum,
   "pairs-trading-cointegration": PairsTrading,
+  "kelly-criterion-position-sizing": KellyCriterion,
+  "gamestop-short-squeeze": GamestopShortSqueeze,
+  "gold-war-and-inflation": GoldWarAndInflation,
 };
 
 export const dynamicParams = false;

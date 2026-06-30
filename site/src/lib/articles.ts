@@ -14,6 +14,12 @@ export type CategorySlug =
   | "risk-management"
   | "algorithmic-trading";
 
+/** The four content formats (see /content): how each piece is written.
+    Tutorial — teach one concept/method. Case Study — apply a model to a real
+    event. Research Note — empirical read on live markets. Research Article —
+    a landmark result, replicated as runnable code. */
+export type ArticleFormat = "Tutorial" | "Case Study" | "Research Note" | "Research Article";
+
 export interface Category {
   slug: CategorySlug;
   /** Roman numeral, periodical convention. */
@@ -31,6 +37,8 @@ export interface ArticleSection {
 export interface Article {
   slug: string;
   category: CategorySlug;
+  /** Which of the four content formats this piece is written as. */
+  format: ArticleFormat;
   title: string;
   /** One-line dek under the title. */
   dek: string;
@@ -87,6 +95,7 @@ export const ARTICLES: Article[] = [
   {
     slug: "black-scholes-from-first-principles",
     category: "finance-fundamentals",
+    format: "Tutorial",
     title: "Black–Scholes from first principles",
     dek: "Deriving the option-pricing formula from a replicating portfolio — then pricing and hedging it in NumPy.",
     date: "2026-05-12",
@@ -107,6 +116,7 @@ export const ARTICLES: Article[] = [
   {
     slug: "time-value-of-money",
     category: "finance-fundamentals",
+    format: "Tutorial",
     title: "The time value of money, in code",
     dek: "Discounting, compounding conventions, and the yield curve — the arithmetic under every valuation.",
     date: "2026-05-05",
@@ -129,6 +139,7 @@ export const ARTICLES: Article[] = [
   {
     slug: "ledoit-wolf-shrinkage",
     category: "portfolio-optimization",
+    format: "Research Article",
     title: "Ledoit–Wolf shrinkage, from scratch",
     dek: "Why the sample covariance matrix fails out-of-sample — and how shrinkage repairs it.",
     date: "2026-05-22",
@@ -151,6 +162,7 @@ export const ARTICLES: Article[] = [
   {
     slug: "hierarchical-risk-parity",
     category: "portfolio-optimization",
+    format: "Research Article",
     title: "Hierarchical Risk Parity, end to end",
     dek: "López de Prado's HRP — allocation that never inverts a covariance matrix.",
     date: "2026-05-18",
@@ -174,6 +186,7 @@ export const ARTICLES: Article[] = [
   {
     slug: "evt-t-copula-var",
     category: "risk-management",
+    format: "Case Study",
     title: "Market risk via EVT + t-copula",
     dek: "A faithful Python port of the classic tail-risk pipeline — GARCH margins, Pareto tails, a t-copula, and Monte Carlo VaR.",
     date: "2026-05-28",
@@ -197,6 +210,7 @@ export const ARTICLES: Article[] = [
   {
     slug: "var-cvar-three-ways",
     category: "risk-management",
+    format: "Tutorial",
     title: "VaR & CVaR, three ways",
     dek: "Historical, parametric, and Monte Carlo tail risk — and where each one quietly lies to you.",
     date: "2026-05-15",
@@ -220,6 +234,7 @@ export const ARTICLES: Article[] = [
   {
     slug: "cross-sectional-momentum",
     category: "algorithmic-trading",
+    format: "Research Article",
     title: "Momentum, honestly backtested",
     dek: "Cross-sectional momentum with the out-of-sample discipline most backtests quietly skip.",
     date: "2026-05-25",
@@ -241,6 +256,7 @@ export const ARTICLES: Article[] = [
   {
     slug: "pairs-trading-cointegration",
     category: "algorithmic-trading",
+    format: "Research Article",
     title: "Pairs trading & cointegration",
     dek: "Engle–Granger, the spread z-score, and a backtest that actually pays the spread.",
     date: "2026-05-08",
@@ -257,6 +273,73 @@ export const ARTICLES: Article[] = [
       { id: "signal", title: "Z-score entry & exit" },
       { id: "backtest", title: "Backtest with costs" },
       { id: "caveats", title: "Caveats & decay" },
+    ],
+  },
+
+  /* ===================== exemplar content — one per format (from the brief) === */
+  {
+    slug: "kelly-criterion-position-sizing",
+    category: "portfolio-optimization",
+    format: "Tutorial",
+    title: "The Kelly criterion for position sizing",
+    dek: "How much to bet — the fraction that maximises long-run growth, and why most pros bet half of it.",
+    date: "2026-06-02",
+    readMinutes: 10,
+    level: "Intermediate",
+    notebook: "kelly-criterion-position-sizing.ipynb",
+    excerpt:
+      "Sizing decides whether an edge compounds or ruins you. We derive the Kelly fraction from maximising log-growth, code both the discrete and continuous forms, and show why fractional Kelly is the practitioner's default.",
+    stack: ["NumPy", "pandas", "matplotlib"],
+    sections: [
+      { id: "idea", title: "The question Kelly answers" },
+      { id: "derivation", title: "Maximising log-growth" },
+      { id: "formula", title: "The Kelly fraction" },
+      { id: "code", title: "Kelly in code" },
+      { id: "fractional", title: "Why bet fractional Kelly" },
+      { id: "takeaways", title: "Takeaways" },
+    ],
+  },
+  {
+    slug: "gamestop-short-squeeze",
+    category: "algorithmic-trading",
+    format: "Case Study",
+    title: "Anatomy of a short squeeze: GameStop, 2021",
+    dek: "Short interest above 100% of float, a gamma feedback loop, and what the tape teaches about crowded trades.",
+    date: "2026-06-05",
+    readMinutes: 12,
+    level: "Intermediate",
+    notebook: "gamestop-short-squeeze.ipynb",
+    excerpt:
+      "In January 2021, GameStop ran from $4 to $120. We reconstruct the mechanics in data — short interest, days-to-cover, the options gamma loop — and measure the risk that a short book never priced.",
+    stack: ["NumPy", "pandas", "matplotlib"],
+    sections: [
+      { id: "setup", title: "The setup: a crowded short" },
+      { id: "squeeze", title: "How a squeeze ignites" },
+      { id: "gamma", title: "The gamma feedback loop" },
+      { id: "measure", title: "Measuring it in data" },
+      { id: "risk", title: "The risk a short book ignored" },
+      { id: "lessons", title: "What it teaches" },
+    ],
+  },
+  {
+    slug: "gold-war-and-inflation",
+    category: "finance-fundamentals",
+    format: "Research Note",
+    title: "Gold through war and inflation",
+    dek: "An empirical read: does gold hedge inflation, or just track real yields — and what war actually adds.",
+    date: "2026-06-09",
+    readMinutes: 9,
+    level: "Intermediate",
+    notebook: "gold-war-and-inflation.ipynb",
+    excerpt:
+      "Gold is sold as an inflation and crisis hedge. We check the tape: its real driver is real yields, its inflation hedge is regime-dependent, and the geopolitical premium around conflict is real but fast-fading.",
+    stack: ["NumPy", "pandas", "statsmodels"],
+    sections: [
+      { id: "question", title: "The question" },
+      { id: "realyields", title: "Gold tracks real yields" },
+      { id: "inflation", title: "The inflation hedge is conditional" },
+      { id: "war", title: "What war adds" },
+      { id: "takeaways", title: "What it implies" },
     ],
   },
 ];

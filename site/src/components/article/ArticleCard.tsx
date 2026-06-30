@@ -16,7 +16,10 @@ export function ArticleCard({ article }: { article: Article }) {
         <span className="t-mono text-xs uppercase tracking-[0.18em] text-aqua/80">{CATEGORIES[article.category].name}</span>
         <span className="t-mono text-[0.62rem] uppercase tracking-[0.14em] text-steel">{article.level}</span>
       </div>
-      <h3 className="t-h2 mt-4 text-pearl">{article.title}</h3>
+      <span className="mt-3 inline-flex w-fit items-center rounded-full border border-aqua/30 bg-aqua/5 px-2.5 py-0.5 t-mono text-[0.56rem] uppercase tracking-[0.16em] text-aqua/90">
+        {article.format}
+      </span>
+      <h3 className="t-h2 mt-3 text-pearl">{article.title}</h3>
       <p className="mt-3 flex-1 leading-relaxed text-mist">{article.excerpt}</p>
       <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-pearl/10 pt-4 t-mono text-xs uppercase tracking-[0.14em] text-steel">
         <span>{formatDate(article.date)}</span>

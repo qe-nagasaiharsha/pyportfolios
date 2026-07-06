@@ -29,6 +29,3 @@ out/
 .DS_Store
 Thumbs.db
 *.log
-.claude/
-CLAUDE.md
-AGENTS.md

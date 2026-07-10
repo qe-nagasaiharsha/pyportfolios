@@ -6,6 +6,7 @@ import { ArticleLayout } from "@/components/article/ArticleLayout";
 
 /* Body registry — each article's prose lives in its own component so figures
    and code can be hand-crafted. Static import (only 8) keeps the export simple. */
+import BrownianMotion from "@/content/articles/brownian-motion";
 import BlackScholes from "@/content/articles/black-scholes-from-first-principles";
 import TimeValueOfMoney from "@/content/articles/time-value-of-money";
 import LedoitWolf from "@/content/articles/ledoit-wolf-shrinkage";
@@ -16,6 +17,7 @@ import CrossSectionalMomentum from "@/content/articles/cross-sectional-momentum"
 import PairsTrading from "@/content/articles/pairs-trading-cointegration";
 
 const BODIES: Record<string, () => ReactElement> = {
+  "brownian-motion": BrownianMotion,
   "black-scholes-from-first-principles": BlackScholes,
   "time-value-of-money": TimeValueOfMoney,
   "ledoit-wolf-shrinkage": LedoitWolf,

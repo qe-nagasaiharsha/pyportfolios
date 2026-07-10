@@ -5,6 +5,7 @@
    ========================================================================== */
 
 import type { ReactNode } from "react";
+import katex from "katex";
 
 /* ------------------------------------------------------ Python highlight -- */
 /* A small, defensive single-pass tokenizer. It only ever *wraps* spans — it
@@ -80,12 +81,21 @@ function tokenizePython(src: string): Tok[] {
       continue;
     }
 
-    // identifier / keyword
+    // identifier / keyword / function call
     if (/[A-Za-z_]/.test(c)) {
       let j = i;
       while (j < n && isId(src[j])) j++;
       const word = src.slice(i, j);
-      push(word, PY_KEYWORDS.has(word) ? "tok-kw" : undefined);
+      let cls: string | undefined;
+      if (PY_KEYWORDS.has(word)) {
+        cls = "tok-kw";
+      } else {
+        // a call if the next non-space char is "(" → highlight as a function
+        let k = j;
+        while (k < n && src[k] === " ") k++;
+        if (src[k] === "(") cls = "tok-fn";
+      }
+      push(word, cls);
       i = j;
       continue;
     }
@@ -100,13 +110,8 @@ export function CodeBlock({ code, file = "python" }: { code: string; file?: stri
   const toks = tokenizePython(code.replace(/\n$/, ""));
   return (
     <div className="code-card my-8">
-      <div className="flex items-center justify-between border-b border-pearl/10 px-4 py-2">
+      <div className="flex items-center border-b border-pearl/10 px-4 py-2">
         <span className="t-mono text-[0.66rem] uppercase tracking-[0.18em] text-steel">{file}</span>
-        <span className="flex gap-1.5" aria-hidden="true">
-          <span className="h-2 w-2 rounded-full bg-pearl/15" />
-          <span className="h-2 w-2 rounded-full bg-pearl/15" />
-          <span className="h-2 w-2 rounded-full bg-aqua/40" />
-        </span>
       </div>
       <pre className="overflow-x-auto px-4 py-4 text-[0.82rem] leading-[1.7]">
         <code className="t-mono text-pearl">
@@ -123,8 +128,8 @@ export function Section({ id, n, title, children }: { id: string; n: number; tit
   const num = String(n).padStart(2, "0");
   return (
     <section id={id} className="article-section scroll-mt-28">
-      <h2 data-reveal className="mt-16 flex items-baseline gap-4 font-serif text-2xl text-anthracite md:text-3xl" style={{ fontWeight: 500 }}>
-        <span className="t-mono text-sm text-teal" style={{ fontWeight: 400 }}>{num}</span>
+      <h2 data-reveal className="mt-16 flex items-baseline gap-4 font-sans text-[1.7rem] leading-tight tracking-tight text-pearl md:text-[2rem]" style={{ fontWeight: 800 }}>
+        <span className="t-mono text-sm text-aqua" style={{ fontWeight: 400 }}>{num}</span>
         <span>{title}</span>
       </h2>
       <div className="mt-5">{children}</div>
@@ -132,34 +137,82 @@ export function Section({ id, n, title, children }: { id: string; n: number; tit
   );
 }
 
+/* sub-heading within a section (e.g. "2.1 The Particle Picture") */
+export function SubSection({ label, title, children }: { label?: string; title: ReactNode; children: ReactNode }) {
+  return (
+    <div className="mt-10">
+      <h3 data-reveal className="flex items-baseline gap-3 font-sans text-[1.25rem] tracking-tight text-pearl md:text-[1.4rem]" style={{ fontWeight: 700 }}>
+        {label ? <span className="t-mono text-[0.8rem] text-aqua" style={{ fontWeight: 400 }}>{label}</span> : null}
+        <span>{title}</span>
+      </h3>
+      <div className="mt-4">{children}</div>
+    </div>
+  );
+}
+
+/* a plain bulleted list on the reading surface */
+export function Bullets({ items }: { items: ReactNode[] }) {
+  return (
+    <ul className="mt-5 space-y-2.5 text-[1.05rem] leading-[1.7] text-pearl/80">
+      {items.map((it, i) => (
+        <li key={i} className="flex gap-3">
+          <span className="mt-[0.55rem] h-1 w-1 shrink-0 rounded-full bg-aqua" aria-hidden="true" />
+          <span>{it}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function Lead({ children }: { children: ReactNode }) {
   return (
-    <p className="dropcap mt-8 font-sans text-xl leading-[1.7] text-anthracite/90">{children}</p>
+    <p className="dropcap mt-8 font-sans text-xl leading-[1.7] text-pearl/85 text-justify">{children}</p>
   );
 }
 
 export function P({ children }: { children: ReactNode }) {
-  return <p className="mt-5 text-[1.05rem] leading-[1.75] text-anthracite/85">{children}</p>;
+  return <p className="mt-5 text-[1.05rem] leading-[1.75] text-pearl/80 text-justify">{children}</p>;
 }
 
 export function InlineCode({ children }: { children: ReactNode }) {
   return (
-    <code className="rounded-sm bg-anthracite/[0.06] px-1.5 py-0.5 t-mono text-[0.86em] text-teal">{children}</code>
+    <code className="rounded-sm bg-white/[0.06] px-1.5 py-0.5 t-mono text-[0.86em] text-aqua">{children}</code>
   );
 }
 
 export function Term({ children }: { children: ReactNode }) {
-  return <em className="font-serif italic text-anthracite">{children}</em>;
+  return <em className="font-serif italic text-pearl">{children}</em>;
+}
+
+/* -------------------------------------------------------------- Math (KaTeX) --
+   Proper typeset mathematics, rendered to static HTML at build time (the "web
+   formula editor"). Write LaTeX; get real fractions, radicals and sub/scripts.
+   <Math>x^2</Math> inline · <Math block>...</Math> as a centred display block. */
+export function Formula({ children, block = false }: { children: string; block?: boolean }) {
+  const html = katex.renderToString(children, {
+    displayMode: block,
+    throwOnError: false,
+    output: "html",
+  });
+  if (block) {
+    return (
+      <div
+        className="my-6 overflow-x-auto text-pearl"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    );
+  }
+  return <span className="text-pearl" dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
 /* numbered "here's the whole flow" overview box */
 export function Pipeline({ steps }: { steps: string[] }) {
   return (
-    <ol className="my-8 grid gap-px overflow-hidden rounded-sm border border-anthracite/12 bg-anthracite/12 sm:grid-cols-2">
+    <ol className="my-8 grid gap-px overflow-hidden rounded-sm border border-pearl/10 bg-pearl/10 sm:grid-cols-2">
       {steps.map((s, i) => (
-        <li key={s} className="flex items-baseline gap-3 bg-sisal px-5 py-4">
-          <span className="t-mono text-xs text-teal">{String(i + 1).padStart(2, "0")}</span>
-          <span className="text-[0.98rem] leading-snug text-anthracite/85">{s}</span>
+        <li key={s} className="flex items-baseline gap-3 bg-anthracite px-5 py-4">
+          <span className="t-mono text-xs text-aqua">{String(i + 1).padStart(2, "0")}</span>
+          <span className="text-[0.98rem] leading-snug text-pearl/80">{s}</span>
         </li>
       ))}
     </ol>
@@ -168,17 +221,17 @@ export function Pipeline({ steps }: { steps: string[] }) {
 
 export function Callout({ kind = "Note", children }: { kind?: string; children: ReactNode }) {
   return (
-    <aside className="my-8 border-l-2 border-teal bg-anthracite/[0.035] px-6 py-5">
-      <p className="t-mono text-[0.66rem] uppercase tracking-[0.2em] text-teal">{kind}</p>
-      <div className="mt-2 text-[1.02rem] leading-[1.7] text-anthracite/85">{children}</div>
+    <aside className="my-8 border-l-2 border-aqua bg-white/[0.05] px-6 py-5">
+      <p className="t-mono text-[0.66rem] uppercase tracking-[0.2em] text-aqua">{kind}</p>
+      <div className="mt-2 text-[1.02rem] leading-[1.7] text-pearl/80">{children}</div>
     </aside>
   );
 }
 
 export function PullQuote({ children }: { children: ReactNode }) {
   return (
-    <blockquote className="my-12 border-l-2 border-teal pl-7">
-      <p className="font-serif text-2xl italic leading-snug text-anthracite md:text-[1.7rem]">{children}</p>
+    <blockquote className="my-12 border-l-2 border-aqua pl-7">
+      <p className="font-serif text-2xl italic leading-snug text-pearl md:text-[1.7rem]">{children}</p>
     </blockquote>
   );
 }
@@ -194,9 +247,9 @@ export function Figure({
   legend?: { label: string; tone: "muted" | "aqua" }[];
 }) {
   return (
-    <figure data-reveal className="corner-ticks my-9 rounded-sm border border-anthracite/12 bg-paper/60 p-6">
+    <figure data-reveal className="corner-ticks my-9 rounded-sm border border-black/10 bg-sisal p-4 sm:p-5">
       <div className="w-full">{children}</div>
-      <figcaption className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-anthracite/12 pt-3">
+      <figcaption className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-anthracite/12 pt-3">
         <span className="t-mono text-xs uppercase tracking-[0.16em] text-graphite">{caption}</span>
         {legend ? (
           <span className="flex items-center gap-4 t-mono text-xs">
@@ -213,16 +266,27 @@ export function Figure({
   );
 }
 
-export function DataTable({ head, rows }: { head: string[]; rows: (string | number)[][] }) {
+export function DataTable({
+  head,
+  rows,
+  variant = "data",
+}: {
+  head: string[];
+  rows: ReactNode[][];
+  variant?: "data" | "prose";
+}) {
+  const prose = variant === "prose";
   return (
     <div className="my-8 overflow-x-auto">
       <table className="w-full border-collapse text-left text-[0.95rem]">
         <thead>
-          <tr className="border-b border-anthracite/25">
+          <tr className="border-b border-pearl/20">
             {head.map((h, i) => (
               <th
                 key={h}
-                className={`pb-2 t-mono text-[0.68rem] uppercase tracking-[0.14em] text-graphite ${i === 0 ? "" : "text-right"}`}
+                className={`pb-2 t-mono text-[0.68rem] uppercase tracking-[0.14em] text-steel ${
+                  prose || i === 0 ? "" : "text-right"
+                }`}
               >
                 {h}
               </th>
@@ -231,11 +295,15 @@ export function DataTable({ head, rows }: { head: string[]; rows: (string | numb
         </thead>
         <tbody>
           {rows.map((r, ri) => (
-            <tr key={ri} className="border-b border-anthracite/10">
+            <tr key={ri} className="border-b border-pearl/10 align-top">
               {r.map((cell, ci) => (
                 <td
                   key={ci}
-                  className={`py-2.5 text-anthracite/85 ${ci === 0 ? "font-medium" : "tnum t-mono text-right text-anthracite"}`}
+                  className={
+                    prose
+                      ? `py-2.5 pr-5 leading-[1.6] text-pearl/80 ${ci === 0 ? "font-medium text-pearl" : ""}`
+                      : `py-2.5 text-pearl/80 ${ci === 0 ? "font-medium" : "tnum t-mono text-right text-pearl"}`
+                  }
                 >
                   {cell}
                 </td>
@@ -250,12 +318,12 @@ export function DataTable({ head, rows }: { head: string[]; rows: (string | numb
 
 export function References({ items }: { items: ReactNode[] }) {
   return (
-    <section className="mt-16 border-t border-anthracite/12 pt-8">
-      <p className="t-mono text-[0.66rem] uppercase tracking-[0.24em] text-graphite">References</p>
-      <ol className="mt-5 space-y-3 text-[0.9rem] leading-relaxed text-anthracite/75">
+    <section className="mt-16 border-t border-pearl/10 pt-8">
+      <p className="t-mono text-[0.66rem] uppercase tracking-[0.24em] text-steel">References</p>
+      <ol className="mt-5 space-y-3 text-[0.9rem] leading-relaxed text-pearl/75">
         {items.map((it, i) => (
           <li key={i} className="flex gap-3">
-            <span className="t-mono text-xs text-teal">[{i + 1}]</span>
+            <span className="t-mono text-xs text-aqua">[{i + 1}]</span>
             <span>{it}</span>
           </li>
         ))}

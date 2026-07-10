@@ -9,7 +9,7 @@
    ========================================================================== */
 
 export type CategorySlug =
-  | "finance-fundamentals"
+  | "quant-finance-foundations"
   | "portfolio-optimization"
   | "risk-management"
   | "algorithmic-trading";
@@ -49,10 +49,10 @@ export interface Article {
 }
 
 export const CATEGORIES: Record<CategorySlug, Category> = {
-  "finance-fundamentals": {
-    slug: "finance-fundamentals",
+  "quant-finance-foundations": {
+    slug: "quant-finance-foundations",
     numeral: "I",
-    name: "Finance Fundamentals",
+    name: "Quant Finance Foundations",
     blurb: "The bedrock — valuation, pricing, and the mathematics every model inherits.",
   },
   "portfolio-optimization": {
@@ -76,7 +76,7 @@ export const CATEGORIES: Record<CategorySlug, Category> = {
 };
 
 export const CATEGORY_ORDER: CategorySlug[] = [
-  "finance-fundamentals",
+  "quant-finance-foundations",
   "portfolio-optimization",
   "risk-management",
   "algorithmic-trading",
@@ -85,8 +85,28 @@ export const CATEGORY_ORDER: CategorySlug[] = [
 export const ARTICLES: Article[] = [
   /* ---------------------------------------------- Finance Fundamentals -- */
   {
+    slug: "brownian-motion",
+    category: "quant-finance-foundations",
+    title: "Brownian motion — the random engine of finance",
+    dek: "From coin flips to continuous randomness — the √t rule, why (dW)² = dt, and a Geometric Brownian Motion example on crude oil.",
+    date: "2026-07-08",
+    readMinutes: 10,
+    level: "Foundational",
+    notebook: "brownian-motion.ipynb",
+    excerpt:
+      "The building block under every derivatives model. We move from coin flips to continuous randomness, establish the √t rule and the Itô fact (dW)² = dt, then apply Geometric Brownian Motion to WTI crude — and show exactly where the Gaussian assumption breaks.",
+    stack: ["NumPy", "SciPy", "matplotlib"],
+    sections: [
+      { id: "summary", title: "Summary" },
+      { id: "intuition", title: "Intuition" },
+      { id: "mechanics", title: "Theory & mechanics" },
+      { id: "example", title: "Applied example — WTI crude oil" },
+      { id: "conclusion", title: "Strengths, limits & extensions" },
+    ],
+  },
+  {
     slug: "black-scholes-from-first-principles",
-    category: "finance-fundamentals",
+    category: "quant-finance-foundations",
     title: "Black–Scholes from first principles",
     dek: "Deriving the option-pricing formula from a replicating portfolio — then pricing and hedging it in NumPy.",
     date: "2026-05-12",
@@ -106,7 +126,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "time-value-of-money",
-    category: "finance-fundamentals",
+    category: "quant-finance-foundations",
     title: "The time value of money, in code",
     dek: "Discounting, compounding conventions, and the yield curve — the arithmetic under every valuation.",
     date: "2026-05-05",

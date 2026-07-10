@@ -28,6 +28,7 @@ import { PhotoPlate } from "@/components/brand/PhotoPlate";
 import { StackCards } from "@/components/brand/StackCards";
 import { ExchangeRow } from "@/components/brand/ExchangeRow";
 import { DerivativesRow } from "@/components/brand/DerivativesRow";
+import { MobileNav } from "@/components/MobileNav";
 import { SectorsIndices } from "@/components/brand/SectorsIndices";
 import { EtfProviders } from "@/components/brand/EtfProviders";
 import { WorldClockBand } from "@/components/brand/WorldClockBand";
@@ -42,7 +43,7 @@ import { ScrollReveal } from "@/components/motion/ScrollReveal";
 import { CapabilityCards } from "@/components/brand/CapabilityCards";
 
 const NAV = [
-  { label: "Finance Fundamentals", href: "/research#finance-fundamentals" },
+  { label: "Quant Finance Foundations", href: "/research#quant-finance-foundations" },
   { label: "Portfolio Optimization", href: "/research#portfolio-optimization" },
   { label: "Risk Management", href: "/research#risk-management" },
   { label: "Algorithmic Trading", href: "/research#algorithmic-trading" },
@@ -145,8 +146,12 @@ export default function StyleTile({
                 <a href="/literature" className="block text-center font-sans font-black text-[0.68rem] leading-[1.05] tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl"><span className="block">Literature</span><span className="block">Recommendations</span></a>
               </li>
             </ul>
-            <div className="flex shrink-0 items-center gap-3">
-              <a href="#course" className="inline-flex w-[183px] items-center justify-center rounded-sm border border-pearl/30 py-2 t-mono text-xs font-semibold text-pearl transition-colors duration-300 hover:border-aqua hover:text-aqua">Sign in</a>
+            <div className="ml-auto flex shrink-0 items-center gap-2">
+              <a href="#course" className="hidden w-[183px] items-center justify-center rounded-sm border border-pearl/30 py-2 t-mono text-xs font-semibold text-pearl transition-colors duration-300 hover:border-aqua hover:text-aqua lg:inline-flex">Sign in</a>
+              <MobileNav
+                items={[...NAV, { label: "Course Structure", href: "/course" }, { label: "Literature Recommendations", href: "/literature" }]}
+                signInHref="#course"
+              />
             </div>
           </nav>
         </header>

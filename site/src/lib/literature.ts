@@ -44,7 +44,7 @@ export interface Paper {
 
 export const BOOK_GROUPS: BookGroup[] = [
   {
-    theme: "Foundations",
+    theme: "Quant Finance Foundations",
     blurb: "The mathematics, probability and stochastic calculus everything else is built on.",
     books: [
       {

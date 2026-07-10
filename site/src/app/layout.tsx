@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Lora, Courier_Prime } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
+import "katex/dist/katex.min.css";
 import { SmoothScroll } from "@/components/motion/SmoothScroll";
 
 /**

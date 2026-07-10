@@ -31,27 +31,27 @@ export function ArticleToc({ sections }: { sections: ArticleSection[] }) {
   }, [sections]);
 
   return (
-    <nav aria-label="On this page" className="text-sm">
-      <p className="t-mono text-[0.62rem] uppercase tracking-[0.24em] text-graphite">On this page</p>
-      <ul className="mt-4 space-y-1">
-        {sections.map((s, i) => {
+    <nav aria-label="Table of Content">
+      <p className="font-sans text-[1.2rem] leading-tight text-pearl">
+        <span style={{ fontWeight: 800 }}>Table</span>
+        <span className="text-mist" style={{ fontWeight: 400 }}> of Content</span>
+      </p>
+      <ul className="mt-5 border-l border-pearl/15">
+        {sections.map((s) => {
           const isActive = active === s.id;
           return (
             <li key={s.id}>
               <a
                 href={`#${s.id}`}
                 aria-current={isActive ? "location" : undefined}
-                className={`group flex items-baseline gap-3 py-1 transition-colors ${
-                  isActive ? "text-teal" : "text-graphite hover:text-anthracite"
+                className={`-ml-px block border-l-2 py-1.5 pl-4 font-sans text-[0.9rem] leading-snug transition-colors ${
+                  isActive
+                    ? "border-aqua text-pearl"
+                    : "border-transparent text-steel hover:border-pearl/30 hover:text-pearl"
                 }`}
+                style={isActive ? { fontWeight: 600 } : undefined}
               >
-                <span
-                  className={`mt-2 h-px shrink-0 transition-all duration-300 ${
-                    isActive ? "w-6 bg-teal" : "w-3 bg-graphite/40 group-hover:w-4"
-                  }`}
-                  aria-hidden="true"
-                />
-                <span className="leading-snug">{s.title}</span>
+                {s.title}
               </a>
             </li>
           );

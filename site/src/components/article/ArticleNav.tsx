@@ -3,9 +3,10 @@
    Server Component; links only. */
 
 import Link from "next/link";
+import { MobileNav } from "@/components/MobileNav";
 
 const NAV = [
-  { label: "Finance Fundamentals", href: "/research#finance-fundamentals" },
+  { label: "Quant Finance Foundations", href: "/research#quant-finance-foundations" },
   { label: "Portfolio Optimization", href: "/research#portfolio-optimization" },
   { label: "Risk Management", href: "/research#risk-management" },
   { label: "Algorithmic Trading", href: "/research#algorithmic-trading" },
@@ -18,7 +19,7 @@ const EXTRA = [
 
 export function ArticleNav() {
   return (
-    <header className="sticky top-0 z-50 border-b border-pearl/10 bg-navy/85 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-pearl/10 bg-anthracite/85 backdrop-blur-md">
       <nav className="mx-auto flex max-w-7xl items-center gap-8 px-6 py-4">
         <Link href="/" className="shrink-0">
           <span className="font-sans text-lg tracking-tight text-pearl" style={{ fontWeight: 900 }}>
@@ -39,13 +40,14 @@ export function ArticleNav() {
             </li>
           ))}
         </ul>
-        <div className="flex shrink-0 items-center gap-3">
+        <div className="ml-auto flex shrink-0 items-center gap-2">
           <Link
             href="/#course"
-            className="inline-flex w-[183px] items-center justify-center rounded-sm border border-pearl/30 py-2 t-mono text-xs font-semibold text-pearl transition-colors duration-300 hover:border-aqua hover:text-aqua"
+            className="hidden w-[183px] items-center justify-center rounded-sm border border-pearl/30 py-2 t-mono text-xs font-semibold text-pearl transition-colors duration-300 hover:border-aqua hover:text-aqua lg:inline-flex"
           >
             Sign in
           </Link>
+          <MobileNav items={[...NAV, ...EXTRA]} signInHref="/#course" />
         </div>
       </nav>
     </header>

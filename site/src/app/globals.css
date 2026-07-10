@@ -20,6 +20,8 @@
   /* — Derived surfaces & ink (dark canvas) — */
   --color-navy-elevated: #11141d; /* cards / raised surfaces */
   --color-navy-sunken: #07080e; /* footer / deepest */
+  --color-coal: #1e1e1e; /* elevated card on the anthracite article surface */
+  --color-pitch: #0e0e0e; /* deepest — article footer on anthracite */
   --color-mist: #b4bcce; /* muted text on dark (lifted for legibility) */
   --color-steel: #9ca4ba; /* captions / metadata on dark (lifted for legibility) */
 
@@ -156,7 +158,7 @@ html.lenis body {
   font-size: 3.6em;
   line-height: 0.74;
   padding: 0.06em 0.12em 0 0;
-  color: var(--color-anthracite);
+  color: var(--ed-cap, var(--color-anthracite));
 }
 
 /* Refined inline link — hairline underline that grows from the left on hover */
@@ -438,25 +440,26 @@ html.lenis body {
    echoes the hero. Build-time highlighting → these are static spans. */
 
 .code-card {
-  background: var(--color-navy);
+  background: #0d0d0d;
   border: 1px solid var(--hairline-on-dark);
-  border-radius: 5px;
+  border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--color-anthracite) 8%, transparent);
+  box-shadow: 0 1px 2px color-mix(in srgb, #000 20%, transparent);
 }
 .code-card pre { margin: 0; }
-.code-card code { display: block; white-space: pre; }
+.code-card code { display: block; white-space: pre; color: #e6e6e6; }
 
-/* Python token palette — kept inside the brand (navy/pearl/aqua/sisal). */
-.tok-com { color: var(--color-steel); font-style: italic; }
-.tok-str { color: #cdc6a9; }            /* dim sisal — quiet, warm */
-.tok-kw  { color: var(--color-aqua); }  /* the single charged accent */
-.tok-num { color: var(--color-mist); }
+/* Python token palette — editorial dark-editor theme (matches the deck's code cards). */
+.tok-com { color: #6b7280; font-style: italic; }   /* muted grey */
+.tok-str { color: #9bbf87; }                        /* sage green */
+.tok-kw  { color: #d0a15e; }                        /* warm gold — keywords */
+.tok-fn  { color: #45c9c9; }                        /* cyan — function calls */
+.tok-num { color: #d19a66; }                        /* amber — numbers */
 
 /* Long-form measure: numerals align, links carry a fine teal underline. */
 .article-body { font-feature-settings: "ss01", "cv01"; }
 .article-body a:not(.code-card a) {
-  color: var(--color-teal);
+  color: var(--color-aqua);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
@@ -727,4 +730,14 @@ html.lenis body {
   #faq > div {
     padding-left: 12.5rem;
   }
+}
+
+/* Mobile menu panel slide-down */
+@keyframes menu-drop {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.mobile-menu-panel { animation: menu-drop 220ms cubic-bezier(0.16, 1, 0.3, 1); }
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu-panel { animation: none; }
 }

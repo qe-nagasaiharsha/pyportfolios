@@ -458,6 +458,9 @@ html.lenis body {
 
 /* Long-form measure: numerals align, links carry a fine teal underline. */
 .article-body { font-feature-settings: "ss01", "cv01"; }
+/* bold emphasis reads as bright white against the muted grey body */
+.article-body b,
+.article-body strong { color: var(--color-pearl); }
 .article-body a:not(.code-card a) {
   color: var(--color-aqua);
   text-decoration: underline;

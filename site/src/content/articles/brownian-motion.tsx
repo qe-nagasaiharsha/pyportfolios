@@ -1,215 +1,133 @@
-import { Section, SubSection, Lead, P, Term, Bullets, Callout, CodeBlock, DataTable, Figure, Formula } from "@/components/article/prose";
-import { WTI_CODE } from "./wti-code";
-import { SIGNATURES_CODE } from "./signatures-code";
+import { Section, SubSection, Lead, P, Bullets, CodeBlock, Figure, Formula } from "@/components/article/prose";
+import { GBM_FUNCS, SPY_CALIB, CONE_CODE, TERMINAL_CODE, MARTINGALE_CODE } from "./gbm-spy-code";
 
 /* eslint-disable @next/next/no-img-element */
-export default function BrownianMotion() {
+export default function GeometricBrownianMotion() {
   return (
     <>
       <Lead>
-        Brownian motion is the mathematical model of <b>pure randomness evolving continuously over
-        time</b>. In finance it is the building block for virtually every derivatives pricing model.
+        Geometric Brownian Motion (GBM) is the canonical continuous-time model for asset prices. It
+        powers the Black–Scholes framework, Monte-Carlo risk engines, and most of the intuition
+        practitioners carry about &ldquo;what could the price do?&rdquo;.
       </Lead>
 
       <Section id="summary" n={1} title="Summary">
         <P>
-          The Black–Scholes model of a stock price is the canonical example —{" "}
-          <Term>Geometric Brownian Motion (GBM)</Term>:
+          GBM assumes that <b>percentage returns</b> — not price changes — are random, normally
+          distributed, and independent over time. Prices therefore stay positive and their terminal
+          distribution is <b>log-normal</b>. Two parameters fully describe the model: the drift{" "}
+          <Formula>{String.raw`\mu`}</Formula> (expected annual log-growth plus half-variance) and the
+          volatility <Formula>{String.raw`\sigma`}</Formula> (annualised standard deviation of log
+          returns) — both estimable directly from historical data.
         </P>
-        <Formula block>{String.raw`dS = \underbrace{\mu S\,dt}_{\text{drift}} + \underbrace{\sigma S\,dW}_{\text{random shock}}`}</Formula>
-        <P>Three facts are worth memorising before going further:</P>
-        <Callout kind="Three facts">
-          <b>Fact 1 — Variance scales with time.</b>{" "}
-          <Formula>{String.raw`\text{Var}(W_t) = t`}</Formula>, so uncertainty grows as{" "}
-          <Formula>{String.raw`\sqrt{t}`}</Formula>, not <Formula>{String.raw`t`}</Formula>. A 35%
-          annual vol on crude oil implies{" "}
-          <Formula>{String.raw`35/\sqrt{252} \approx 2.2\%`}</Formula> daily moves.
-          <br /><br />
-          <b>Fact 2 — The path has no derivative.</b> <Formula>{String.raw`W_t`}</Formula> is
-          continuous but nowhere differentiable — so the ordinary chain rule fails, and we need Itô
-          calculus instead.
-          <br /><br />
-          <b>Fact 3 — <Formula>{String.raw`(dW)^2 = dt`}</Formula>.</b> Squared increments
-          don&apos;t vanish. This produces the Itô correction{" "}
-          <Formula>{String.raw`\tfrac{1}{2}\sigma^2 S^2 \dfrac{\partial^2 V}{\partial S^2}`}</Formula>{" "}
-          in the Black–Scholes PDE — that second derivative is <b>Gamma</b>, and it&apos;s the reason
-          option prices depend on volatility at all.
-        </Callout>
       </Section>
 
       <Section id="intuition" n={2} title="Intuition">
-        <SubSection label="2.1" title="The Particle Picture">
+        <SubSection label="2.1" title="Returns compound, prices don't add">
           <P>
-            Picture a pollen grain floating on water, getting bumped by invisible molecules from
-            every direction, every instant. Its position traces a jagged, continuous, unpredictable
-            path. That&apos;s Brownian motion — named after botanist Robert Brown who observed it in
-            1827, formalised by Einstein in 1905, and made mathematically rigorous by Wiener in the
-            1920s.
-          </P>
-          <P>
-            In finance, the &ldquo;particle&rdquo; is a price. The &ldquo;molecular bumps&rdquo; are
-            the aggregate of thousands of buy and sell orders arriving continuously.
+            A $10 move means something very different at SPY = 100 than at SPY = 600. What is
+            comparable across price levels is the <b>relative</b> move. GBM makes randomness
+            proportional to the current price: <Formula>{String.raw`dS = \mu S\,dt + \sigma S\,dW`}</Formula>.
           </P>
         </SubSection>
 
-        <SubSection label="2.2" title="The Random Walk Limit">
+        <SubSection label="2.2" title="Why log-normal">
           <P>
-            Flip a fair coin every second: heads <Formula>{String.raw`+1`}</Formula>, tails{" "}
-            <Formula>{String.raw`-1`}</Formula>. After <Formula>{String.raw`n`}</Formula> steps,{" "}
-            <Formula>{String.raw`X_n \sim \mathcal{N}(0, n)`}</Formula> by the Central Limit Theorem.
-          </P>
-          <P>
-            Now <b>shrink the step</b> to <Formula>{String.raw`\Delta t`}</Formula> and{" "}
-            <b>scale the jump</b> to <Formula>{String.raw`\sqrt{\Delta t}`}</Formula>:
-          </P>
-          <Formula block>{String.raw`W_t \approx \sum_{i=1}^{t/\Delta t} \sqrt{\Delta t}\;\xi_i, \qquad \xi_i = \pm 1`}</Formula>
-          <P>
-            As <Formula>{String.raw`\Delta t \to 0`}</Formula> this converges to Brownian motion. The{" "}
-            <Formula>{String.raw`\sqrt{\Delta t}`}</Formula> scaling is <b>forced</b> by the variance
-            requirement: <Formula>{String.raw`\tfrac{t}{\Delta t}`}</Formula> steps each of variance{" "}
-            <Formula>{String.raw`\Delta t`}</Formula> gives total variance{" "}
-            <Formula>{String.raw`t`}</Formula> — so the spread grows as{" "}
-            <Formula>{String.raw`\sqrt{t}`}</Formula> regardless of how finely you slice time.
+            If each day multiplies the price by a small random gross return, the log-price is a{" "}
+            <b>sum</b> of many small independent shocks — and sums of independent shocks are
+            (approximately) normal. Normal log-price <Formula>{String.raw`\Rightarrow`}</Formula>{" "}
+            log-normal price: skewed right, floored at zero.
           </P>
         </SubSection>
 
-        <SubSection label="2.3" title={<>The <Formula>{String.raw`\sqrt{t}`}</Formula> Rule in Practice</>}>
+        <SubSection label="2.3" title="Drift vs. noise">
           <P>
-            This single fact — <Formula>{String.raw`\text{Std}(W_t) = \sqrt{t}`}</Formula> —
-            underpins most of quantitative risk:
+            Over short horizons the noise term dominates (<Formula>{String.raw`\sigma\sqrt{t}`}</Formula>{" "}
+            shrinks slower than <Formula>{String.raw`\mu t`}</Formula> as{" "}
+            <Formula>{String.raw`t \to 0`}</Formula>); over long horizons drift wins. This is the same{" "}
+            <Formula>{String.raw`\sqrt{t}`}</Formula> rule that governs plain Brownian motion — GBM
+            simply wraps it in an exponential.
           </P>
-          <Bullets
-            items={[
-              <><b>Implied vol</b> is quoted annualised:{" "}
-                <Formula>{String.raw`\sigma_{\text{annual}} = \sigma_{\text{daily}} \times \sqrt{252}`}</Formula></>,
-              <><b>VaR scaling</b>: a 1-day VaR becomes a 10-day VaR by multiplying by{" "}
-                <Formula>{String.raw`\sqrt{10}`}</Formula>, not <Formula>{String.raw`10`}</Formula></>,
-              <><b>Option time value</b> decays as <Formula>{String.raw`\sqrt{T-t}`}</Formula> near
-                expiry — time value bleeds faster at the end</>,
-            ]}
-          />
         </SubSection>
       </Section>
 
       <Section id="mechanics" n={3} title="Theory & Mechanics">
-        <SubSection label="3.1" title="Formal Definition">
+        <SubSection label="3.1" title="The SDE and its solution">
+          <Formula block>{String.raw`dS_t = \mu S_t\,dt + \sigma S_t\,dW_t`}</Formula>
           <P>
-            A standard Brownian motion <Formula>{String.raw`W_t`}</Formula> is a continuous-time
-            stochastic process satisfying:
+            Applying Itô&rsquo;s lemma to <Formula>{String.raw`\ln S_t`}</Formula> (the{" "}
+            <Formula>{String.raw`-\tfrac{1}{2}\sigma^2`}</Formula> correction comes from{" "}
+            <Formula>{String.raw`(dW)^2 = dt`}</Formula>):
           </P>
-          <DataTable
-            variant="prose"
-            head={["#", "Property", "Formal", "Plain English"]}
-            rows={[
-              ["1", "Starts at zero", <Formula key="f1">{String.raw`W_0 = 0`}</Formula>, "Origin"],
-              ["2", "Independent increments", <Formula key="f2">{String.raw`W_t - W_s \perp W_s - W_u\;(u<s<t)`}</Formula>, "No memory — the past path is irrelevant"],
-              ["3", "Gaussian increments", <Formula key="f3">{String.raw`W_t - W_s \sim \mathcal{N}(0,\, t-s)`}</Formula>, <>Each move is normal; <b>variance = elapsed time</b></>],
-              ["4", "Continuous paths", <Formula key="f4">{String.raw`t \mapsto W_t \text{ cont. a.s.}`}</Formula>, "No jumps"],
-            ]}
-          />
-          <P>
-            Properties 2 and 3 together make <Formula>{String.raw`W_t`}</Formula> a <b>martingale</b>:{" "}
-            <Formula>{String.raw`\mathbb{E}[W_t \mid \mathcal{F}_s] = W_s`}</Formula>. The best
-            forecast of tomorrow&apos;s value is today&apos;s value — no drift. This is the
-            mathematical expression of <em>no free lunch</em>.
-          </P>
+          <Formula block>{String.raw`S_t = S_0 \exp\!\Big[\big(\mu - \tfrac{1}{2}\sigma^2\big)t + \sigma W_t\Big]`}</Formula>
         </SubSection>
 
-        <SubSection label="3.2" title="Nowhere Differentiable — and Why It Matters">
+        <SubSection label="3.2" title="Exact discretisation">
           <P>
-            For any smooth function, zooming in eventually reveals a straight line. For{" "}
-            <Formula>{String.raw`W_t`}</Formula>, zooming in reveals <b>more roughness</b> at every
-            scale. The difference quotient blows up:
+            Because the solution is closed-form, we can simulate <b>without discretisation error</b> at
+            any step size <Formula>{String.raw`\Delta t`}</Formula>:
           </P>
-          <Formula block>{String.raw`\frac{W_{t+h} - W_t}{h} \sim \frac{\sqrt{h}}{h} = \frac{1}{\sqrt{h}} \xrightarrow{h \to 0} \infty`}</Formula>
+          <Formula block>{String.raw`S_{t+\Delta t} = S_t \cdot \exp\!\Big[\big(\mu - \tfrac{1}{2}\sigma^2\big)\Delta t + \sigma \sqrt{\Delta t}\, Z\Big], \qquad Z \sim \mathcal{N}(0,1)`}</Formula>
           <P>
-            There is no <Formula>{String.raw`dW/dt`}</Formula> — ever, anywhere. This breaks the
-            ordinary chain rule. If <Formula>{String.raw`V = f(W_t)`}</Formula>, the Taylor expansion
-            is:
+            Two small functions implement this: one draws per-step <b>gross returns</b>, the other
+            compounds them into price paths.
           </P>
-          <Formula block>{String.raw`dV = f'(W_t)\,dW_t + \underbrace{\tfrac{1}{2}f''(W_t)\,(dW_t)^2}_{\text{normally discarded}}`}</Formula>
-          <P>
-            In ordinary calculus <Formula>{String.raw`(dW)^2 \to 0`}</Formula> and you throw it away.
-            But here <Formula>{String.raw`(dW)^2 = dt`}</Formula>, so this term <b>survives</b>. That
-            is Itô&apos;s lemma — the chain rule for stochastic processes — and that surviving term is
-            the Itô correction.
-          </P>
-          <CodeBlock code={SIGNATURES_CODE} />
-          <Figure caption="Independent increments · self-similarity · no derivative">
-            <img src="/figures/bm-signatures.png" alt="Three panels: a scatter of two non-overlapping Brownian increments with near-zero correlation, a path segment with a zoomed inset showing identical roughness, and a log-log plot of the difference quotient diverging as the step size shrinks" className="w-full rounded-sm" />
-          </Figure>
-        </SubSection>
-
-        <SubSection label="3.3" title={<>Quadratic Variation: <Formula>{String.raw`(dW)^2 = dt`}</Formula></>}>
-          <P>
-            The <b>quadratic variation</b> measures how much a path wiggles in the squared sense:
-          </P>
-          <Formula block>{String.raw`[W, W]_t = \lim_{\|\Pi\| \to 0} \sum_{i} (W_{t_{i+1}} - W_{t_i})^2 = t \quad \text{(almost surely)}`}</Formula>
-          <P>
-            For a smooth function this would be zero. For Brownian motion it&apos;s exactly{" "}
-            <Formula>{String.raw`t`}</Formula>. This is the single algebraic fact that makes Itô
-            calculus different:
-          </P>
-          <Formula block>{String.raw`\boxed{(dW_t)^2 = dt, \qquad dt^2 = 0, \qquad dt\,dW_t = 0}`}</Formula>
-          <P>
-            Applied to option pricing: if <Formula>{String.raw`V(S,t)`}</Formula> is a derivative on
-            a GBM asset, Itô&apos;s lemma gives:
-          </P>
-          <Formula block>{String.raw`dV = \frac{\partial V}{\partial t}dt + \frac{\partial V}{\partial S}dS + \underbrace{\frac{1}{2}\sigma^2 S^2 \frac{\partial^2 V}{\partial S^2}}_{\text{Gamma term, from }(dW)^2 = dt}\,dt`}</Formula>
-          <P>
-            The Gamma term <Formula>{String.raw`\tfrac{1}{2}\sigma^2 S^2 V_{SS}`}</Formula> exists{" "}
-            <b>only because</b> <Formula>{String.raw`(dW)^2 = dt \neq 0`}</Formula>. Remove it and
-            option prices would be independent of volatility — which is obviously wrong.
-          </P>
+          <CodeBlock code={GBM_FUNCS} />
         </SubSection>
       </Section>
 
-      <Section id="example" n={4} title="Applied Example — WTI Crude Oil (CL)">
-        <SubSection title="Setup">
+      <Section id="example" n={4} title="Applied Example — SPY">
+        <SubSection label="4.1" title={<>Calibrate <Formula>{String.raw`\mu`}</Formula> and <Formula>{String.raw`\sigma`}</Formula> from real data</>}>
           <P>
-            WTI crude oil futures (CME ticker: CL, 1,000 bbl/contract) are among the most liquid
-            commodity derivatives in the world. We apply the GBM model with parameters calibrated to
-            realistic 2024 market conditions:
+            We pull daily SPY prices, estimate annualised drift and volatility from <b>log returns</b>,
+            and let the data — not guesses — drive the simulation.
           </P>
-          <DataTable
-            variant="prose"
-            head={["Parameter", "Value", "Source"]}
-            rows={[
-              [<>Spot <Formula key="s0">{String.raw`S_0`}</Formula></>, "$80/bbl", "Front-month CL, early 2024"],
-              [<>Annual drift <Formula key="mu">{String.raw`\mu`}</Formula></>, "5%", "Approximate carry / expected return"],
-              [<>Annual vol <Formula key="sig">{String.raw`\sigma`}</Formula></>, "35%", "Historical realised vol, calm regime"],
-              ["Daily move (1σ)", <Formula key="dm">{String.raw`35/\sqrt{252} \approx 2.2\%`}</Formula>, <>From the <Formula key="rt">{String.raw`\sqrt{t}`}</Formula> rule</>],
-              ["Horizon", "252 trading days", "1 year"],
-            ]}
-          />
-          <P>
-            The three panels test: (1) whether the price fan looks plausible, (2) whether log-returns
-            are Gaussian as theory predicts, and (3) where that assumption breaks down.
-          </P>
+          <CodeBlock code={SPY_CALIB} />
         </SubSection>
 
-        <CodeBlock code={WTI_CODE} />
-        <Figure caption="Figure 4.1 · WTI Crude Oil — GBM Simulation">
-          <img src="/figures/bm-wti.png" alt="Three panels: 200 simulated WTI price paths widening as a fan, a Gaussian daily log-return histogram, and a Q-Q plot against the normal distribution" className="w-full rounded-sm" />
-        </Figure>
+        <SubSection label="4.2" title="Simulate 1,000 five-year paths">
+          <P>
+            Grey lines are individual paths, the dashed line is the mean of the simulated distribution,
+            and the band spans the 5th–95th percentile — the &ldquo;cone of plausible futures&rdquo;.
+          </P>
+          <CodeBlock code={CONE_CODE} />
+          <Figure caption="Figure 4.2 · SPY — 1,000 GBM paths over five years">
+            <img src="/figures/gbm-cone.png" alt="One thousand simulated SPY price paths fanning out over five years; a shaded band spans the 5th to 95th percentile and a dashed line marks the mean path" className="w-full rounded-sm" />
+          </Figure>
+        </SubSection>
+
+        <SubSection label="4.3" title="Terminal distribution — is it log-normal?">
+          <P>
+            Theory says{" "}
+            <Formula>{String.raw`\ln S_T \sim \mathcal{N}\big((\mu - \tfrac{1}{2}\sigma^2)T,\; \sigma^2 T\big)`}</Formula>.
+            Overlaying the theoretical density on the simulated histogram is a one-line correctness
+            check — and shows the characteristic right skew: the <b>mean sits above the median</b>.
+          </P>
+          <CodeBlock code={TERMINAL_CODE} />
+          <Figure caption="Figure 4.3 · SPY — terminal price distribution after five years">
+            <img src="/figures/gbm-terminal.png" alt="Histogram of simulated terminal SPY prices with the theoretical log-normal density overlaid; dashed lines mark the mean above the median, showing the right skew" className="w-full rounded-sm" />
+          </Figure>
+        </SubSection>
+
+        <SubSection label="4.4" title="Sanity check: switch the drift off">
+          <P>
+            With <Formula>{String.raw`\mu = 0`}</Formula>, GBM is a <b>martingale</b>: the mean terminal
+            price must sit at <Formula>{String.raw`S_0`}</Formula>. A quick way to catch implementation
+            bugs (a common one: forgetting the <Formula>{String.raw`-\tfrac{1}{2}\sigma^2`}</Formula>{" "}
+            correction, which inflates the mean).
+          </P>
+          <CodeBlock code={MARTINGALE_CODE} />
+        </SubSection>
       </Section>
 
       <Section id="conclusion" n={5} title="Conclusion">
         <SubSection label="5a" title="Strengths">
           <Bullets
             items={[
-              <><b>Tractability.</b> GBM has a closed-form solution
-                (<Formula>{String.raw`S_t = S_0 e^{(\mu-\sigma^2/2)t + \sigma W_t}`}</Formula>) and
-                yields closed-form option prices (Black–Scholes). No other price model comes close for
-                analytical convenience.</>,
-              <><b>Universal baseline.</b> Every more sophisticated model — Heston, SABR, Merton — is a
-                modification of GBM. You must understand BM to understand the corrections.</>,
-              <><b><Formula>{String.raw`\sqrt{t}`}</Formula> scaling.</b> Variance growing linearly in
-                time is empirically reasonable for most assets over short horizons, and it is exact for
-                BM. This makes VaR, margin, and vol scaling formulas straightforward.</>,
-              <><b>No-arbitrage foundation.</b> The martingale property of BM under the risk-neutral
-                measure <Formula>{String.raw`\mathbb{Q}`}</Formula> directly supports the no-arbitrage
-                pricing framework. Risk-neutral pricing is BM in disguise.</>,
+              <><b>Analytically tractable</b> — closed-form solutions (Black–Scholes) make it the natural baseline</>,
+              <><b>Positive prices, log-normal terminal distribution</b> — matches the basic stylised fact that prices can&apos;t go negative</>,
+              <><b>Only two parameters</b> — both estimable directly from historical log returns</>,
+              <><b>Cheap to simulate</b> — vectorised NumPy generates millions of paths in seconds</>,
             ]}
           />
         </SubSection>
@@ -217,59 +135,32 @@ export default function BrownianMotion() {
         <SubSection label="5b" title="Weaknesses & Limitations">
           <Bullets
             items={[
-              <><b>Fat tails.</b> Real returns have kurtosis <Formula>{String.raw`> 3`}</Formula>{" "}
-                (leptokurtic). Gaussian BM underestimates the probability of extreme moves — the 2020
-                CL negative price event was essentially impossible under GBM, yet it happened.</>,
-              <><b>Volatility clustering.</b> Calm periods follow calm periods; turbulent periods
-                cluster. BM has constant <Formula>{String.raw`\sigma`}</Formula> — GARCH models capture
-                this behaviour; BM does not.</>,
-              <><b>No jumps.</b> BM paths are continuous. Real prices gap on earnings, OPEC decisions,
-                or geopolitical shocks. Merton&apos;s jump-diffusion adds a Poisson jump process to fix
-                this.</>,
-              <><b>Flat vol surface.</b> If GBM were exactly correct, implied vol would be flat across
-                all strikes and maturities. It never is — the smile/skew is the market&apos;s direct
-                refutation of GBM.</>,
-              <><b>Positive prices only in GBM.</b> The 2020 crude oil futures briefly went negative —
-                GBM assigns zero probability to <Formula>{String.raw`S_t \leq 0`}</Formula>, making it
-                structurally wrong for certain commodities.</>,
+              <><b>Constant volatility</b> — real vol clusters and spikes</>,
+              <><b>No jumps</b> — crashes like March 2020 are far outside its reach</>,
+              <><b>Normal log-returns</b> — real returns have fat tails</>,
+              <><b>Independent increments</b> — momentum and mean-reversion exist</>,
             ]}
           />
         </SubSection>
 
         <SubSection label="5c" title="Applications in Practice">
-          <DataTable
-            variant="prose"
-            head={["Area", "How BM is used"]}
-            rows={[
-              ["Option pricing", <>GBM + Itô → Black–Scholes PDE → closed-form <Formula key="cp">{String.raw`C, P`}</Formula> and Greeks</>],
-              ["Monte Carlo", "Simulate thousands of GBM paths; price exotics as discounted average payoff"],
-              ["Delta hedging", <>Hedge <Formula key="dl">{String.raw`\Delta = \partial V/\partial S`}</Formula> units daily; P&amp;L = realised vs implied vol</>],
-              ["VaR / margin", <>Scale daily vol to any horizon using <Formula key="sv">{String.raw`\sigma\sqrt{T}`}</Formula>; SPAN margin uses scenarios</>],
-              ["Yield curves", "OU / Vasicek = BM with mean reversion; models short rates for bond pricing"],
-              ["Pairs trading", "Spread of two correlated assets modelled as OU; trade mean reversion"],
+          <Bullets
+            items={[
+              "Baseline for option pricing and Monte-Carlo risk engines",
+              "Scenario cones for wealth projections",
+              "Null model against which fancier models must justify their complexity",
             ]}
           />
         </SubSection>
 
         <SubSection label="5d" title="Alternatives & Extensions">
-          <P>Each extension fixes one specific failure of pure GBM:</P>
-          <DataTable
-            variant="prose"
-            head={["Model", "What it fixes", "Key addition"]}
-            rows={[
-              [<b>Heston</b>, "Flat vol surface", <><Formula key="he">{String.raw`\sigma_t`}</Formula> itself follows a mean-reverting SDE (CIR process)</>],
-              [<b>SABR</b>, "Vol smile for rates / FX", "Stochastic vol correlated with the asset"],
-              [<b>Merton jump-diffusion</b>, "No jumps in BM", <>Add Poisson-distributed price jumps: <Formula key="me">{String.raw`dS = \mu S\,dt + \sigma S\,dW + J\,dN`}</Formula></>],
-              [<b>Rough volatility (rBergomi)</b>, "Short-term vol surface shape", <>Replace BM with fractional BM (<Formula key="ro">{String.raw`H < 0.5`}</Formula>), making paths even rougher</>],
-              [<b>Ornstein–Uhlenbeck</b>, "Unrestricted drift", <>Add mean-reversion: <Formula key="ou">{String.raw`dX = \kappa(\theta - X)\,dt + \sigma\,dW`}</Formula></>],
-              [<b>GARCH</b>, "Constant vol", "Discrete-time vol that depends on past squared returns"],
+          <Bullets
+            items={[
+              <><b>Stochastic volatility</b> — Heston (see our Quant Insights piece <em>&ldquo;Heston vs Black-Scholes: fitting the volatility smile&rdquo;</em>)</>,
+              <><b>Jump-diffusion</b> — Merton</>,
+              <><b>GARCH-family models</b> — for clustered volatility</>,
             ]}
           />
-          <P>
-            All of these have <Formula>{String.raw`(dW)^2 = dt`}</Formula> at their core. Brownian
-            motion is not a model you replace — it&apos;s the language you use to build every model
-            above it.
-          </P>
         </SubSection>
       </Section>
     </>

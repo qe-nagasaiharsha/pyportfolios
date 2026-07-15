@@ -4,7 +4,7 @@
    Pure Server Components: Python is highlighted at build time (zero client JS).
    ========================================================================== */
 
-import type { ReactNode } from "react";
+import { isValidElement, Fragment, type ReactNode } from "react";
 import katex from "katex";
 
 /* ------------------------------------------------------ Python highlight -- */
@@ -125,11 +125,11 @@ export function CodeBlock({ code, file = "python" }: { code: string; file?: stri
 /* ------------------------------------------------------------ structure -- */
 
 export function Section({ id, n, title, children }: { id: string; n: number; title: string; children: ReactNode }) {
-  const num = String(n).padStart(2, "0");
+  const num = `${n}.`;
   return (
     <section id={id} className="article-section scroll-mt-28">
-      <h2 data-reveal className="mt-16 flex items-baseline gap-4 font-sans text-[1.7rem] leading-tight tracking-tight text-pearl md:text-[2rem]" style={{ fontWeight: 800 }}>
-        <span className="t-mono text-sm text-aqua" style={{ fontWeight: 400 }}>{num}</span>
+      <h2 data-reveal className="mt-16 flex items-baseline gap-3 font-sans text-[1.7rem] leading-tight tracking-tight text-pearl md:text-[2rem]" style={{ fontWeight: 500 }}>
+        <span className="text-pearl">{num}</span>
         <span>{title}</span>
       </h2>
       <div className="mt-5">{children}</div>
@@ -142,7 +142,7 @@ export function SubSection({ label, title, children }: { label?: string; title: 
   return (
     <div className="mt-10">
       <h3 data-reveal className="flex items-baseline gap-3 font-sans text-[1.25rem] tracking-tight text-pearl md:text-[1.4rem]" style={{ fontWeight: 700 }}>
-        {label ? <span className="t-mono text-[0.8rem] text-aqua" style={{ fontWeight: 400 }}>{label}</span> : null}
+        {label ? <span className="text-pearl">{label}</span> : null}
         <span>{title}</span>
       </h3>
       <div className="mt-4">{children}</div>
@@ -150,13 +150,32 @@ export function SubSection({ label, title, children }: { label?: string; title: 
   );
 }
 
-/* a plain bulleted list on the reading surface */
+/* Does a list item lead with a bold term? If so its bullet is white to match
+   that lead-in; otherwise the item is plain grey body text and the bullet is
+   grey to match. Recurses through the leading fragment/array node. */
+function leadsBold(node: ReactNode): boolean {
+  if (Array.isArray(node)) return leadsBold(node[0]);
+  if (isValidElement(node)) {
+    if (node.type === "b" || node.type === "strong") return true;
+    if (node.type === Fragment) {
+      const children = (node.props as { children?: ReactNode }).children;
+      return leadsBold(Array.isArray(children) ? children[0] : children);
+    }
+  }
+  return false;
+}
+
+/* a plain bulleted list on the reading surface — the bullet colour matches the
+   colour of the text beside it (white next to a bold lead-in, grey otherwise) */
 export function Bullets({ items }: { items: ReactNode[] }) {
   return (
-    <ul className="mt-5 space-y-2.5 text-[1.05rem] leading-[1.7] text-pearl/80">
+    <ul className="mt-5 space-y-2.5 text-[1.05rem] leading-[1.7] text-pearl/65">
       {items.map((it, i) => (
         <li key={i} className="flex gap-3">
-          <span className="mt-[0.55rem] h-1 w-1 shrink-0 rounded-full bg-aqua" aria-hidden="true" />
+          <span
+            className={`mt-[0.55rem] h-1 w-1 shrink-0 rounded-full ${leadsBold(it) ? "bg-pearl" : "bg-pearl/65"}`}
+            aria-hidden="true"
+          />
           <span>{it}</span>
         </li>
       ))}
@@ -166,12 +185,12 @@ export function Bullets({ items }: { items: ReactNode[] }) {
 
 export function Lead({ children }: { children: ReactNode }) {
   return (
-    <p className="dropcap mt-8 font-sans text-xl leading-[1.7] text-pearl/85 text-justify">{children}</p>
+    <p className="mt-8 font-sans text-xl leading-[1.7] text-pearl/65 text-justify">{children}</p>
   );
 }
 
 export function P({ children }: { children: ReactNode }) {
-  return <p className="mt-5 text-[1.05rem] leading-[1.75] text-pearl/80 text-justify">{children}</p>;
+  return <p className="mt-5 text-[1.05rem] leading-[1.75] text-pearl/65 text-justify">{children}</p>;
 }
 
 export function InlineCode({ children }: { children: ReactNode }) {

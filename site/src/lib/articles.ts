@@ -40,6 +40,10 @@ export interface Article {
   level: "Foundational" | "Intermediate" | "Advanced";
   /** Filename under /public/notebooks. */
   notebook: string;
+  /** Optional downloadable project zip filename under /public/downloads. */
+  project?: string;
+  /** Optional full-bleed hero background image path under /public. */
+  hero?: string;
   /** Drives the sticky table of contents + scroll-spy. */
   sections: ArticleSection[];
   /** Card / index summary. */
@@ -87,41 +91,45 @@ export const ARTICLES: Article[] = [
   {
     slug: "brownian-motion",
     category: "quant-finance-foundations",
-    title: "Brownian motion — the random engine of finance",
-    dek: "From coin flips to continuous randomness — the √t rule, why (dW)² = dt, and a Geometric Brownian Motion example on crude oil.",
-    date: "2026-07-08",
-    readMinutes: 10,
+    title: "Geometric Brownian Motion — simulating price paths through SPY",
+    dek: "The canonical continuous-time model for asset prices — its SDE, closed-form solution, and an exact simulation calibrated to SPY over a thousand five-year paths.",
+    date: "2026-07-15",
+    readMinutes: 9,
     level: "Foundational",
     notebook: "brownian-motion.ipynb",
+    project: "brownian-motion.zip",
+    hero: "hero/mountain-marc-thunis.jpg",
     excerpt:
-      "The building block under every derivatives model. We move from coin flips to continuous randomness, establish the √t rule and the Itô fact (dW)² = dt, then apply Geometric Brownian Motion to WTI crude — and show exactly where the Gaussian assumption breaks.",
+      "The canonical model for asset prices. We move from multiplicative returns to the GBM SDE and its closed-form solution, then calibrate to SPY and simulate a thousand five-year paths — checking the terminal distribution is log-normal and that zero drift makes it a martingale.",
+    stack: ["NumPy", "pandas", "SciPy", "matplotlib"],
+    sections: [
+      { id: "summary", title: "Summary" },
+      { id: "intuition", title: "Intuition" },
+      { id: "mechanics", title: "Theory & mechanics" },
+      { id: "example", title: "Applied example — SPY" },
+      { id: "conclusion", title: "Strengths, limits & extensions" },
+    ],
+  },
+  {
+    slug: "black-scholes-greeks",
+    category: "quant-finance-foundations",
+    title: "Black–Scholes & the Greeks",
+    dek: "The BSM model turns five observable inputs into a fair option price and a full risk report — shown through QQQ (Nasdaq 100) options.",
+    date: "2026-07-15",
+    readMinutes: 11,
+    level: "Foundational",
+    notebook: "black-scholes-greeks.ipynb",
+    project: "black-scholes-greeks.zip",
+    hero: "hero/matterhorn-calame.jpg",
+    excerpt:
+      "Five observable inputs in, a fair price and a full risk report out. We replicate the option, derive the Greeks in closed form, then price and risk-map a 3-month QQQ option from real data — and check it two ways: put-call parity and Monte Carlo.",
     stack: ["NumPy", "SciPy", "matplotlib"],
     sections: [
       { id: "summary", title: "Summary" },
       { id: "intuition", title: "Intuition" },
       { id: "mechanics", title: "Theory & mechanics" },
-      { id: "example", title: "Applied example — WTI crude oil" },
+      { id: "example", title: "Applied example — QQQ" },
       { id: "conclusion", title: "Strengths, limits & extensions" },
-    ],
-  },
-  {
-    slug: "black-scholes-from-first-principles",
-    category: "quant-finance-foundations",
-    title: "Black–Scholes from first principles",
-    dek: "Deriving the option-pricing formula from a replicating portfolio — then pricing and hedging it in NumPy.",
-    date: "2026-05-12",
-    readMinutes: 11,
-    level: "Foundational",
-    notebook: "black-scholes-from-first-principles.ipynb",
-    excerpt:
-      "No-arbitrage, a hedged portfolio, and a heat equation in disguise. We build Black–Scholes from the replication argument up, then implement the price and all five Greeks.",
-    stack: ["NumPy", "SciPy", "matplotlib"],
-    sections: [
-      { id: "setup", title: "The setup & assumptions" },
-      { id: "replication", title: "The replication argument" },
-      { id: "formula", title: "The Black–Scholes formula" },
-      { id: "greeks", title: "Pricing & the Greeks in NumPy" },
-      { id: "smile", title: "Where the model breaks" },
     ],
   },
   {

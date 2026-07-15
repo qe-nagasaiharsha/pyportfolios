@@ -33,6 +33,7 @@ function NotebookBadge({ href }: { href: string }) {
 export function ArticleLayout({ article, children }: { article: Article; children: ReactNode }) {
   const category = CATEGORIES[article.category];
   const notebookHref = `/notebooks/${article.notebook}`;
+  const projectHref = article.project ? `/downloads/${article.project}` : null;
   const { prev, next } = articleNeighbours(article.slug);
 
   return (
@@ -41,8 +42,42 @@ export function ArticleLayout({ article, children }: { article: Article; childre
       <ScrollReveal />
       <ArticleNav />
 
+      {/* full-bleed hero — whole image shown (section matches the photo's aspect ratio) */}
+      {article.hero ? (
+        <section className="relative isolate overflow-hidden aspect-[2400/1064] min-h-[26rem]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={`/${article.hero}`} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover object-center brightness-[1.06]" />
+          {/* the photo's own dark foreground merges into the page with a light assist */}
+          <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(to_top,#151515_0%,rgba(21,21,21,0.55)_8%,transparent_20%)]" />
+          <div className="absolute inset-x-0 top-0 mx-auto max-w-7xl px-6 lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-14">
+            <div className="hidden lg:block" aria-hidden="true" />
+            <div className="py-14 md:py-20">
+              <TransitionLink
+                href={`/research#${category.slug}`}
+                className="t-mono text-xs uppercase tracking-[0.2em] text-aqua transition-colors hover:text-pearl"
+              >
+                {category.numeral} · {category.name}
+              </TransitionLink>
+              <h1 className="mt-5 font-sans text-[2.6rem] leading-[1.02] tracking-tight text-pearl md:text-[3.7rem]" style={{ fontWeight: 900 }}>
+                {article.title}
+              </h1>
+              <p className="mt-6 max-w-2xl t-mono text-[0.95rem] italic leading-relaxed text-pearl">
+                {article.dek}
+              </p>
+              <p className="mt-6 t-mono text-[0.72rem] text-pearl/70">
+                <span className="text-pearl/70">Stack — </span>
+                {article.stack.join(" · ")}
+                <span className="ml-auto float-right lg:hidden">
+                  <NotebookBadge href={notebookHref} />
+                </span>
+              </p>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       <article className="editorial-dark bg-anthracite text-pearl">
-        <div className="mx-auto max-w-6xl px-6 lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-12 lg:px-8">
+        <div className="mx-auto max-w-7xl px-6 lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-14">
           {/* -------------------------------------------------- TOC rail -- */}
           <aside className="hidden lg:block">
             <div className="sticky top-28 py-16">
@@ -62,53 +97,78 @@ export function ArticleLayout({ article, children }: { article: Article; childre
           </aside>
 
           {/* ------------------------------------------------- article col -- */}
-          <div className="min-w-0 py-16 lg:max-w-[46rem] lg:py-20">
-            {/* header */}
-            <header className="border-b border-pearl/10 pb-9">
-              <div className="flex items-center gap-3">
-                <TransitionLink
-                  href={`/research#${category.slug}`}
-                  className="t-mono text-xs uppercase tracking-[0.2em] text-aqua transition-colors hover:text-pearl"
-                >
-                  {category.numeral} · {category.name}
-                </TransitionLink>
-              </div>
+          <div className="min-w-0 py-16 lg:py-20">
+            {/* header — shown here only when there is no full-bleed hero above */}
+            {!article.hero ? (
+              <header className="border-b border-pearl/10 pb-9">
+                <div className="flex items-center gap-3">
+                  <TransitionLink
+                    href={`/research#${category.slug}`}
+                    className="t-mono text-xs uppercase tracking-[0.2em] text-aqua transition-colors hover:text-pearl"
+                  >
+                    {category.numeral} · {category.name}
+                  </TransitionLink>
+                </div>
 
-              <h1 className="mt-5 font-sans text-[2.5rem] leading-[1.02] tracking-tight text-pearl md:text-[3.5rem]" style={{ fontWeight: 900 }}>
-                {article.title}
-              </h1>
-              <p className="mt-6 max-w-2xl rounded-sm border border-aqua/25 px-4 py-3 t-mono text-[0.9rem] italic leading-relaxed text-mist">
-                {article.dek}
-              </p>
+                <h1 className="mt-5 font-sans text-[2.5rem] leading-[1.02] tracking-tight text-pearl md:text-[3.5rem]" style={{ fontWeight: 900 }}>
+                  {article.title}
+                </h1>
+                <p className="mt-6 max-w-2xl t-mono text-[0.95rem] italic leading-relaxed text-pearl">
+                  {article.dek}
+                </p>
 
-              <p className="mt-7 t-mono text-[0.72rem] text-steel/80">
-                <span className="text-steel">Stack — </span>
-                {article.stack.join(" · ")}
-                <span className="ml-auto float-right lg:hidden">
-                  <NotebookBadge href={notebookHref} />
-                </span>
-              </p>
-            </header>
+                <p className="mt-7 t-mono text-[0.72rem] text-steel/80">
+                  <span className="text-steel">Stack — </span>
+                  {article.stack.join(" · ")}
+                  <span className="ml-auto float-right lg:hidden">
+                    <NotebookBadge href={notebookHref} />
+                  </span>
+                </p>
+              </header>
+            ) : null}
 
             {/* body */}
             <div className="article-body">{children}</div>
 
-            {/* notebook CTA */}
+            {/* notebook / project CTA */}
             <aside className="corner-ticks mt-16 flex flex-col items-start justify-between gap-5 rounded-sm border border-pearl/10 bg-coal p-7 sm:flex-row sm:items-center">
               <div>
                 <p className="t-mono text-[0.66rem] uppercase tracking-[0.2em] text-aqua">Run it yourself</p>
-                <p className="mt-2 font-serif text-xl text-pearl">The full, reproducible notebook.</p>
-                <p className="mt-1 text-sm text-steel">Every figure and table in this article is generated by this notebook.</p>
+                <p className="mt-2 font-serif text-xl text-pearl">
+                  {projectHref ? "The full, reproducible project." : "The full, reproducible notebook."}
+                </p>
+                <p className="mt-1 text-sm text-steel">
+                  {projectHref
+                    ? "Download the project and double-click the launcher for your OS — it installs Python and the libraries for you, then runs it locally."
+                    : "Every figure and table in this article is generated by this notebook."}
+                </p>
               </div>
+              <div className="flex shrink-0 flex-col items-start gap-3 sm:items-end">
+                {projectHref ? (
+                  <a
+                    href={projectHref}
+                    download
+                    className="group inline-flex items-center gap-2 rounded-sm bg-aqua px-6 py-3 text-sm font-semibold text-anthracite transition-colors duration-300 hover:bg-pearl"
+                  >
+                    Download project
+                    <span className="t-mono text-xs opacity-70">.zip</span>
+                    <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-y-0.5">↓</span>
+                  </a>
+                ) : null}
               <a
                 href={notebookHref}
                 download
-                className="group inline-flex shrink-0 items-center gap-2 rounded-sm bg-pearl px-6 py-3 text-sm font-semibold text-anthracite transition-colors duration-300 hover:bg-aqua"
+                className={`group inline-flex items-center gap-2 rounded-sm px-6 py-3 text-sm font-semibold transition-colors duration-300 ${
+                  projectHref
+                    ? "border border-pearl/25 text-pearl hover:border-aqua hover:text-aqua"
+                    : "bg-pearl text-anthracite hover:bg-aqua"
+                }`}
               >
                 Download notebook
                 <span className="t-mono text-xs opacity-70">.ipynb</span>
                 <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-y-0.5">↓</span>
               </a>
+              </div>
             </aside>
 
             {/* prev / next */}

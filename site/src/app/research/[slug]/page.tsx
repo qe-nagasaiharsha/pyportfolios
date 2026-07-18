@@ -8,6 +8,7 @@ import { ArticleLayout } from "@/components/article/ArticleLayout";
    and code can be hand-crafted. Static import (only 8) keeps the export simple. */
 import BrownianMotion from "@/content/articles/brownian-motion";
 import BlackScholesGreeks from "@/content/articles/black-scholes-greeks";
+import BondDurationConvexity from "@/content/articles/bond-duration-convexity";
 import TimeValueOfMoney from "@/content/articles/time-value-of-money";
 import LedoitWolf from "@/content/articles/ledoit-wolf-shrinkage";
 import HierarchicalRiskParity from "@/content/articles/hierarchical-risk-parity";
@@ -19,6 +20,7 @@ import PairsTrading from "@/content/articles/pairs-trading-cointegration";
 const BODIES: Record<string, () => ReactElement> = {
   "brownian-motion": BrownianMotion,
   "black-scholes-greeks": BlackScholesGreeks,
+  "bond-duration-convexity": BondDurationConvexity,
   "time-value-of-money": TimeValueOfMoney,
   "ledoit-wolf-shrinkage": LedoitWolf,
   "hierarchical-risk-parity": HierarchicalRiskParity,

@@ -58,7 +58,7 @@ export function ArticleLayout({ article, children }: { article: Article; childre
               >
                 {category.numeral} · {category.name}
               </TransitionLink>
-              <h1 className="mt-5 font-sans text-[2.6rem] leading-[1.02] tracking-tight text-pearl md:text-[3.7rem]" style={{ fontWeight: 900 }}>
+              <h1 className="mt-5 font-sans text-[2.6rem] capitalize leading-[1.02] tracking-tight text-pearl md:text-[3.7rem]" style={{ fontWeight: 900 }}>
                 {article.title}
               </h1>
               <p className="mt-6 max-w-2xl t-mono text-[0.95rem] italic leading-relaxed text-pearl">
@@ -110,7 +110,7 @@ export function ArticleLayout({ article, children }: { article: Article; childre
                   </TransitionLink>
                 </div>
 
-                <h1 className="mt-5 font-sans text-[2.5rem] leading-[1.02] tracking-tight text-pearl md:text-[3.5rem]" style={{ fontWeight: 900 }}>
+                <h1 className="mt-5 font-sans text-[2.5rem] capitalize leading-[1.02] tracking-tight text-pearl md:text-[3.5rem]" style={{ fontWeight: 900 }}>
                   {article.title}
                 </h1>
                 <p className="mt-6 max-w-2xl t-mono text-[0.95rem] italic leading-relaxed text-pearl">
@@ -128,7 +128,7 @@ export function ArticleLayout({ article, children }: { article: Article; childre
             ) : null}
 
             {/* body */}
-            <div className="article-body">{children}</div>
+            <div className={`article-body${article.bodyFont === "serif" ? " article-body-serif" : ""}`}>{children}</div>
 
             {/* notebook / project CTA */}
             <aside className="corner-ticks mt-16 flex flex-col items-start justify-between gap-5 rounded-sm border border-pearl/10 bg-coal p-7 sm:flex-row sm:items-center">

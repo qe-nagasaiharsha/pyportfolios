@@ -44,6 +44,8 @@ export interface Article {
   project?: string;
   /** Optional full-bleed hero background image path under /public. */
   hero?: string;
+  /** Optional body typeface override — "serif" sets the reading text in Lora. */
+  bodyFont?: "serif";
   /** Drives the sticky table of contents + scroll-spy. */
   sections: ArticleSection[];
   /** Card / index summary. */
@@ -91,7 +93,7 @@ export const ARTICLES: Article[] = [
   {
     slug: "brownian-motion",
     category: "quant-finance-foundations",
-    title: "Geometric Brownian Motion — simulating price paths through SPY",
+    title: "Geometric Brownian Motion: Simulating Price Paths — Shown Through SPY",
     dek: "The canonical continuous-time model for asset prices — its SDE, closed-form solution, and an exact simulation calibrated to SPY over a thousand five-year paths.",
     date: "2026-07-15",
     readMinutes: 9,
@@ -121,6 +123,7 @@ export const ARTICLES: Article[] = [
     notebook: "black-scholes-greeks.ipynb",
     project: "black-scholes-greeks.zip",
     hero: "hero/matterhorn-calame.jpg",
+    bodyFont: "serif",
     excerpt:
       "Five observable inputs in, a fair price and a full risk report out. We replicate the option, derive the Greeks in closed form, then price and risk-map a 3-month QQQ option from real data — and check it two ways: put-call parity and Monte Carlo.",
     stack: ["NumPy", "SciPy", "matplotlib"],
@@ -150,6 +153,28 @@ export const ARTICLES: Article[] = [
       { id: "compounding", title: "Compounding conventions" },
       { id: "curve", title: "From rates to a discount curve" },
       { id: "code", title: "Valuing cashflows in pandas" },
+    ],
+  },
+  {
+    slug: "bond-duration-convexity",
+    category: "quant-finance-foundations",
+    title: "Bond Pricing, Duration & Convexity: Via US Treasuries — and the ETFs That Lived Through 2022",
+    dek: "A bond is a promise of future cash flows — so its price is pure discounting. From that follow the three numbers every rates desk lives by: price, duration and convexity, checked against the Treasury ETFs of 2022.",
+    date: "2026-07-16",
+    readMinutes: 11,
+    level: "Foundational",
+    notebook: "bond-duration-convexity.ipynb",
+    project: "bond-duration-convexity.zip",
+    hero: "hero/dolomites-krivec.jpg",
+    excerpt:
+      "Price, duration and convexity — the three numbers that summarise a bond's rate risk. We build them in 20 lines, walk the price-yield curve and the duration ladder, then check the theory against SHY/IEF/TLT's real drawdowns in the worst bond year in modern history.",
+    stack: ["NumPy", "pandas", "matplotlib"],
+    sections: [
+      { id: "summary", title: "Summary" },
+      { id: "intuition", title: "Intuition" },
+      { id: "mechanics", title: "Theory & mechanics" },
+      { id: "example", title: "Applied example — US Treasuries" },
+      { id: "conclusion", title: "Strengths, limits & extensions" },
     ],
   },
 

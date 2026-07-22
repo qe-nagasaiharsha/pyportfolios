@@ -461,10 +461,10 @@ html.lenis body {
 /* bold emphasis reads as bright white against the muted grey body */
 .article-body b,
 .article-body strong { color: var(--color-pearl); }
-/* opt-in serif reading body (Lora) for a single article — descendant selector
-   beats the utility `font-sans` on paragraphs; headings/code/math keep their fonts */
-.article-body-serif p,
-.article-body-serif li { font-family: var(--font-serif), Georgia, serif; }
+/* article reading body is set in Lora — descendant selector beats the utility
+   `font-sans` on paragraphs; headings, code and math keep their own fonts */
+.article-body p,
+.article-body li { font-family: var(--font-serif), Georgia, serif; }
 .article-body a:not(.code-card a) {
   color: var(--color-aqua);
   text-decoration: underline;

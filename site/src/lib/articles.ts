@@ -44,8 +44,6 @@ export interface Article {
   project?: string;
   /** Optional full-bleed hero background image path under /public. */
   hero?: string;
-  /** Optional body typeface override — "serif" sets the reading text in Lora. */
-  bodyFont?: "serif";
   /** Drives the sticky table of contents + scroll-spy. */
   sections: ArticleSection[];
   /** Card / index summary. */
@@ -123,7 +121,6 @@ export const ARTICLES: Article[] = [
     notebook: "black-scholes-greeks.ipynb",
     project: "black-scholes-greeks.zip",
     hero: "hero/matterhorn-calame.jpg",
-    bodyFont: "serif",
     excerpt:
       "Five observable inputs in, a fair price and a full risk report out. We replicate the option, derive the Greeks in closed form, then price and risk-map a 3-month QQQ option from real data — and check it two ways: put-call parity and Monte Carlo.",
     stack: ["NumPy", "SciPy", "matplotlib"],

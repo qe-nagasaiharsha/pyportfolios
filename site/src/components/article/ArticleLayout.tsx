@@ -128,7 +128,7 @@ export function ArticleLayout({ article, children }: { article: Article; childre
             ) : null}
 
             {/* body */}
-            <div className={`article-body${article.bodyFont === "serif" ? " article-body-serif" : ""}`}>{children}</div>
+            <div className="article-body">{children}</div>
 
             {/* notebook / project CTA */}
             <aside className="corner-ticks mt-16 flex flex-col items-start justify-between gap-5 rounded-sm border border-pearl/10 bg-coal p-7 sm:flex-row sm:items-center">

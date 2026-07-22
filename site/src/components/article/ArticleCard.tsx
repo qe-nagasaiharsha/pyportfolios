@@ -6,12 +6,30 @@ import { TransitionLink } from "@/components/motion/TransitionLink";
 import { Tilt } from "@/components/motion/Tilt";
 
 export function ArticleCard({ article }: { article: Article }) {
+  /* Foundations tiles carry a photo thumbnail (Kyma-style); articles without a
+     hero keep a blank coal plate so the grid stays uniform. */
+  const showThumb = article.category === "quant-finance-foundations";
   return (
     <Tilt className="h-full">
     <TransitionLink
       href={`/research/${article.slug}`}
-      className="glow-card group flex h-full flex-col rounded-sm border border-pearl/10 bg-navy-elevated/50 p-7 hover:border-aqua/40"
+      className="glow-card group flex h-full flex-col overflow-hidden rounded-2xl border border-pearl/10 bg-navy-elevated/50 hover:border-aqua/40"
     >
+      {showThumb ? (
+        <div className="relative aspect-[16/9] w-full overflow-hidden border-b border-pearl/10">
+          {article.hero ? (
+            <img
+              src={`/${article.hero}`}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full object-cover object-center brightness-[1.02] transition-transform duration-500 group-hover:scale-[1.04]"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-coal" />
+          )}
+        </div>
+      ) : null}
+      <div className="flex flex-1 flex-col p-7">
       <div className="flex items-center justify-between">
         <span className="t-mono text-xs uppercase tracking-[0.18em] text-aqua/80">{CATEGORIES[article.category].name}</span>
         <span className="t-mono text-[0.62rem] uppercase tracking-[0.14em] text-steel">{article.level}</span>
@@ -24,6 +42,7 @@ export function ArticleCard({ article }: { article: Article }) {
         <span>{article.readMinutes} min</span>
         <span className="text-aqua/50" aria-hidden="true">·</span>
         <span className="text-aqua transition-transform duration-300 group-hover:translate-x-0.5">Read ↗</span>
+      </div>
       </div>
     </TransitionLink>
     </Tilt>

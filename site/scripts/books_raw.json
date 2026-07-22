@@ -1,0 +1,433 @@
+[
+  {
+    "category": "1. Foundations",
+    "books": [
+      {
+        "citation": "Baxter, M., & Rennie, A. (1996). Financial calculus: An introduction to derivative pricing. Cambridge University Press.",
+        "bullets": [
+          "A famous textbook and classic guide in quantitative finance.",
+          "Explains the complex math used to find fair prices for financial derivatives.",
+          "Bridges high-level mathematical theory and practical use on trading desks."
+        ]
+      },
+      {
+        "citation": "Joshi, M. S. (2008). The concepts and practice of mathematical finance (2nd ed.). Cambridge University Press.",
+        "bullets": [
+          "A highly respected guide to quantitative finance.",
+          "Bridges the gap between complex mathematical theory and practical trading-floor applications.",
+          "Strong emphasis on how models are actually implemented."
+        ]
+      },
+      {
+        "citation": "Shreve, S. E. (2004). Stochastic calculus for finance II: Continuous-time models. Springer.",
+        "bullets": [
+          "Highly popular text from Carnegie Mellon’s renowned computational finance master’s program.",
+          "A core guide for quants and financial engineers.",
+          "Models stock prices, interest rates, and options under randomness over time."
+        ]
+      },
+      {
+        "citation": "Björk, T. (2020). Arbitrage theory in continuous time (4th ed.). Oxford University Press.",
+        "bullets": [
+          "The standard graduate text on arbitrage pricing in continuous time.",
+          "Develops martingale and measure-change methods rigorously yet readably.",
+          "Bridges pure stochastic calculus and derivative pricing."
+        ]
+      },
+      {
+        "citation": "Karatzas, I., & Shreve, S. E. (1991). Brownian motion and stochastic calculus (2nd ed.). Springer.",
+        "bullets": [
+          "The definitive mathematical reference on Brownian motion and stochastic calculus.",
+          "Aimed at advanced readers.",
+          "Supplies the rigorous foundations under every continuous-time pricing model."
+        ]
+      },
+      {
+        "citation": "Casella, G., & Berger, R. L. (2002). Statistical inference (2nd ed.). Duxbury.",
+        "bullets": [
+          "The standard graduate text on mathematical statistics and inference.",
+          "Rigorous foundation in estimation, hypothesis testing, and likelihood.",
+          "The statistics backbone behind econometrics and model validation."
+        ]
+      },
+      {
+        "citation": "Tsay, R. S. (2010). Analysis of financial time series (3rd ed.). Wiley.",
+        "bullets": [
+          "The standard applied text on financial time series.",
+          "Covers volatility modeling (GARCH), return dynamics, and multivariate methods.",
+          "A staple of empirical quant research."
+        ]
+      },
+      {
+        "citation": "Hamilton, J. D. (1994). Time series analysis. Princeton University Press.",
+        "bullets": [
+          "The authoritative reference on time-series econometrics.",
+          "Go-to source for ARMA, state-space, VAR, and regime-switching models.",
+          "Dense and comprehensive."
+        ]
+      },
+      {
+        "citation": "Ross, S. M. (2019). A first course in probability (10th ed.). Pearson.",
+        "bullets": [
+          "A classic first course in probability used worldwide.",
+          "Builds core intuition for randomness, distributions, and expectation.",
+          "Foundational for every quantitative discipline."
+        ]
+      },
+      {
+        "citation": "Blitzstein, J. K., & Hwang, J. (2019). Introduction to probability (2nd ed.). Chapman & Hall/CRC.",
+        "bullets": [
+          "Modern, intuition-first text from Harvard’s popular Stat 110 course.",
+          "Makes conditioning, distributions, and stochastic thinking understandable.",
+          "Widely praised for clarity."
+        ]
+      },
+      {
+        "citation": "Campbell, J. Y., Lo, A. W., & MacKinlay, A. C. (1997). The econometrics of financial markets. Princeton University Press.",
+        "bullets": [
+          "The foundational graduate text in financial econometrics.",
+          "Links asset-pricing theory to empirical testing.",
+          "Standard reference for factor models and market-efficiency research."
+        ]
+      },
+      {
+        "citation": "Wooldridge, J. M. (2010). Econometric analysis of cross section and panel data (2nd ed.). MIT Press.",
+        "bullets": [
+          "The leading reference on cross-section and panel econometrics.",
+          "Standard for causal inference and fixed/random effects.",
+          "Key methods for alpha and factor research."
+        ]
+      }
+    ],
+    "subtopics": [
+      "Stochastic Calculus & Mathematical Finance",
+      "Statistics, Probability & Econometrics"
+    ]
+  },
+  {
+    "category": "2. Fixed Income & Interest-Rate Modeling",
+    "books": [
+      {
+        "citation": "Fabozzi, F. J. (2022). Fixed income analysis (5th ed.). Wiley.",
+        "bullets": [
+          "The CFA-series standard on fixed income.",
+          "Covers bond math, term structure, credit, and securitized products.",
+          "Institutional entry point to rates and credit analysis."
+        ]
+      },
+      {
+        "citation": "Tuckman, B., & Serrat, A. (2022). Fixed income securities: Tools for today’s markets (4th ed.). Wiley.",
+        "bullets": [
+          "Modern, practitioner-oriented bestseller on fixed income.",
+          "Covers arbitrage pricing, duration/convexity, and curve construction.",
+          "Reflects the tools used on rates desks today."
+        ]
+      },
+      {
+        "citation": "Veronesi, P. (2010). Fixed income securities: Valuation, risk, and risk management. Wiley.",
+        "bullets": [
+          "Bridges bond fundamentals and quantitative rates modeling.",
+          "Strong on valuation and risk management.",
+          "Covers derivatives and structured products."
+        ]
+      },
+      {
+        "citation": "Rebonato, R. (2018). Bond pricing and yield curve modeling: A structural approach. Cambridge University Press.",
+        "bullets": [
+          "A modern, authoritative treatment of the yield curve.",
+          "A structural approach from a leading rates quant.",
+          "Bridges heavy rates models and how curves are actually built."
+        ]
+      },
+      {
+        "citation": "Brigo, D., & Mercurio, F. (2006). Interest rate models—Theory and practice: With smile, inflation and credit (2nd ed.). Springer.",
+        "bullets": [
+          "The definitive practitioner reference for interest-rate models.",
+          "Covers short-rate and market (LIBOR/HJM) models in depth.",
+          "Detailed on calibration and smile-consistent pricing."
+        ]
+      },
+      {
+        "citation": "Andersen, L. B. G., & Piterbarg, V. V. (2010). Interest rate modeling (Vols. 1–3). Atlantic Financial Press.",
+        "bullets": [
+          "Three-volume magnum opus on modern rates modeling.",
+          "Written by leading quants.",
+          "The most comprehensive advanced treatment of term structure, volatility, and numerics."
+        ]
+      }
+    ]
+  },
+  {
+    "category": "3. Derivatives, Options & Volatility",
+    "books": [
+      {
+        "citation": "Hull, J. C. (2021). Options, futures, and other derivatives (11th ed.). Pearson.",
+        "bullets": [
+          "The most widely used derivatives textbook in the world.",
+          "The common language of options, futures, swaps, and risk-neutral pricing.",
+          "Standard for students and practitioners alike."
+        ]
+      },
+      {
+        "citation": "Natenberg, S. (2015). Option volatility and pricing: Advanced trading strategies and techniques (2nd ed.). McGraw-Hill.",
+        "bullets": [
+          "The classic on options from a trader’s perspective.",
+          "Builds intuition for the Greeks, volatility, and spreads.",
+          "Light on heavy math; a perennial desk favorite."
+        ]
+      },
+      {
+        "citation": "Wilmott, P. (2006). Paul Wilmott on quantitative finance (2nd ed.). Wiley.",
+        "bullets": [
+          "An intuition-rich tour of quantitative finance.",
+          "From a renowned practitioner-educator.",
+          "Connects derivatives math to real market behavior."
+        ]
+      },
+      {
+        "citation": "Gatheral, J. (2006). The volatility surface: A practitioner’s guide. Wiley.",
+        "bullets": [
+          "The definitive text on the implied-volatility surface.",
+          "Standard reference for local and stochastic volatility models.",
+          "Used to price and hedge exotic options."
+        ]
+      },
+      {
+        "citation": "Glasserman, P. (2003). Monte Carlo methods in financial engineering. Springer.",
+        "bullets": [
+          "The authoritative reference on Monte Carlo methods in finance.",
+          "Covers simulation, variance reduction, and Greeks estimation.",
+          "Underpins pricing of path-dependent, high-dimensional derivatives."
+        ]
+      }
+    ]
+  },
+  {
+    "category": "4. Portfolio Optimization & Asset Allocation",
+    "books": [
+      {
+        "citation": "Bodie, Z., Kane, A., & Marcus, A. J. (2024). Investments (13th ed.). McGraw-Hill.",
+        "bullets": [
+          "The leading university textbook on investments.",
+          "Covers risk-return, the CAPM, market efficiency, and asset classes.",
+          "Foundational framework for all portfolio work."
+        ]
+      },
+      {
+        "citation": "Luenberger, D. G. (2013). Investment science (2nd ed.). Oxford University Press.",
+        "bullets": [
+          "A clear, elegant introduction to investment mathematics.",
+          "Spans cash flows, mean-variance theory, and derivatives.",
+          "Ideal foundational bridge into quant portfolio work."
+        ]
+      },
+      {
+        "citation": "Grinold, R. C., & Kahn, R. N. (1999). Active portfolio management: A quantitative approach for producing superior returns and controlling risk (2nd ed.). McGraw-Hill.",
+        "bullets": [
+          "The definitive institutional text on quantitative active management.",
+          "Introduced the information ratio and the Fundamental Law of Active Management.",
+          "Foundational for factor investing and alpha research."
+        ]
+      },
+      {
+        "citation": "Litterman, B., & the Quantitative Resources Group, Goldman Sachs. (2003). Modern investment management: An equilibrium approach. Wiley.",
+        "bullets": [
+          "The Goldman Sachs guide to institutional portfolio management.",
+          "Best known for the Black–Litterman model.",
+          "Equilibrium approach to combining views with market priors."
+        ]
+      },
+      {
+        "citation": "Meucci, A. (2005). Risk and asset allocation. Springer.",
+        "bullets": [
+          "Advanced, unifying treatment of risk and asset allocation.",
+          "Covers estimation, Bayesian methods, and robust optimization.",
+          "Reflects how professionals build portfolios."
+        ]
+      },
+      {
+        "citation": "Fabozzi, F. J., Kolm, P. N., Pachamanova, D. A., & Focardi, S. M. (2007). Robust portfolio optimization and management. Wiley.",
+        "bullets": [
+          "A focused treatment of robust portfolio construction.",
+          "Tackles estimation error and unstable covariance matrices.",
+          "Moves beyond classical Markowitz toward real-world optimization."
+        ]
+      }
+    ]
+  },
+  {
+    "category": "5. Risk Management",
+    "books": [
+      {
+        "citation": "Hull, J. C. (2023). Risk management and financial institutions (6th ed.). Wiley.",
+        "bullets": [
+          "A broad, accessible survey of financial risk management.",
+          "Connects market, credit, and operational risk with regulation.",
+          "Standard for risk professionals and the FRM exam."
+        ]
+      },
+      {
+        "citation": "Crouhy, M., Galai, D., & Mark, R. (2014). The essentials of risk management (2nd ed.). McGraw-Hill.",
+        "bullets": [
+          "A practitioner overview of enterprise risk management.",
+          "Explains VaR, credit and operational risk, and governance.",
+          "An ideal foundational read."
+        ]
+      },
+      {
+        "citation": "Jorion, P. (2007). Value at risk: The new benchmark for managing financial risk (3rd ed.). McGraw-Hill.",
+        "bullets": [
+          "The classic reference on Value at Risk.",
+          "Defined the modern language of market-risk measurement.",
+          "Standard introduction to VaR methodology and its pitfalls."
+        ]
+      },
+      {
+        "citation": "McNeil, A. J., Frey, R., & Embrechts, P. (2015). Quantitative risk management: Concepts, techniques and tools (Rev. ed.). Princeton University Press.",
+        "bullets": [
+          "The rigorous graduate text on quantitative risk management.",
+          "Authoritative on extreme-value theory and copulas.",
+          "Underpins modern tail-risk systems."
+        ]
+      }
+    ]
+  },
+  {
+    "category": "6. Market Microstructure & Execution",
+    "books": [
+      {
+        "citation": "Harris, L. (2003). Trading and exchanges: Market microstructure for practitioners. Oxford University Press.",
+        "bullets": [
+          "The most accessible guide to how markets actually work.",
+          "Explains order types, liquidity, and trading mechanics.",
+          "The ideal first book on microstructure."
+        ]
+      },
+      {
+        "citation": "O’Hara, M. (1995). Market microstructure theory. Blackwell.",
+        "bullets": [
+          "The classic theoretical foundation of market microstructure.",
+          "Formalizes how information and inventory shape prices and spreads.",
+          "A standard academic reference."
+        ]
+      },
+      {
+        "citation": "Foucault, T., Pagano, M., & Röell, A. (2024). Market liquidity: Theory, evidence, and policy (2nd ed.). Oxford University Press.",
+        "bullets": [
+          "A modern graduate synthesis of market-liquidity research.",
+          "Surveys the theory, evidence, and policy of liquidity.",
+          "Rigorous treatment of how markets price liquidity."
+        ]
+      },
+      {
+        "citation": "Kissell, R. (2021). Algorithmic trading methods: Applications using advanced statistics, optimization, and machine learning techniques (2nd ed.). Academic Press.",
+        "bullets": [
+          "The leading applied reference on trading costs and execution.",
+          "Covers market-impact modeling and TWAP/VWAP algorithms.",
+          "2nd edition adds advanced statistics, optimization, and machine learning."
+        ]
+      },
+      {
+        "citation": "Cartea, Á., Jaimungal, S., & Penalva, J. (2015). Algorithmic and high-frequency trading. Cambridge University Press.",
+        "bullets": [
+          "The leading quantitative text on algorithmic and high-frequency trading.",
+          "Develops optimal execution and market-making.",
+          "Built on stochastic control."
+        ]
+      }
+    ]
+  },
+  {
+    "category": "7. Algorithmic Trading & Machine Learning",
+    "books": [
+      {
+        "citation": "Chan, E. P. (2021). Quantitative trading: How to build your own algorithmic trading business (2nd ed.). Wiley.",
+        "bullets": [
+          "An accessible, hands-on intro to building a retail quant trading business.",
+          "Demystifies backtesting and strategy evaluation.",
+          "Covers the practical realities of going live."
+        ]
+      },
+      {
+        "citation": "Narang, R. K. (2013). Inside the black box: A simple guide to quantitative and high-frequency trading (2nd ed.). Wiley.",
+        "bullets": [
+          "A clear, non-technical overview of quant and HFT firms.",
+          "Maps how systematic trading actually works.",
+          "The best big-picture view of the “black box.”"
+        ]
+      },
+      {
+        "citation": "Chan, E. P. (2013). Algorithmic trading: Winning strategies and their rationale. Wiley.",
+        "bullets": [
+          "A more advanced sequel with concrete strategies.",
+          "Covers mean-reversion and momentum.",
+          "Includes the statistical tests to validate them."
+        ]
+      },
+      {
+        "citation": "Carver, R. (2015). Systematic trading: A unique new method for designing trading and investing systems. Harriman House.",
+        "bullets": [
+          "A framework for designing systematic trading systems.",
+          "Strong on position sizing and diversification.",
+          "Focused on avoiding overfitting."
+        ]
+      },
+      {
+        "citation": "Jansen, S. (2020). Machine learning for algorithmic trading (2nd ed.). Packt Publishing.",
+        "bullets": [
+          "A comprehensive, code-rich guide to ML for trading.",
+          "800+ pages spanning data sourcing to deployment.",
+          "Full ML workflow in Python."
+        ]
+      },
+      {
+        "citation": "López de Prado, M. (2018). Advances in financial machine learning. Wiley.",
+        "bullets": [
+          "A landmark text on rigorous ML in finance.",
+          "Exposes common backtesting pitfalls.",
+          "Introduces meta-labeling and purged cross-validation."
+        ]
+      },
+      {
+        "citation": "McKinney, W. (2022). Python for data analysis: Data wrangling with pandas, NumPy, and Jupyter (3rd ed.). O’Reilly Media.",
+        "bullets": [
+          "The definitive guide to data analysis in Python.",
+          "Written by the creator of pandas.",
+          "Foundational toolkit for quant work in Python."
+        ]
+      },
+      {
+        "citation": "Hilpisch, Y. J. (2018). Python for finance: Mastering data-driven finance (2nd ed.). O’Reilly Media.",
+        "bullets": [
+          "The standard reference for doing finance with Python.",
+          "Covers data handling and derivatives analytics.",
+          "Includes Monte Carlo simulation."
+        ]
+      },
+      {
+        "citation": "Lewinson, E. (2022). Python for finance cookbook (2nd ed.). Packt Publishing.",
+        "bullets": [
+          "A recipe-based cookbook for financial analysis in Python.",
+          "A fast, hands-on reference.",
+          "Covers time-series, risk, and portfolio tasks."
+        ]
+      },
+      {
+        "citation": "Hilpisch, Y. J. (2020). Python for algorithmic trading: From idea to cloud deployment. O’Reilly Media.",
+        "bullets": [
+          "An end-to-end guide to automated trading in Python.",
+          "Covers backtesting and broker APIs.",
+          "Includes cloud deployment of live strategies."
+        ]
+      },
+      {
+        "citation": "Strimpel, J. (2024). Python for algorithmic trading cookbook. Packt Publishing.",
+        "bullets": [
+          "A modern cookbook for the algo-trading workflow in Python.",
+          "Up-to-date recipes for data, signals, and backtesting.",
+          "Covers execution."
+        ]
+      }
+    ]
+  }
+]

@@ -175,6 +175,70 @@ export const ARTICLES: Article[] = [
     ],
   },
 
+  {
+    slug: "mvo-efficient-frontier",
+    category: "quant-finance-foundations",
+    title: "Mean-Variance Optimization & the Efficient Frontier: A Six-Asset Portfolio in Python",
+    dek: "Markowitz's 1952 insight, built from real data — the correlation matrix, a 20,000-portfolio Monte-Carlo bullet, and the exact minimum-variance and maximum-Sharpe portfolios.",
+    date: "2026-07-20",
+    readMinutes: 10,
+    level: "Foundational",
+    notebook: "mvo-efficient-frontier.ipynb",
+    project: "mvo-efficient-frontier.zip",
+    excerpt:
+      "Don't pick assets — pick the combination. We build the efficient frontier across six asset classes (2015–2024), see why every single ETF plots inside the cloud, and solve for the two portfolios everyone quotes: minimum variance and maximum Sharpe.",
+    stack: ["NumPy", "pandas", "matplotlib", "PyPortfolioOpt"],
+    sections: [
+      { id: "summary", title: "Summary" },
+      { id: "intuition", title: "Intuition" },
+      { id: "mechanics", title: "Theory & mechanics" },
+      { id: "example", title: "Applied example — six ETFs" },
+      { id: "conclusion", title: "Strengths, limits & extensions" },
+    ],
+  },
+  {
+    slug: "black-litterman",
+    category: "quant-finance-foundations",
+    title: "The Black-Litterman Model: Blending Market Equilibrium with Your Own Views",
+    dek: "Start from the portfolio the market already holds, tilt only where you have a view — the 1990 Goldman fix for MVO's wild weights, run on five country ETFs.",
+    date: "2026-07-21",
+    readMinutes: 10,
+    level: "Intermediate",
+    notebook: "black-litterman.ipynb",
+    project: "black-litterman.zip",
+    excerpt:
+      "Reverse-optimize the market's implied returns, state one view — Germany at 10%, half confidence — and watch the Bayesian blend tilt the whole book sensibly while naive MVO lurches 75% into one country. Includes the no-views-equals-market sanity check.",
+    stack: ["NumPy", "pandas", "PyPortfolioOpt"],
+    sections: [
+      { id: "summary", title: "Summary" },
+      { id: "intuition", title: "Intuition" },
+      { id: "mechanics", title: "Theory & mechanics" },
+      { id: "example", title: "Applied example — country ETFs" },
+      { id: "conclusion", title: "Strengths, limits & extensions" },
+    ],
+  },
+  {
+    slug: "risk-parity-futures",
+    category: "quant-finance-foundations",
+    title: "Risk Parity from Scratch: Allocating by Risk, Not Capital — A Futures Portfolio",
+    dek: "Equal capital is not equal risk — in a five-futures book, crude supplies 87% of the total. We equalize every risk contribution in SciPy, validate with Riskfolio-lib, then lever to a vol target.",
+    date: "2026-07-22",
+    readMinutes: 9,
+    level: "Intermediate",
+    notebook: "risk-parity-futures.ipynb",
+    project: "risk-parity-futures.zip",
+    excerpt:
+      "The 60/40 secret: capital weight ≠ risk weight. We compute marginal risk contributions across five futures, solve the risk-parity weights from scratch, match Riskfolio-lib to 1e-6, and scale the book to a 10% vol target with 1.45x leverage — the All-Weather mechanism in miniature.",
+    stack: ["NumPy", "SciPy", "Riskfolio-Lib"],
+    sections: [
+      { id: "summary", title: "Summary" },
+      { id: "intuition", title: "Intuition" },
+      { id: "mechanics", title: "Theory & mechanics" },
+      { id: "example", title: "Applied example — five futures" },
+      { id: "conclusion", title: "Strengths, limits & extensions" },
+    ],
+  },
+
   /* --------------------------------------------- Portfolio Optimization -- */
   {
     slug: "ledoit-wolf-shrinkage",

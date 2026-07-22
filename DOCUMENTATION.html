@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>pyportfolios.com — Codebase Documentation</title>
+<style>
+  :root{
+    --navy:#0a0c14; --navy-elev:#11141d; --navy-sunk:#07080e;
+    --pearl:#eeeeee; --mist:#b4bcce; --steel:#9ca4ba; --aqua:#1fffff;
+    --sisal:#f4f2e8; --line:rgba(238,238,238,.10); --line-strong:rgba(238,238,238,.16);
+    --aqua-dim:rgba(31,255,255,.14);
+    --mono:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Times New Roman",serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--navy);color:var(--pearl);font-family:var(--sans);line-height:1.6;font-size:15px}
+  a{color:var(--aqua);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code,pre{font-family:var(--mono)}
+  /* layout */
+  .wrap{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+  aside{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;border-right:1px solid var(--line);background:var(--navy-sunk);padding:24px 16px}
+  main{max-width:980px;margin:0 auto;padding:40px 32px 120px;width:100%}
+  .brand{display:flex;align-items:baseline;gap:2px;font-weight:900;font-size:18px;letter-spacing:-.02em;margin-bottom:4px}
+  .brand .dot{color:var(--aqua)}
+  .brand-sub{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.18em;color:var(--steel);margin-bottom:24px}
+  nav button{display:block;width:100%;text-align:left;background:none;border:0;color:var(--mist);font-family:var(--mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.1em;padding:9px 12px;border-radius:4px;cursor:pointer;transition:.15s;border-left:2px solid transparent}
+  nav button:hover{color:var(--pearl);background:rgba(255,255,255,.03)}
+  nav button.active{color:var(--aqua);border-left-color:var(--aqua);background:var(--aqua-dim)}
+  nav .grp{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--steel);text-transform:uppercase;padding:18px 12px 6px;opacity:.7}
+  /* typography */
+  h1{font-family:var(--serif);font-weight:500;font-size:clamp(2rem,3vw,2.7rem);line-height:1.1;letter-spacing:-.02em;margin:0 0 6px}
+  h2{font-family:var(--serif);font-weight:500;font-size:1.55rem;margin:44px 0 14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+  h3{font-size:1.05rem;margin:28px 0 8px;color:var(--pearl)}
+  .lede{color:var(--mist);font-size:1.05rem;margin:0 0 8px;max-width:70ch}
+  .eyebrow{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.22em;color:var(--aqua);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--aqua);opacity:.6}
+  p{max-width:74ch}
+  ul,ol{max-width:74ch}
+  li{margin:4px 0}
+  strong{color:#fff}
+  /* plain english callout */
+  .plain{border-left:2px solid var(--aqua);background:linear-gradient(90deg,var(--aqua-dim),transparent);padding:12px 16px;border-radius:0 6px 6px 0;margin:14px 0;font-size:.95rem}
+  .plain b{color:var(--aqua);font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:4px}
+  .note{border:1px solid var(--line-strong);background:var(--navy-elev);border-radius:6px;padding:12px 16px;margin:14px 0;font-size:.92rem;color:var(--mist)}
+  .note b{color:var(--pearl)}
+  /* code */
+  pre{background:var(--navy-sunk);border:1px solid var(--line);border-radius:8px;padding:14px 16px;overflow-x:auto;font-size:12.5px;line-height:1.6;color:#d6dbe6}
+  pre .c{color:var(--steel)}            /* comment */
+  pre .k{color:var(--aqua)}             /* keyword */
+  pre .s{color:#b7e3a8}                 /* string */
+  p code,li code,td code{background:rgba(255,255,255,.06);padding:1px 6px;border-radius:4px;font-size:12.5px;color:var(--aqua)}
+  /* tables */
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--steel);font-weight:400}
+  td code{white-space:nowrap}
+  /* cards / chips */
+  .grid{display:grid;gap:12px;margin:16px 0}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .card{border:1px solid var(--line);background:var(--navy-elev);border-radius:8px;padding:14px 16px}
+  .card h4{margin:0 0 4px;font-size:.95rem;color:var(--pearl)}
+  .card p{margin:0;font-size:.86rem;color:var(--mist)}
+  .pill{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border:1px solid var(--line-strong);border-radius:999px;color:var(--steel);margin:2px 4px 2px 0}
+  .pill.aqua{color:var(--aqua);border-color:var(--aqua-dim)}
+  .swatch{display:inline-block;width:14px;height:14px;border-radius:3px;border:1px solid var(--line-strong);vertical-align:-2px;margin-right:7px}
+  .tab{display:none}
+  .tab.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .filemap{font-family:var(--mono);font-size:12px;color:var(--mist);line-height:1.8;background:var(--navy-sunk);border:1px solid var(--line);border-radius:8px;padding:16px 18px;overflow-x:auto}
+  .filemap .d{color:var(--aqua)}
+  .filemap .cm{color:var(--steel)}
+  .kvs{font-family:var(--mono);font-size:12px}
+  hr{border:0;border-top:1px solid var(--line);margin:32px 0}
+  .toggle-aside{display:none}
+  @media(max-width:840px){
+    .wrap{grid-template-columns:1fr}
+    aside{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+    .g2,.g3{grid-template-columns:1fr}
+    main{padding:28px 18px 80px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside>
+    <div class="brand">pyportfolios<span class="dot">.</span>com</div>
+    <div class="brand-sub">Codebase Documentation</div>
+    <nav id="nav">
+      <button data-tab="overview" class="active">Overview</button>
+      <button data-tab="architecture">Architecture &amp; Build</button>
+      <button data-tab="routing">Routing &amp; Pages</button>
+      <div class="grp">The Code</div>
+      <button data-tab="components">Components</button>
+      <button data-tab="data">Data &amp; Content</button>
+      <button data-tab="design">Design System</button>
+      <button data-tab="motion">Motion &amp; Animation</button>
+      <button data-tab="mechanisms">Key Mechanisms</button>
+      <div class="grp">Reference</div>
+      <button data-tab="deploy">Build &amp; Deploy</button>
+      <button data-tab="glossary">Glossary</button>
+    </nav>
+  </aside>
+  <main id="main">
+
+  <!-- ========================= OVERVIEW ========================= -->
+  <section class="tab active" id="overview">
+    <div class="eyebrow">01 — Overview</div>
+    <h1>What this website is, and how it's built</h1>
+    <p class="lede">pyportfolios.com is an educational platform that bridges quantitative finance theory with practical Python. The site you see is a marketing landing page plus a small content site (research articles, a course outline, and a literature canon).</p>
+
+    <div class="plain"><b>In plain English</b>
+      Think of the whole project as a very fancy, fast-loading brochure + library. There is no server doing work when a visitor arrives — every page is pre-baked into plain HTML files ahead of time and simply handed over. That makes it cheap, fast, and hard to break.</div>
+
+    <h2>The technology, in one glance</h2>
+    <table>
+      <tr><th>Layer</th><th>Tool</th><th>Why it's here</th></tr>
+      <tr><td>Framework</td><td><code>Next.js 16.2.6</code></td><td>Organizes pages, routing, and the build into static HTML</td></tr>
+      <tr><td>UI library</td><td><code>React 19.2.4</code></td><td>Builds the interface from reusable components</td></tr>
+      <tr><td>Language</td><td><code>TypeScript 5</code></td><td>JavaScript + type safety (catches mistakes before they ship)</td></tr>
+      <tr><td>Styling</td><td><code>Tailwind CSS v4</code></td><td>Utility classes + a CSS-first design-token system</td></tr>
+      <tr><td>Smooth scroll</td><td><code>Lenis 1.3.23</code></td><td>The buttery momentum scrolling feel</td></tr>
+      <tr><td>Testing/shots</td><td><code>Playwright</code> (dev only)</td><td>Automated screenshots of versions (the <code>shoot-*.mjs</code> scripts)</td></tr>
+      <tr><td>Hosting</td><td><code>nginx</code> (static files)</td><td>Serves the pre-built <code>out/</code> folder — no Node.js at runtime</td></tr>
+    </table>
+
+    <h2>The big picture</h2>
+    <div class="grid g3">
+      <div class="card"><h4>Pre-rendered</h4><p>Everything is generated at <em>build time</em> into static HTML (<code>output: "export"</code>). Visitors download files, not computed responses.</p></div>
+      <div class="card"><h4>Component-driven</h4><p>The UI is assembled from ~30 small React components (hero, ticker, charts, pricing, etc.) that snap together.</p></div>
+      <div class="card"><h4>Data-driven</h4><p>All content (articles, course, books, design variants) lives in plain TypeScript files under <code>src/lib/</code>. No database, no CMS.</p></div>
+    </div>
+
+    <h2>What lives where (top level)</h2>
+    <div class="filemap">
+pyportfolios/
+├── <span class="d">site/</span>            <span class="cm"># the Next.js app (all the real code)</span>
+│   ├── <span class="d">src/app/</span>      <span class="cm"># pages &amp; routes (App Router)</span>
+│   ├── <span class="d">src/components/</span><span class="cm"># React UI building blocks</span>
+│   ├── <span class="d">src/lib/</span>      <span class="cm"># content as data (articles, course, variants…)</span>
+│   ├── <span class="d">src/content/</span>  <span class="cm"># article prose (hand-written React)</span>
+│   ├── <span class="d">src/fonts/</span>    <span class="cm"># self-hosted Switzer font files</span>
+│   ├── <span class="d">public/</span>       <span class="cm"># images, logos, flags, notebooks</span>
+│   └── next.config.ts  <span class="cm"># build config (static export)</span>
+├── <span class="d">deploy/</span>          <span class="cm"># nginx configs</span>
+└── DOCUMENTATION.html  <span class="cm"># you are here</span>
+    </div>
+    <div class="note">Read the tabs in order for a guided tour, or jump to <b>Key Mechanisms</b> for the interesting engineering (the globe, the world clock, the lightbox).</div>
+  </section>
+
+  <!-- ========================= ARCHITECTURE ========================= -->
+  <section class="tab" id="architecture">
+    <div class="eyebrow">02 — Architecture &amp; Build</div>
+    <h1>How the pieces fit together</h1>
+    <p class="lede">The site uses Next.js's <strong>App Router</strong> with <strong>static export</strong>. Understanding three ideas — static export, server vs. client components, and the data→component→page flow — explains nearly everything.</p>
+
+    <h2>1. Static export ("no server")</h2>
+    <pre><span class="c">// next.config.ts</span>
+<span class="k">const</span> nextConfig = {
+  output: <span class="s">"export"</span>,   <span class="c">// build into plain HTML files (out/)</span>
+};</pre>
+    <p>At build time, Next.js runs every page once, renders the HTML, and writes it to an <code>out/</code> folder. nginx then serves those files directly.</p>
+    <div class="plain"><b>In plain English</b>
+      Most websites cook each page fresh when you ask for it. This one cooks <em>all</em> the pages in advance and keeps them ready on a shelf. When you visit, you just grab the finished plate. Faster, cheaper, and nothing to crash.</div>
+
+    <h2>2. Server vs. Client components</h2>
+    <p>React components here come in two flavours. By default they are <strong>Server Components</strong> — rendered once at build time into HTML, shipping zero JavaScript. A component opts into interactivity by adding <code>"use client"</code> at the top, which means its JavaScript is sent to the browser and runs there.</p>
+    <table>
+      <tr><th>Type</th><th>Marker</th><th>Runs</th><th>Examples</th></tr>
+      <tr><td>Server (default)</td><td>—</td><td>Build time → HTML</td><td><code>StyleTile</code>, <code>Pricing</code>, <code>FAQ</code>, all logo rows, charts</td></tr>
+      <tr><td>Client</td><td><code>"use client"</code></td><td>In the browser</td><td><code>WorldSphere</code>, <code>WorldClockBand</code>, <code>Lightbox</code>, <code>PageTOC</code>, <code>EarlyAccess</code>, <code>SmoothScroll</code>, <code>ScrollReveal</code>, <code>VersionSwitcher</code></td></tr>
+    </table>
+    <div class="plain"><b>In plain English</b>
+      Static parts (text, layout, logos) are printed once and need no "brain". Only the genuinely <em>live</em> parts (the spinning globe, the ticking clocks, the click-to-zoom) carry a little JavaScript brain that wakes up in your browser.</div>
+
+    <h2>3. The data → component → page flow</h2>
+    <pre><span class="c">// data lives as plain TS</span>            <span class="c">// a page reads it</span>          <span class="c">// and renders components</span>
+src/lib/articles.ts   ──►   src/app/research/page.tsx   ──►   &lt;ArticleCard/&gt; × N</pre>
+    <p>Content is never hard-coded inside pages. A page imports arrays/objects from <code>src/lib/*</code>, loops over them, and feeds each item into a presentational component. To add an article, course module, or book, you edit a data file — not the layout.</p>
+
+    <h2>Rendering model summary</h2>
+    <div class="grid g2">
+      <div class="card"><h4>Build step</h4><p><code>next build</code> → runs <code>generateStaticParams()</code> for dynamic routes, renders all pages, writes <code>out/</code>.</p></div>
+      <div class="card"><h4>Runtime</h4><p>Browser loads static HTML + CSS. A handful of client components "hydrate" (attach their JS) for interactivity.</p></div>
+    </div>
+
+    <div class="note"><b>Next.js 16 gotcha:</b> route params are now <b>async</b>. Pages do <code>const { slug } = await params;</code>. The repo's <code>AGENTS.md</code> warns this version differs from older Next.js — always check the bundled docs before editing routing.</div>
+  </section>
+
+  <!-- ========================= ROUTING ========================= -->
+  <section class="tab" id="routing">
+    <div class="eyebrow">03 — Routing &amp; Pages</div>
+    <h1>Every URL, and the file behind it</h1>
+    <p class="lede">Next.js's App Router maps folders under <code>src/app/</code> to URLs. A folder with <code>page.tsx</code> becomes a route; <code>[brackets]</code> mean a dynamic segment.</p>
+
+    <h2>The full URL map</h2>
+    <table>
+      <tr><th>URL</th><th>File</th><th>What it is</th></tr>
+      <tr><td><code>/</code></td><td><code>app/page.tsx</code></td><td>Home — renders the v0 landing</td></tr>
+      <tr><td><code>/v0 … /v6, /v11</code></td><td><code>app/[version]/page.tsx</code></td><td>Design variants (A/B versions)</td></tr>
+      <tr><td><code>/research</code></td><td><code>app/research/page.tsx</code></td><td>Article index (8 articles, 4 categories)</td></tr>
+      <tr><td><code>/research/&lt;slug&gt;</code></td><td><code>app/research/[slug]/page.tsx</code></td><td>One article (8 total)</td></tr>
+      <tr><td><code>/course</code></td><td><code>app/course/page.tsx</code></td><td>Course outline (7 modules, 28 lessons)</td></tr>
+      <tr><td><code>/literature</code></td><td><code>app/literature/page.tsx</code></td><td>Books &amp; landmark papers canon</td></tr>
+      <tr><td><code>/parked</code></td><td><code>app/parked/page.tsx</code></td><td>Staging for removed sections (no-index)</td></tr>
+    </table>
+
+    <h2>The root layout wraps everything</h2>
+    <p><code>app/layout.tsx</code> is the shell every page lives inside. It loads the three fonts, sets global metadata, and mounts <code>&lt;SmoothScroll/&gt;</code> (Lenis) so momentum scrolling applies site-wide.</p>
+    <pre><span class="c">// app/layout.tsx (essence)</span>
+&lt;html className={lora.variable +" "+ switzer.variable +" "+ courier.variable}&gt;
+  &lt;body&gt;
+    &lt;SmoothScroll /&gt;        <span class="c">// Lenis momentum scrolling</span>
+    {children}              <span class="c">// the current page</span>
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+
+    <h2>Dynamic routes &amp; pre-generation</h2>
+    <p>The variant and article routes are dynamic, but the site is fully static — so Next.js needs the list of every valid value up front. That's <code>generateStaticParams()</code>, paired with <code>dynamicParams = false</code> (anything not in the list → 404).</p>
+    <pre><span class="c">// app/research/[slug]/page.tsx</span>
+<span class="k">export const</span> dynamicParams = <span class="k">false</span>;            <span class="c">// only known slugs exist</span>
+
+<span class="k">export function</span> generateStaticParams(){
+  <span class="k">return</span> ARTICLE_SLUGS.map(slug =&gt; ({ slug })); <span class="c">// build one page per article</span>
+}
+
+<span class="k">export default async function</span> ArticlePage({ params }){
+  <span class="k">const</span> { slug } = <span class="k">await</span> params;            <span class="c">// Next 16: params is async</span>
+  <span class="k">const</span> article = getArticle(slug);
+  <span class="k">const</span> Body = BODIES[slug];               <span class="c">// the hand-written prose component</span>
+  <span class="k">if</span>(!article || !Body) notFound();
+  <span class="k">return</span> &lt;ArticleLayout article={article}&gt;&lt;Body/&gt;&lt;/ArticleLayout&gt;;
+}</pre>
+    <div class="plain"><b>In plain English</b>
+      Because there's no live server, the site can't invent a page on demand. So at build time it asks each section "give me your full list of items" and prints one page for every one of them. Ask for a URL that wasn't on the list and you simply get a 404.</div>
+
+    <h2>The variant system</h2>
+    <p>Versions <code>v0–v6</code> render the same <code>StyleTile</code> component with different feature <strong>flags</strong> toggled on; <code>v11</code> ("The Quarterly") renders a separate <code>EditorialTile</code> layout. The flags decide whether extras like the crest, photography, or the live globe appear.</p>
+    <pre><span class="c">// app/[version]/page.tsx</span>
+<span class="k">if</span>(version === <span class="s">"v11"</span>) <span class="k">return</span> &lt;EditorialTile/&gt;;
+<span class="k">return</span> &lt;StyleTile variant={VARIANTS[version]} /&gt;;</pre>
+    <p>See <strong>Data &amp; Content</strong> for the flag table.</p>
+  </section>
+
+  <!-- ========================= COMPONENTS ========================= -->
+  <section class="tab" id="components">
+    <div class="eyebrow">04 — Components</div>
+    <h1>The UI building blocks</h1>
+    <p class="lede">Around 30 components, grouped by role. <code>StyleTile</code> is the conductor that arranges the landing page; everything else is an instrument it plays.</p>
+
+    <h2>Core composition</h2>
+    <table>
+      <tr><th>Component</th><th>Role</th></tr>
+      <tr><td><code>StyleTile.tsx</code></td><td>The whole landing page. Renders, in order: Hero → World-clock ticker → Our Focus → Libraries → Markets → (Imagery) → Geographies → Concepts → Pricing → FAQ → Early access → Footer. Holds data constants (<code>NAV, PILLARS, MARKETS, MODELS</code>) and helper sub-components (<code>SectionLabel, HeroCurve, FigureCovariance</code>).</td></tr>
+      <tr><td><code>EditorialTile.tsx</code></td><td>The alternate "Quarterly" magazine layout used by <code>/v11</code>.</td></tr>
+      <tr><td><code>VersionSwitcher.tsx</code> <span class="pill aqua">client</span></td><td>The sticky V0–V11 toggle strip for browsing design variants.</td></tr>
+    </table>
+
+    <h2>Brand components <span class="pill">src/components/brand</span></h2>
+    <table>
+      <tr><th>Component</th><th>What it draws</th></tr>
+      <tr><td><code>Crest.tsx</code></td><td>The monoline shield-and-sword logo (pure SVG). <code>CrestLockup</code> = crest + wordmark.</td></tr>
+      <tr><td><code>PhotoBackdrop.tsx</code></td><td>Full-bleed background photo with readability gradients (hero &amp; footer).</td></tr>
+      <tr><td><code>PhotoPlate.tsx</code></td><td>Duotone SVG placeholder art (skyline / summit) until real photos drop in.</td></tr>
+      <tr><td><code>StackCards.tsx</code></td><td>White "logo chip" grid of the Python quant stack (scikit-learn, PyTorch…).</td></tr>
+      <tr><td><code>ExchangeRow.tsx</code></td><td>Exchange logos grouped by region (NYSE, LSE, JPX…).</td></tr>
+      <tr><td><code>SectorsIndices.tsx</code></td><td>GICS sectors, country indices, and index-provider logos.</td></tr>
+      <tr><td><code>WorldMap.tsx</code></td><td>Dotted equirectangular map highlighting the top-15 economies. Also exports the <code>EXCHANGES_BY_REGION</code> data.</td></tr>
+      <tr><td><code>WorldClockBand.tsx</code> <span class="pill aqua">client</span></td><td>Scrolling ticker of financial centres with <em>live local times</em> + market-open dots.</td></tr>
+    </table>
+
+    <h2>Landing components <span class="pill">src/components/landing</span></h2>
+    <table>
+      <tr><th>Component</th><th>Role</th></tr>
+      <tr><td><code>Pricing.tsx</code></td><td>Three-tier pricing cards (Starter / Pro / Enterprise); CTAs point to the email capture.</td></tr>
+      <tr><td><code>FAQ.tsx</code></td><td>Accordion built on native <code>&lt;details&gt;</code> — zero custom JS.</td></tr>
+      <tr><td><code>EarlyAccess.tsx</code> <span class="pill aqua">client</span></td><td>Email waitlist form with a state machine (idle → loading → done/error).</td></tr>
+      <tr><td><code>PageTOC.tsx</code> <span class="pill aqua">client</span></td><td>On-this-page table of contents with scroll-spy (highlights the section you're in).</td></tr>
+      <tr><td><code>Lightbox.tsx</code> <span class="pill aqua">client</span></td><td>Click-to-enlarge overlay for the map, logos, and SVG charts.</td></tr>
+      <tr><td><code>ParkedSections.tsx</code></td><td>Sections removed from the live page, kept on <code>/parked</code> for review.</td></tr>
+    </table>
+
+    <h2>Motion &amp; charts</h2>
+    <table>
+      <tr><th>Component</th><th>Role</th></tr>
+      <tr><td><code>motion/SmoothScroll.tsx</code> <span class="pill aqua">client</span></td><td>Lenis momentum scrolling + routes <code>#anchor</code> clicks through an eased scroll.</td></tr>
+      <tr><td><code>motion/ScrollReveal.tsx</code> <span class="pill aqua">client</span></td><td>Fades/animates elements in as they enter the viewport (IntersectionObserver).</td></tr>
+      <tr><td><code>charts/ReturnsHistogram.tsx</code></td><td>SVG histogram of daily returns with the VaR loss-tail shaded.</td></tr>
+      <tr><td><code>WorldSphere.tsx</code> <span class="pill aqua">client</span></td><td>The auto-rotating 3D globe (HTML canvas, hand-rolled projection — no Three.js).</td></tr>
+    </table>
+
+    <h2>Article prose <span class="pill">src/components/article</span></h2>
+    <p>Long-form articles are assembled from typographic building blocks: <code>&lt;Section&gt;</code>, <code>&lt;P&gt;</code>, <code>&lt;Callout&gt;</code>, <code>&lt;CodeBlock&gt;</code>, <code>&lt;DataTable&gt;</code>, <code>&lt;Figure&gt;</code>, <code>&lt;References&gt;</code>, all wrapped by <code>ArticleLayout</code> (which adds the article's nav + TOC).</p>
+
+    <div class="plain"><b>In plain English</b>
+      Picture a set of LEGO bricks. The "brand" bricks are logos and the crest; "landing" bricks are the pricing table and FAQ; "motion" bricks add movement; "article" bricks are paragraph and figure shapes for writing essays. <code>StyleTile</code> is the instruction booklet that says which bricks go where on the home page.</div>
+  </section>
+
+  <!-- ========================= DATA ========================= -->
+  <section class="tab" id="data">
+    <div class="eyebrow">05 — Data &amp; Content</div>
+    <h1>Content as data</h1>
+    <p class="lede">The site has no database. Every list of things — articles, course modules, books, design variants — is a typed array in <code>src/lib/</code>. Pages import these and render them. This is the single most important pattern to understand for editing content.</p>
+
+    <h2>The data files</h2>
+    <table>
+      <tr><th>File</th><th>Holds</th><th>Key exports</th></tr>
+      <tr><td><code>lib/variants.ts</code></td><td>The 8 design versions + feature flags</td><td><code>VARIANTS</code>, <code>VARIANT_IDS</code>, <code>VARIANT_LIST</code></td></tr>
+      <tr><td><code>lib/articles.ts</code></td><td>8 research articles + 4 categories</td><td><code>ARTICLES</code>, <code>getArticle()</code>, <code>articlesByCategory()</code>, <code>articleNeighbours()</code></td></tr>
+      <tr><td><code>lib/course.ts</code></td><td>7 modules, 28 lessons</td><td><code>MODULES</code>, <code>MODULE_COUNT</code>, <code>LESSON_COUNT</code>, <code>TOTAL_MINUTES</code></td></tr>
+      <tr><td><code>lib/literature.ts</code></td><td>Book groups + landmark papers</td><td><code>BOOK_GROUPS</code>, <code>PAPERS</code>, counts</td></tr>
+    </table>
+
+    <h2>Where article <em>prose</em> lives</h2>
+    <p>Article <strong>metadata</strong> (title, date, reading time, stack, TOC) sits in <code>lib/articles.ts</code>. The article <strong>body</strong> is a hand-written React component in <code>src/content/articles/&lt;slug&gt;.tsx</code> — not Markdown — so figures and code can be crafted precisely. A small registry wires slug → component:</p>
+    <pre><span class="c">// research/[slug]/page.tsx</span>
+<span class="k">const</span> BODIES = {
+  <span class="s">"black-scholes-from-first-principles"</span>: BlackScholes,
+  <span class="s">"time-value-of-money"</span>: TimeValueOfMoney,
+  <span class="c">// …8 total</span>
+};</pre>
+    <p>Each article also ships a runnable Jupyter notebook in <code>public/notebooks/&lt;slug&gt;.ipynb</code>.</p>
+
+    <h2>The variant flags</h2>
+    <p>Each version flips a few booleans that <code>StyleTile</code> checks (e.g. <code>{f.globe ? &lt;WorldSphere/&gt; : null}</code>):</p>
+    <table>
+      <tr><th>Version</th><th>Adds</th><th>Flag</th></tr>
+      <tr><td>v0</td><td>Baseline "Quant Research House"</td><td><em>all off</em></td></tr>
+      <tr><td>v1</td><td>Crest &amp; wordmark</td><td><code>crest</code></td></tr>
+      <tr><td>v2</td><td>Editorial photography</td><td><code>photography</code></td></tr>
+      <tr><td>v3</td><td>Stack logo cards</td><td><code>stackCards</code></td></tr>
+      <tr><td>v4</td><td>World map / market reach</td><td><code>worldMap</code></td></tr>
+      <tr><td>v5</td><td>Slogan voice</td><td><code>slogans</code></td></tr>
+      <tr><td>v6</td><td>Live rotating globe</td><td><code>globe</code></td></tr>
+      <tr><td>v11</td><td>Separate magazine layout</td><td><em>EditorialTile</em></td></tr>
+    </table>
+
+    <h2>Cross-linking</h2>
+    <p>The data files reference each other by <code>slug</code> strings, validated at build time: a course <em>lesson</em> can link to a research <em>article</em>; a literature <em>paper</em> can link to the article that explains it. Change a slug and the build surfaces the break.</p>
+
+    <div class="plain"><b>In plain English</b>
+      Adding a new article is like adding a row to a spreadsheet: you fill in its details in <code>articles.ts</code>, write its essay file, drop in its notebook — and the index page, the article page, and any cross-links appear automatically. No layout surgery needed.</div>
+  </section>
+
+  <!-- ========================= DESIGN ========================= -->
+  <section class="tab" id="design">
+    <div class="eyebrow">06 — Design System</div>
+    <h1>Colours, type, and tokens</h1>
+    <p class="lede">All visual decisions flow from a small set of <strong>design tokens</strong> declared once in <code>src/app/globals.css</code> using Tailwind v4's <code>@theme</code> block. Change a token, and it updates everywhere.</p>
+
+    <h2>The colour palette</h2>
+    <table>
+      <tr><th>Token</th><th>Hex</th><th>Use</th></tr>
+      <tr><td><span class="swatch" style="background:#0a0c14"></span><code>navy</code></td><td>#0a0c14</td><td>Primary dark canvas</td></tr>
+      <tr><td><span class="swatch" style="background:#11141d"></span><code>navy-elevated</code></td><td>#11141d</td><td>Cards, raised surfaces</td></tr>
+      <tr><td><span class="swatch" style="background:#07080e"></span><code>navy-sunken</code></td><td>#07080e</td><td>Footer, deepest layer</td></tr>
+      <tr><td><span class="swatch" style="background:#eeeeee"></span><code>pearl</code></td><td>#eeeeee</td><td>Primary text on dark</td></tr>
+      <tr><td><span class="swatch" style="background:#b4bcce"></span><code>mist</code></td><td>#b4bcce</td><td>Muted body text</td></tr>
+      <tr><td><span class="swatch" style="background:#9ca4ba"></span><code>steel</code></td><td>#9ca4ba</td><td>Captions, metadata</td></tr>
+      <tr><td><span class="swatch" style="background:#1fffff"></span><code>aqua</code></td><td>#1fffff</td><td>The single charged accent — used sparingly</td></tr>
+      <tr><td><span class="swatch" style="background:#f4f2e8"></span><code>sisal</code></td><td>#f4f2e8</td><td>Light reading canvas</td></tr>
+      <tr><td><span class="swatch" style="background:#151515"></span><code>anthracite</code></td><td>#151515</td><td>Near-black ink</td></tr>
+    </table>
+    <div class="note">Hairlines and tints are derived with <code>color-mix()</code> (e.g. borders = pearl at 8–14% opacity), so opacities stay consistent without new variables.</div>
+
+    <h2>Typography — three voices</h2>
+    <table>
+      <tr><th>Role</th><th>Font</th><th>Loaded via</th><th>Used by</th></tr>
+      <tr><td>Serif (headings)</td><td>Lora</td><td><code>next/font/google</code></td><td><code>.t-display .t-h1 .t-h2 .dropcap</code></td></tr>
+      <tr><td>Sans (body/UI)</td><td>Switzer</td><td>self-hosted <code>.woff2</code></td><td>body, nav, <code>.t-eyebrow</code></td></tr>
+      <tr><td>Mono (data/labels)</td><td>Courier Prime</td><td><code>next/font/google</code></td><td><code>.t-mono</code>, code, ticker</td></tr>
+    </table>
+    <p>Headings use a <strong>fluid scale</strong> with <code>clamp()</code> so they grow with the viewport without breakpoints:</p>
+    <pre><span class="c">/* globals.css @theme */</span>
+--t-display: clamp(2.85rem, 6.4vw + 0.5rem, 6.75rem);
+--t-h1:      clamp(2rem,    3.2vw + 1rem,   3.5rem);</pre>
+
+    <h2>Tailwind v4 — CSS-first</h2>
+    <p>There is no <code>tailwind.config.js</code>. Tailwind v4 is configured inside the CSS itself:</p>
+    <pre><span class="c">/* globals.css */</span>
+<span class="k">@import</span> <span class="s">"tailwindcss"</span>;
+<span class="k">@theme</span> {
+  --color-navy: #0a0c14;
+  --color-aqua: #1fffff;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  <span class="c">/* …tokens become utilities: bg-navy, text-aqua, etc. */</span>
+}</pre>
+    <div class="plain"><b>In plain English</b>
+      The whole look is controlled from one short "settings" block at the top of one CSS file. The navy background, the electric-aqua highlight, the heading sizes — all named there once. Designers can re-skin the site by editing a dozen lines instead of hunting through the code.</div>
+  </section>
+
+  <!-- ========================= MOTION ========================= -->
+  <section class="tab" id="motion">
+    <div class="eyebrow">07 — Motion &amp; Animation</div>
+    <h1>How the site moves</h1>
+    <p class="lede">Motion is deliberate and mostly CSS-driven. Two client components provide the "engine" (smooth scroll + reveal-on-scroll); the rest are CSS <code>@keyframes</code> in <code>globals.css</code>. Everything respects the user's "reduce motion" setting.</p>
+
+    <h2>The two motion engines</h2>
+    <div class="grid g2">
+      <div class="card"><h4>SmoothScroll (Lenis)</h4><p>Wraps native scrolling in eased momentum (<code>duration 1.05s</code>, ease-out-expo). Also intercepts <code>#anchor</code> clicks and glides to them with an <code>-80px</code> offset to clear the sticky nav. Disabled on touch + reduced-motion.</p></div>
+      <div class="card"><h4>ScrollReveal</h4><p>An IntersectionObserver adds an <code>in-view</code> class as elements (marked <code>data-reveal</code>) enter the viewport, triggering CSS fade/slide and chart draw-in animations. One-shot per element.</p></div>
+    </div>
+
+    <h2>Notable CSS animations</h2>
+    <table>
+      <tr><th>Class</th><th>Effect</th></tr>
+      <tr><td><code>.hero-in</code></td><td>Hero text fades + rises on load (staggered by delay)</td></tr>
+      <tr><td><code>.draw-line / .draw-path</code></td><td>SVG lines "draw" themselves via <code>stroke-dashoffset</code> (the equity curve, the covariance chart)</td></tr>
+      <tr><td><code>.grow-bar</code></td><td>Histogram bars grow from the baseline, left→right, when scrolled into view</td></tr>
+      <tr><td><code>.marquee</code></td><td>The world-clock ticker scroll (48s linear loop; pauses on hover)</td></tr>
+      <tr><td><code>.live-dot</code></td><td>Pulsing aqua ring on "market open" indicators</td></tr>
+      <tr><td><code>.float-curve</code> / <code>.aurora-*</code></td><td>Slow ambient drift of the hero curve and background light blobs</td></tr>
+      <tr><td><code>.nav-condense / .nav-logo</code></td><td>Scroll-driven nav padding + logo shrink (CSS <code>animation-timeline: scroll()</code>)</td></tr>
+      <tr><td><code>.lb-backdrop / .lb-panel</code></td><td>Lightbox fade + zoom-in</td></tr>
+    </table>
+
+    <h2>Accessibility: reduce-motion is honoured</h2>
+    <pre><span class="c">/* globals.css */</span>
+<span class="k">@media</span> (prefers-reduced-motion: reduce){
+  .hero-in,.lb-panel { animation: none; }
+  .draw-path { stroke-dashoffset: 0; }   <span class="c">/* show final state, no drawing */</span>
+}</pre>
+    <p>The two JS engines bail out early when reduce-motion is set: SmoothScroll never initialises Lenis, and ScrollReveal leaves everything visible.</p>
+
+    <div class="plain"><b>In plain English</b>
+      The animations are like tasteful stage lighting — they guide your eye (text rises in, charts draw themselves, a ticker glides). But if a visitor has told their device "I get motion sick, calm things down," the site quietly turns the effects off and just shows the finished result.</div>
+  </section>
+
+  <!-- ========================= MECHANISMS ========================= -->
+  <section class="tab" id="mechanisms">
+    <div class="eyebrow">08 — Key Mechanisms</div>
+    <h1>The clever bits, explained</h1>
+    <p class="lede">A few features are worth a deeper look — they're where the engineering is most interesting and most reusable.</p>
+
+    <h3>① The rotating globe — <code>WorldSphere.tsx</code></h3>
+    <p><strong>Technical:</strong> An HTML <code>&lt;canvas&gt;</code> with a hand-written 3D projection (no Three.js). City latitude/longitude are converted to points on a sphere, rotated each frame, projected to 2D, depth-sorted, and drawn. City labels use a fixed priority list and a greedy overlap check so they never flicker. The canvas scales to <code>devicePixelRatio</code> for crisp rendering, and the spin slows dramatically under reduce-motion.</p>
+    <div class="plain"><b>In plain English</b> It's a tiny hand-built planetarium drawn dot-by-dot, instead of pulling in a heavy 3D library. Lightweight and fully controlled.</div>
+
+    <h3>② Live world clocks — <code>WorldClockBand.tsx</code></h3>
+    <p><strong>Technical:</strong> Times come from the browser's <code>Intl.DateTimeFormat</code> with each city's IANA timezone (e.g. <code>Asia/Tokyo</code>) — no timezone math by hand. A 1-second interval re-renders; market-open dots compare "now" against open/close minutes and trading weekdays (e.g. Tel Aviv trades Sun–Thu). To avoid a server/browser mismatch, it shows <code>--:--</code> until mounted, then fills in.</p>
+    <div class="plain"><b>In plain English</b> Each city's clock asks the browser "what time is it <em>there</em> right now?" and ticks every second, lighting a dot green when that market is open.</div>
+
+    <h3>③ Click-to-enlarge — <code>Lightbox.tsx</code></h3>
+    <p><strong>Technical:</strong> One delegated click listener on the document handles every image/figure tagged <code>data-zoom</code> — no per-image wiring. Photos open on a white panel at intrinsic resolution; SVG charts are cloned onto a dark panel (so they stay theme-correct and infinitely sharp). Esc / backdrop / ✕ close it; focus is trapped and restored; background scroll locks.</p>
+    <div class="plain"><b>In plain English</b> A single "watcher" notices any clickable image and pops a clean, zoomed view over the page — keyboard-friendly and tidy on the way out.</div>
+
+    <h3>④ On-this-page TOC — <code>PageTOC.tsx</code></h3>
+    <p><strong>Technical:</strong> An IntersectionObserver with a viewport-middle band (<code>rootMargin: -45% 0 -50%</code>) picks the "current" section and highlights its tab (scroll-spy). Clicks are plain <code>#anchor</code> links that fall through to the global Lenis handler for an eased jump.</p>
+    <div class="plain"><b>In plain English</b> As you scroll, the menu automatically underlines whichever section you're reading — and clicking a menu item glides you there.</div>
+
+    <h3>⑤ Drop-in images — build-time file checks</h3>
+    <p><strong>Technical:</strong> Server components like <code>StyleTile</code> (focus photos) and <code>SectorsIndices</code> (provider logos) call <code>fs.existsSync()</code> <em>at build time</em> to detect whether an asset file exists, choosing a real image or a graceful text/placeholder fallback. Drop a correctly-named file into <code>public/</code> and it appears — no code change.</p>
+    <div class="plain"><b>In plain English</b> The site checks its own image folders while building. Add a logo named the right way and it shows up automatically; leave it out and a neat placeholder stands in.</div>
+
+    <h3>⑥ Charts are SVG, not images</h3>
+    <p><strong>Technical:</strong> <code>ReturnsHistogram</code> and the covariance figure are drawn from hardcoded data arrays into deterministic SVG. That means crisp at any zoom, animatable (bars grow, lines draw), and identical between server render and browser.</p>
+    <div class="plain"><b>In plain English</b> The charts are drawn with math, not saved as picture files — so they're razor-sharp at any size and can animate.</div>
+  </section>
+
+  <!-- ========================= DEPLOY ========================= -->
+  <section class="tab" id="deploy">
+    <div class="eyebrow">09 — Build &amp; Deploy</div>
+    <h1>From source to live site</h1>
+    <p class="lede">The workflow is: develop locally, build to static files, serve those files with nginx.</p>
+
+    <h2>npm scripts</h2>
+    <table>
+      <tr><th>Command</th><th>Does</th></tr>
+      <tr><td><code>npm run dev</code></td><td>Local dev server with hot reload (<code>next dev</code>)</td></tr>
+      <tr><td><code>npm run build</code></td><td>Builds the static site into <code>site/out/</code></td></tr>
+      <tr><td><code>npm run lint</code></td><td>Runs ESLint</td></tr>
+      <tr><td><code>npm run start</code></td><td>(Standard Next start — unused for static hosting)</td></tr>
+    </table>
+
+    <h2>The build output</h2>
+    <p><code>next build</code> with <code>output: "export"</code> produces a folder of plain files:</p>
+    <div class="filemap">
+site/out/
+├── index.html              <span class="cm"># home (v0)</span>
+├── v1/index.html …         <span class="cm"># each variant</span>
+├── research/index.html     <span class="cm"># article index</span>
+├── research/&lt;slug&gt;/…       <span class="cm"># each article</span>
+├── course/  literature/  parked/
+├── _next/static/…          <span class="cm"># CSS + JS bundles (hashed)</span>
+└── flags/ logos/ notebooks/ …  <span class="cm"># copied from public/</span>
+    </div>
+
+    <h2>Serving with nginx</h2>
+    <p>nginx points its root at <code>site/out</code> and serves files directly. The repo's <code>deploy/</code> holds isolated configs (e.g. an instance on port <code>1133</code>) that run alongside any other site without touching port 80.</p>
+    <pre><span class="c"># deploy/ (essence)</span>
+root  .../site/out;
+location / { try_files $uri $uri.html $uri/ /index.html; }
+location /_next/static/ { expires 1y; }   <span class="c"># hashed assets cache forever</span></pre>
+
+    <div class="plain"><b>In plain English</b>
+      You "compile" the website into a folder of finished pages, then point a simple file-server (nginx) at that folder. Updating the site = rebuild the folder and refresh. There's no app to keep running or crash.</div>
+
+    <div class="note"><b>Editing checklist:</b> change content in <code>src/lib/*</code> or <code>src/content/*</code> → run <code>npm run build</code> → the static <code>out/</code> updates → hard-refresh the browser (hashed assets cache aggressively).</div>
+  </section>
+
+  <!-- ========================= GLOSSARY ========================= -->
+  <section class="tab" id="glossary">
+    <div class="eyebrow">10 — Glossary</div>
+    <h1>Plain-English glossary</h1>
+    <p class="lede">Quick definitions for the terms used throughout this doc.</p>
+    <table>
+      <tr><th>Term</th><th>Meaning</th></tr>
+      <tr><td><strong>Static export</strong></td><td>Building the whole site into plain HTML files ahead of time, so no server computes pages on request.</td></tr>
+      <tr><td><strong>Component</strong></td><td>A reusable, self-contained piece of UI (a button, a card, the whole hero). The site is built by composing these.</td></tr>
+      <tr><td><strong>Server component</strong></td><td>A component rendered once at build time into HTML; ships no JavaScript. The default here.</td></tr>
+      <tr><td><strong>Client component</strong></td><td>A component marked <code>"use client"</code> that runs JavaScript in the browser for interactivity.</td></tr>
+      <tr><td><strong>Hydration</strong></td><td>When the browser "wakes up" a client component by attaching its JavaScript to the already-rendered HTML.</td></tr>
+      <tr><td><strong>App Router</strong></td><td>Next.js's system where folders under <code>src/app/</code> become URLs.</td></tr>
+      <tr><td><strong>Route / slug</strong></td><td>A URL path; a <em>slug</em> is the readable id in it, e.g. <code>black-scholes…</code> in <code>/research/black-scholes…</code>.</td></tr>
+      <tr><td><strong>generateStaticParams</strong></td><td>A function that lists every dynamic page to build (since there's no live server to invent them).</td></tr>
+      <tr><td><strong>Design token</strong></td><td>A named value (a colour, a size) defined once and reused everywhere — change it once, it updates globally.</td></tr>
+      <tr><td><strong>Tailwind</strong></td><td>A styling system of small utility classes (<code>bg-navy</code>, <code>text-aqua</code>) plus, in v4, a CSS-based token config.</td></tr>
+      <tr><td><strong>IntersectionObserver</strong></td><td>A browser tool that notices when an element scrolls into view — used for reveal animations and the TOC scroll-spy.</td></tr>
+      <tr><td><strong>Lenis</strong></td><td>The library that gives the page its smooth, momentum scrolling.</td></tr>
+      <tr><td><strong>IANA timezone</strong></td><td>A standard timezone name like <code>Asia/Tokyo</code>; the browser uses it to compute correct local times.</td></tr>
+      <tr><td><strong>SVG</strong></td><td>Scalable Vector Graphics — images drawn with math, so they stay sharp at any size and can animate.</td></tr>
+      <tr><td><strong>Canvas</strong></td><td>An HTML element you draw pixels onto with code — used for the rotating globe.</td></tr>
+      <tr><td><strong>prefers-reduced-motion</strong></td><td>A device setting where users ask for fewer animations; the site honours it.</td></tr>
+      <tr><td><strong>Variant / flag</strong></td><td>A design version (v0–v11); <em>flags</em> are on/off switches that add features like the crest or globe.</td></tr>
+    </table>
+    <hr/>
+    <p style="color:var(--steel);font-size:12px;font-family:var(--mono)">Generated documentation · pyportfolios.com codebase · Next.js 16 · React 19 · Tailwind v4</p>
+  </section>
+
+  </main>
+</div>
+<script>
+  const nav = document.getElementById('nav');
+  const tabs = document.querySelectorAll('.tab');
+  const btns = nav.querySelectorAll('button');
+  function show(id){
+    tabs.forEach(t=>t.classList.toggle('active', t.id===id));
+    btns.forEach(b=>b.classList.toggle('active', b.dataset.tab===id));
+    document.getElementById('main').scrollTo({top:0});
+    window.scrollTo({top:0});
+    if(history.replaceState) history.replaceState(null,'','#'+id);
+  }
+  nav.addEventListener('click', e=>{
+    const b = e.target.closest('button[data-tab]');
+    if(b) show(b.dataset.tab);
+  });
+  // deep-link support
+  const initial = location.hash.replace('#','');
+  if(initial && document.getElementById(initial)) show(initial);
+</script>
+</body>
+</html>

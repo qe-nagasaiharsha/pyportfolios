@@ -1,0 +1,787 @@
+[
+  {
+    "theme": "Foundations",
+    "books": [
+      {
+        "title": "Financial calculus: An introduction to derivative pricing",
+        "author": "Baxter & Rennie",
+        "year": 1996,
+        "why": [
+          "A famous textbook and classic guide in quantitative finance.",
+          "Explains the complex math used to find fair prices for financial derivatives.",
+          "Bridges high-level mathematical theory and practical use on trading desks.",
+          "Authors: Martin Baxter and Andrew Rennie, industry derivatives quants."
+        ],
+        "cover": "baxter-financial-calculus.jpg",
+        "citation": "Baxter, M., & Rennie, A. (1996). Financial calculus: An introduction to derivative pricing. Cambridge University Press.",
+        "coverW": 855,
+        "coverH": 1360
+      },
+      {
+        "title": "The concepts and practice of mathematical finance (2nd ed.)",
+        "author": "Joshi",
+        "year": 2008,
+        "why": [
+          "A highly respected guide to quantitative finance.",
+          "Bridges the gap between complex mathematical theory and practical trading-floor applications.",
+          "Strong emphasis on how models are actually implemented.",
+          "Author: Mark Joshi, former bank quant (RBS) and professor at the University of Melbourne."
+        ],
+        "cover": "joshi-the-concepts-and-practice-of-mathematical-.jpg",
+        "citation": "Joshi, M. S. (2008). The concepts and practice of mathematical finance. Cambridge University Press.",
+        "coverW": 897,
+        "coverH": 1360
+      },
+      {
+        "title": "Stochastic calculus for finance II: Continuous-time models",
+        "author": "Shreve",
+        "year": 2004,
+        "why": [
+          "Highly popular text from Carnegie Mellon’s renowned computational finance master’s program.",
+          "A core guide for quants and financial engineers.",
+          "Models stock prices, interest rates, and options under randomness over time.",
+          "Author: Steven Shreve, Carnegie Mellon professor and co-founder of its computational-finance master’s."
+        ],
+        "cover": "shreve-stochastic-calculus-for-finance-ii.jpg",
+        "citation": "Shreve, S. E. (2004). Stochastic calculus for finance II: Continuous-time models. Springer.",
+        "coverW": 827,
+        "coverH": 1245
+      },
+      {
+        "title": "Arbitrage theory in continuous time (4th ed.)",
+        "author": "Björk",
+        "year": 2020,
+        "why": [
+          "The standard graduate text on arbitrage pricing in continuous time.",
+          "Develops martingale and measure-change methods rigorously yet readably.",
+          "Bridges pure stochastic calculus and derivative pricing.",
+          "Author: Tomas Björk, professor at the Stockholm School of Economics."
+        ],
+        "cover": "bj-rk-arbitrage-theory-in-continuous-time.jpg",
+        "citation": "Björk, T. (2020). Arbitrage theory in continuous time. Oxford University Press.",
+        "coverW": 856,
+        "coverH": 1360
+      },
+      {
+        "title": "Brownian motion and stochastic calculus (2nd ed.)",
+        "author": "Karatzas & Shreve",
+        "year": 1991,
+        "why": [
+          "The definitive mathematical reference on Brownian motion and stochastic calculus.",
+          "Aimed at advanced readers.",
+          "Supplies the rigorous foundations under every continuous-time pricing model.",
+          "Authors: Ioannis Karatzas (Columbia) and Steven Shreve (Carnegie Mellon), leading probabilists."
+        ],
+        "cover": "karatzas-brownian-motion-and-stochastic-calculus.jpg",
+        "citation": "Karatzas, I., & Shreve, S. E. (1991). Brownian motion and stochastic calculus. Springer.",
+        "coverW": 827,
+        "coverH": 1254
+      },
+      {
+        "title": "Statistical inference (2nd ed.)",
+        "author": "Casella & Berger",
+        "year": 2002,
+        "why": [
+          "The standard graduate text on mathematical statistics and inference.",
+          "Rigorous foundation in estimation, hypothesis testing, and likelihood.",
+          "The statistics backbone behind econometrics and model validation.",
+          "Authors: George Casella and Roger Berger, eminent academic statisticians."
+        ],
+        "cover": "casella-statistical-inference.jpg",
+        "citation": "Casella, G., & Berger, R. L. (2002). Statistical inference. Duxbury.",
+        "coverW": 350,
+        "coverH": 514
+      },
+      {
+        "title": "Analysis of financial time series (3rd ed.)",
+        "author": "Tsay",
+        "year": 2010,
+        "why": [
+          "The standard applied text on financial time series.",
+          "Covers volatility modeling (GARCH), return dynamics, and multivariate methods.",
+          "A staple of empirical quant research.",
+          "Author: Ruey Tsay, professor of econometrics and statistics at Chicago Booth."
+        ],
+        "cover": "tsay-analysis-of-financial-time-series.jpg",
+        "citation": "Tsay, R. S. (2010). Analysis of financial time series. Wiley.",
+        "coverW": 978,
+        "coverH": 1500
+      },
+      {
+        "title": "Time series analysis",
+        "author": "Hamilton",
+        "year": 1994,
+        "why": [
+          "The authoritative reference on time-series econometrics.",
+          "Go-to source for ARMA, state-space, VAR, and regime-switching models.",
+          "Dense and comprehensive.",
+          "Author: James Hamilton, professor at UC San Diego; a leading time-series econometrician."
+        ],
+        "cover": "hamilton-time-series-analysis.jpg",
+        "citation": "Hamilton, J. D. (1994). Time series analysis. Princeton University Press.",
+        "coverW": 956,
+        "coverH": 1500
+      },
+      {
+        "title": "A first course in probability (10th ed.)",
+        "author": "Ross",
+        "year": 2019,
+        "why": [
+          "A classic first course in probability used worldwide.",
+          "Builds core intuition for randomness, distributions, and expectation.",
+          "Foundational for every quantitative discipline.",
+          "Author: Sheldon Ross, professor at USC and a prolific applied-probability author."
+        ],
+        "cover": "ross-a-first-course-in-probability.jpg",
+        "citation": "Ross, S. M. (2019). A first course in probability. Pearson.",
+        "coverW": 370,
+        "coverH": 474
+      },
+      {
+        "title": "Introduction to probability (2nd ed.)",
+        "author": "Blitzstein & Hwang",
+        "year": 2019,
+        "why": [
+          "Modern, intuition-first text from Harvard’s popular Stat 110 course.",
+          "Makes conditioning, distributions, and stochastic thinking understandable.",
+          "Widely praised for clarity.",
+          "Authors: Joe Blitzstein (Harvard, Stat 110) and Jessica Hwang (Stanford)."
+        ],
+        "cover": "blitzstein-introduction-to-probability.jpg",
+        "citation": "Blitzstein, J. K., & Hwang, J. (2019). Introduction to probability. Chapman & Hall/CRC.",
+        "coverW": 949,
+        "coverH": 1400
+      },
+      {
+        "title": "The econometrics of financial markets",
+        "author": "Campbell & MacKinlay",
+        "year": 1997,
+        "why": [
+          "The foundational graduate text in financial econometrics.",
+          "Links asset-pricing theory to empirical testing.",
+          "Standard reference for factor models and market-efficiency research.",
+          "Authors: John Campbell (Harvard), Andrew Lo (MIT Sloan), and Craig MacKinlay (Wharton)."
+        ],
+        "cover": "campbell-the-econometrics-of-financial-markets.jpg",
+        "citation": "Campbell, J. Y., Lo, A. W., & MacKinlay, A. C. (1997). The econometrics of financial markets. Princeton University Press.",
+        "coverW": 856,
+        "coverH": 1360
+      },
+      {
+        "title": "Econometric analysis (8th ed.)",
+        "author": "Greene",
+        "year": 2018,
+        "why": [
+          "The encyclopedic graduate reference in econometrics.",
+          "One of the most-cited works in economics (90,000+ citations).",
+          "Comprehensive across MLE, GMM, time series, panel, and limited-dependent models.",
+          "Author: William Greene, professor at NYU Stern."
+        ],
+        "cover": "greene-econometric-analysis.jpg",
+        "citation": "Greene, W. H. (2018). Econometric analysis. Pearson.",
+        "coverW": 332,
+        "coverH": 400
+      }
+    ]
+  },
+  {
+    "theme": "Fixed Income & Interest-Rate Modeling",
+    "books": [
+      {
+        "title": "Fixed income analysis (5th ed.)",
+        "author": "Fabozzi",
+        "year": 2022,
+        "why": [
+          "The CFA-series standard on fixed income.",
+          "Covers bond math, term structure, credit, and securitized products.",
+          "Institutional entry point to rates and credit analysis.",
+          "Author: Frank Fabozzi, editor of the CFA fixed-income curriculum and the most prolific fixed-income author."
+        ],
+        "cover": "fabozzi-fixed-income-analysis.jpg",
+        "citation": "Fabozzi, F. J. (2022). Fixed income analysis. Wiley.",
+        "coverW": 637,
+        "coverH": 900
+      },
+      {
+        "title": "Fixed income securities (4th ed.): Tools for today’s markets",
+        "author": "Tuckman & Serrat",
+        "year": 2022,
+        "why": [
+          "Modern, practitioner-oriented bestseller on fixed income.",
+          "Covers arbitrage pricing, duration/convexity, and curve construction.",
+          "Reflects the tools used on rates desks today.",
+          "Authors: Bruce Tuckman (NYU Stern; ex-Lehman/CME) and Angel Serrat (ex-JPMorgan PM)."
+        ],
+        "cover": "tuckman-fixed-income-securities.jpg",
+        "citation": "Tuckman, B., & Serrat, A. (2022). Fixed income securities: Tools for today’s markets. Wiley.",
+        "coverW": 1014,
+        "coverH": 1500
+      },
+      {
+        "title": "Fixed income securities: Valuation, risk, and risk management",
+        "author": "Veronesi",
+        "year": 2010,
+        "why": [
+          "Bridges bond fundamentals and quantitative rates modeling.",
+          "Strong on valuation and risk management.",
+          "Covers derivatives and structured products.",
+          "Author: Pietro Veronesi, professor of finance at Chicago Booth."
+        ],
+        "cover": "veronesi-fixed-income-securities.jpg",
+        "citation": "Veronesi, P. (2010). Fixed income securities: Valuation, risk, and risk management. Wiley.",
+        "coverW": 1000,
+        "coverH": 1427
+      },
+      {
+        "title": "Bond pricing and yield curve modeling: A structural approach",
+        "author": "Rebonato",
+        "year": 2018,
+        "why": [
+          "A modern, authoritative treatment of the yield curve.",
+          "A structural approach from a leading rates quant.",
+          "Bridges heavy rates models and how curves are actually built.",
+          "Author: Riccardo Rebonato, EDHEC professor; former head of rates/FX quant research at PIMCO and RBS."
+        ],
+        "cover": "rebonato-bond-pricing-and-yield-curve-modeling.jpg",
+        "citation": "Rebonato, R. (2018). Bond pricing and yield curve modeling: A structural approach. Cambridge University Press.",
+        "coverW": 1003,
+        "coverH": 1500
+      },
+      {
+        "title": "Interest rate models (2nd ed.)—Theory and practice: With smile, inflation and credit",
+        "author": "Brigo & Mercurio",
+        "year": 2006,
+        "why": [
+          "The definitive practitioner reference for interest-rate models.",
+          "Covers short-rate and market (LIBOR/HJM) models in depth.",
+          "Detailed on calibration and smile-consistent pricing.",
+          "Authors: Damiano Brigo (Imperial College) and Fabio Mercurio (head of quant analytics, Bloomberg)."
+        ],
+        "cover": "brigo-interest-rate-models.jpg",
+        "citation": "Brigo, D., & Mercurio, F. (2006). Interest rate models—Theory and practice: With smile, inflation and credit. Springer.",
+        "coverW": 827,
+        "coverH": 1257
+      }
+    ]
+  },
+  {
+    "theme": "Derivatives, Options & Volatility",
+    "books": [
+      {
+        "title": "Options, futures, and other derivatives (11th ed.)",
+        "author": "Hull",
+        "year": 2021,
+        "why": [
+          "The most widely used derivatives textbook in the world.",
+          "The common language of options, futures, swaps, and risk-neutral pricing.",
+          "Standard for students and practitioners alike.",
+          "Author: John Hull, professor at the University of Toronto’s Rotman School."
+        ],
+        "cover": "hull-options-futures-and-other-derivatives.jpg",
+        "citation": "Hull, J. C. (2021). Options, futures, and other derivatives. Pearson.",
+        "coverW": 484,
+        "coverH": 613
+      },
+      {
+        "title": "Option volatility and pricing (2nd ed.): Advanced trading strategies and techniques",
+        "author": "Natenberg",
+        "year": 2015,
+        "why": [
+          "The classic on options from a trader’s perspective.",
+          "Builds intuition for the Greeks, volatility, and spreads.",
+          "Light on heavy math; a perennial desk favorite.",
+          "Author: Sheldon Natenberg, veteran options trader and educator (Chicago)."
+        ],
+        "cover": "natenberg-option-volatility-and-pricing.jpg",
+        "citation": "Natenberg, S. (2015). Option volatility and pricing: Advanced trading strategies and techniques. McGraw-Hill.",
+        "coverW": 662,
+        "coverH": 1000
+      },
+      {
+        "title": "Dynamic hedging: Managing vanilla and exotic options",
+        "author": "Taleb",
+        "year": 1997,
+        "why": [
+          "The practitioner classic on actually running an options book.",
+          "Deep on Greeks behavior, exotics, and real-world hedging risks.",
+          "Covers what textbook models miss — gaps, liquidity, second-order effects.",
+          "Author: Nassim Nicholas Taleb, former options trader and risk theorist (NYU Tandon)."
+        ],
+        "cover": "taleb-dynamic-hedging.jpg",
+        "citation": "Taleb, N. N. (1997). Dynamic hedging: Managing vanilla and exotic options. Wiley.",
+        "coverW": 904,
+        "coverH": 1360
+      },
+      {
+        "title": "Paul Wilmott on quantitative finance (2nd ed.)",
+        "author": "Wilmott",
+        "year": 2006,
+        "why": [
+          "An intuition-rich tour of quantitative finance.",
+          "From a renowned practitioner-educator.",
+          "Connects derivatives math to real market behavior.",
+          "Author: Paul Wilmott, founder of the CQF and the Wilmott quant community."
+        ],
+        "cover": "wilmott-paul-wilmott-on-quantitative-finance.jpg",
+        "citation": "Wilmott, P. (2006). Paul Wilmott on quantitative finance. Wiley.",
+        "coverW": 1149,
+        "coverH": 1500
+      },
+      {
+        "title": "The volatility surface: A practitioner’s guide",
+        "author": "Gatheral",
+        "year": 2006,
+        "why": [
+          "The definitive text on the implied-volatility surface.",
+          "Standard reference for local and stochastic volatility models.",
+          "Used to price and hedge exotic options.",
+          "Author: Jim Gatheral, ex-head of equity-derivatives quant at Merrill Lynch; now Baruch College professor."
+        ],
+        "cover": "gatheral-the-volatility-surface.jpg",
+        "citation": "Gatheral, J. (2006). The volatility surface: A practitioner’s guide. Wiley.",
+        "coverW": 1006,
+        "coverH": 1500
+      },
+      {
+        "title": "Stochastic volatility modeling",
+        "author": "Bergomi",
+        "year": 2016,
+        "why": [
+          "The modern reference on local and stochastic volatility.",
+          "The advanced successor to Gatheral, used on derivatives desks.",
+          "By a leading practitioner-quant (head of quant research, Société Générale).",
+          "Author: Lorenzo Bergomi, head of quantitative research at Société Générale."
+        ],
+        "cover": "bergomi-stochastic-volatility-modeling.jpg",
+        "citation": "Bergomi, L. (2016). Stochastic volatility modeling. Chapman & Hall/CRC.",
+        "coverW": 856,
+        "coverH": 1360
+      },
+      {
+        "title": "Monte Carlo methods in financial engineering",
+        "author": "Glasserman",
+        "year": 2003,
+        "why": [
+          "The authoritative reference on Monte Carlo methods in finance.",
+          "Covers simulation, variance reduction, and Greeks estimation.",
+          "Underpins pricing of path-dependent, high-dimensional derivatives.",
+          "Author: Paul Glasserman, professor at Columbia Business School."
+        ],
+        "cover": "glasserman-monte-carlo-methods-in-financial-engi.jpg",
+        "citation": "Glasserman, P. (2003). Monte Carlo methods in financial engineering. Springer.",
+        "coverW": 827,
+        "coverH": 1253
+      }
+    ]
+  },
+  {
+    "theme": "Portfolio Optimization & Asset Allocation",
+    "books": [
+      {
+        "title": "Investments (13th ed.)",
+        "author": "Bodie & Marcus",
+        "year": 2024,
+        "why": [
+          "The leading university textbook on investments.",
+          "Covers risk-return, the CAPM, market efficiency, and asset classes.",
+          "Foundational framework for all portfolio work.",
+          "Authors: Zvi Bodie, Alex Kane, and Alan Marcus, leading finance academics."
+        ],
+        "cover": "bodie-investments.jpg",
+        "citation": "Bodie, Z., Kane, A., & Marcus, A. J. (2024). Investments. McGraw-Hill.",
+        "coverW": 1000,
+        "coverH": 1207
+      },
+      {
+        "title": "Investment science (2nd ed.)",
+        "author": "Luenberger",
+        "year": 2013,
+        "why": [
+          "A clear, elegant introduction to investment mathematics.",
+          "Spans cash flows, mean-variance theory, and derivatives.",
+          "Ideal foundational bridge into quant portfolio work.",
+          "Author: David Luenberger, professor of engineering and operations research at Stanford."
+        ],
+        "cover": "luenberger-investment-science.jpg",
+        "citation": "Luenberger, D. G. (2013). Investment science. Oxford University Press.",
+        "coverW": 1216,
+        "coverH": 1500
+      },
+      {
+        "title": "Asset management: A systematic approach to factor investing",
+        "author": "Ang",
+        "year": 2014,
+        "why": [
+          "The definitive modern text on factor investing.",
+          "Reframes allocation around factors, not asset-class labels.",
+          "By Andrew Ang, who built BlackRock’s factor-investing business.",
+          "Author: Andrew Ang, former Columbia professor; head of factor investing at BlackRock."
+        ],
+        "cover": "ang-asset-management.jpg",
+        "citation": "Ang, A. (2014). Asset management: A systematic approach to factor investing. Oxford University Press.",
+        "coverW": 988,
+        "coverH": 1500
+      },
+      {
+        "title": "Active portfolio management (2nd ed.): A quantitative approach for producing superior returns and controlling risk",
+        "author": "Grinold & Kahn",
+        "year": 1999,
+        "why": [
+          "The definitive institutional text on quantitative active management.",
+          "Introduced the information ratio and the Fundamental Law of Active Management.",
+          "Foundational for factor investing and alpha research.",
+          "Authors: Richard Grinold and Ronald Kahn, longtime heads of research at BARRA/BlackRock."
+        ],
+        "cover": "grinold-active-portfolio-management.jpg",
+        "citation": "Grinold, R. C., & Kahn, R. N. (1999). Active portfolio management: A quantitative approach for producing superior returns and controlling risk. McGraw-Hill.",
+        "coverW": 667,
+        "coverH": 1000
+      },
+      {
+        "title": "Introduction to risk parity and budgeting",
+        "author": "Roncalli",
+        "year": 2013,
+        "why": [
+          "The standard quant reference on risk-based allocation.",
+          "Covers risk parity, risk budgeting, and equal-risk-contribution portfolios.",
+          "The rigorous modern alternative to mean-variance.",
+          "Author: Thierry Roncalli, head of quant research at Amundi and a risk-parity authority."
+        ],
+        "cover": "roncalli-introduction-to-risk-parity-and-budgeti.jpg",
+        "citation": "Roncalli, T. (2013). Introduction to risk parity and budgeting. Chapman & Hall/CRC.",
+        "coverW": 856,
+        "coverH": 1360
+      },
+      {
+        "title": "Risk and asset allocation",
+        "author": "Meucci",
+        "year": 2005,
+        "why": [
+          "Advanced, unifying treatment of risk and asset allocation.",
+          "Covers estimation, Bayesian methods, and robust optimization.",
+          "Reflects how professionals build portfolios.",
+          "Author: Attilio Meucci, buy-side quant and creator of the ARPM Bootcamp."
+        ],
+        "cover": "meucci-risk-and-asset-allocation.jpg",
+        "citation": "Meucci, A. (2005). Risk and asset allocation. Springer.",
+        "coverW": 827,
+        "coverH": 1247
+      },
+      {
+        "title": "Robust portfolio optimization and management",
+        "author": "Fabozzi & Focardi",
+        "year": 2007,
+        "why": [
+          "A focused treatment of robust portfolio construction.",
+          "Tackles estimation error and unstable covariance matrices.",
+          "Moves beyond classical Markowitz toward real-world optimization.",
+          "Authors: Frank Fabozzi with quant academics Petter Kolm (NYU), Dessislava Pachamanova, and Sergio Focardi."
+        ],
+        "cover": "fabozzi-robust-portfolio-optimization-and-manage.jpg",
+        "citation": "Fabozzi, F. J., Kolm, P. N., Pachamanova, D. A., & Focardi, S. M. (2007). Robust portfolio optimization and management. Wiley.",
+        "coverW": 855,
+        "coverH": 1360
+      }
+    ]
+  },
+  {
+    "theme": "Risk Management",
+    "books": [
+      {
+        "title": "Risk management and financial institutions (6th ed.)",
+        "author": "Hull",
+        "year": 2023,
+        "why": [
+          "A broad, accessible survey of financial risk management.",
+          "Connects market, credit, and operational risk with regulation.",
+          "Standard for risk professionals and the FRM exam.",
+          "Author: John Hull, University of Toronto, Rotman School."
+        ],
+        "cover": "hull-risk-management-and-financial-institutions.jpg",
+        "citation": "Hull, J. C. (2023). Risk management and financial institutions. Wiley.",
+        "coverW": 1051,
+        "coverH": 1500
+      },
+      {
+        "title": "The essentials of risk management (2nd ed.)",
+        "author": "Crouhy & Mark",
+        "year": 2014,
+        "why": [
+          "A practitioner overview of enterprise risk management.",
+          "Explains VaR, credit and operational risk, and governance.",
+          "An ideal foundational read.",
+          "Authors: Michel Crouhy (head of R&D, Natixis), Dan Galai (Hebrew University), and Robert Mark (former bank CRO)."
+        ],
+        "cover": "crouhy-the-essentials-of-risk-management.jpg",
+        "citation": "Crouhy, M., Galai, D., & Mark, R. (2014). The essentials of risk management. McGraw-Hill.",
+        "coverW": 1000,
+        "coverH": 1500
+      },
+      {
+        "title": "Quantitative risk management (Rev. ed.): Concepts, techniques and tools",
+        "author": "McNeil & Embrechts",
+        "year": 2015,
+        "why": [
+          "The rigorous graduate text on quantitative risk management.",
+          "Authoritative on extreme-value theory and copulas.",
+          "Covers VaR, Expected Shortfall (CVaR), and coherent risk measures.",
+          "Authors: Alexander McNeil, Rüdiger Frey, and Paul Embrechts (ETH Zurich), leaders in quantitative risk."
+        ],
+        "cover": "mcneil-quantitative-risk-management.jpg",
+        "citation": "McNeil, A. J., Frey, R., & Embrechts, P. (2015). Quantitative risk management: Concepts, techniques and tools. Princeton University Press.",
+        "coverW": 1212,
+        "coverH": 1500
+      },
+      {
+        "title": "Copula methods in finance",
+        "author": "Cherubini & Vecchiato",
+        "year": 2004,
+        "why": [
+          "The first book-length treatment of copulas in finance.",
+          "Models dependence for pricing and risk aggregation.",
+          "A focused, advanced complement to the copula chapters in McNeil.",
+          "Authors: Umberto Cherubini and Elisa Luciano, Italian financial-mathematics academics."
+        ],
+        "cover": "cherubini-copula-methods-in-finance.jpg",
+        "citation": "Cherubini, U., Luciano, E., & Vecchiato, W. (2004). Copula methods in finance. Wiley.",
+        "coverW": 1002,
+        "coverH": 1500
+      },
+      {
+        "title": "Market risk analysis",
+        "author": "Alexander",
+        "year": 2008,
+        "why": [
+          "A four-volume set: quantitative methods, financial econometrics, pricing & trading, and Value-at-Risk models.",
+          "Prized for rigorous technical depth combined with unusual clarity.",
+          "A complete market-risk reference shelf in one work.",
+          "Author: Carol Alexander, University of Sussex professor; a leading market-risk academic and former editor of the Journal of Banking & Finance."
+        ],
+        "cover": "alexander-market-risk-analysis.jpg",
+        "citation": "Alexander, C. (2008). Market risk analysis (Vols. I–IV). Wiley.",
+        "coverW": 256,
+        "coverH": 369
+      }
+    ]
+  },
+  {
+    "theme": "Market Microstructure & Execution",
+    "books": [
+      {
+        "title": "Trading and exchanges: Market microstructure for practitioners",
+        "author": "Harris",
+        "year": 2003,
+        "why": [
+          "The most accessible guide to how markets actually work.",
+          "Explains order types, liquidity, and trading mechanics.",
+          "The ideal first book on microstructure.",
+          "Author: Larry Harris, USC Marshall professor and former Chief Economist of the SEC."
+        ],
+        "cover": "harris-trading-and-exchanges.jpg",
+        "citation": "Harris, L. (2003). Trading and exchanges: Market microstructure for practitioners. Oxford University Press.",
+        "coverW": 904,
+        "coverH": 1360
+      },
+      {
+        "title": "Market microstructure theory",
+        "author": "O’Hara",
+        "year": 1995,
+        "why": [
+          "The classic theoretical foundation of market microstructure.",
+          "Formalizes how information and inventory shape prices and spreads.",
+          "A standard academic reference.",
+          "Author: Maureen O’Hara, Cornell professor and a founder of market-microstructure theory."
+        ],
+        "cover": "o-hara-market-microstructure-theory.jpg",
+        "citation": "O’Hara, M. (1995). Market microstructure theory. Blackwell.",
+        "coverW": 907,
+        "coverH": 1360
+      },
+      {
+        "title": "Market liquidity (2nd ed.): Theory, evidence, and policy",
+        "author": "Foucault & Röell",
+        "year": 2024,
+        "why": [
+          "A modern graduate synthesis of market-liquidity research.",
+          "Surveys the theory, evidence, and policy of liquidity.",
+          "Rigorous treatment of how markets price liquidity.",
+          "Authors: Thierry Foucault (HEC Paris), Marco Pagano (Naples), and Ailsa Röell (Columbia)."
+        ],
+        "cover": "foucault-market-liquidity.jpg",
+        "citation": "Foucault, T., Pagano, M., & Röell, A. (2024). Market liquidity: Theory, evidence, and policy. Oxford University Press.",
+        "coverW": 426,
+        "coverH": 648
+      }
+    ]
+  },
+  {
+    "theme": "Algorithmic Trading & Machine Learning",
+    "books": [
+      {
+        "title": "Quantitative trading (2nd ed.): How to build your own algorithmic trading business",
+        "author": "Chan",
+        "year": 2021,
+        "why": [
+          "An accessible, hands-on intro to building a retail quant trading business.",
+          "Demystifies backtesting and strategy evaluation.",
+          "Covers the practical realities of going live.",
+          "Author: Ernest Chan, former quant at Morgan Stanley and Credit Suisse; founder of QTS Capital."
+        ],
+        "cover": "chan-quantitative-trading.jpg",
+        "citation": "Chan, E. P. (2021). Quantitative trading: How to build your own algorithmic trading business. Wiley.",
+        "coverW": 993,
+        "coverH": 1500
+      },
+      {
+        "title": "Algorithmic trading: Winning strategies and their rationale",
+        "author": "Chan",
+        "year": 2013,
+        "why": [
+          "A more advanced sequel with concrete strategies.",
+          "Covers mean-reversion and momentum.",
+          "Includes the statistical tests to validate them.",
+          "Author: Ernest Chan (QTS Capital; ex-Morgan Stanley)."
+        ],
+        "cover": "chan-algorithmic-trading.jpg",
+        "citation": "Chan, E. P. (2013). Algorithmic trading: Winning strategies and their rationale. Wiley.",
+        "coverW": 1014,
+        "coverH": 1500
+      },
+      {
+        "title": "Systematic trading: A unique new method for designing trading and investing systems",
+        "author": "Carver",
+        "year": 2015,
+        "why": [
+          "A framework for designing systematic trading systems.",
+          "Strong on position sizing and diversification.",
+          "Focused on avoiding overfitting.",
+          "Author: Robert Carver, former systematic portfolio manager at AHL / Man Group."
+        ],
+        "cover": "carver-systematic-trading.jpg",
+        "citation": "Carver, R. (2015). Systematic trading: A unique new method for designing trading and investing systems. Harriman House.",
+        "coverW": 1000,
+        "coverH": 1500
+      },
+      {
+        "title": "Algorithmic trading methods (2nd ed.): Applications using advanced statistics, optimization, and machine learning techniques",
+        "author": "Kissell",
+        "year": 2021,
+        "why": [
+          "The leading applied reference on trading costs and execution.",
+          "Covers market-impact modeling and TWAP/VWAP algorithms.",
+          "2nd edition adds advanced statistics, optimization, and machine learning.",
+          "Author: Robert Kissell, a transaction-cost-analysis authority with senior execution-research roles on Wall Street."
+        ],
+        "cover": "kissell-algorithmic-trading-methods.jpg",
+        "citation": "Kissell, R. (2021). Algorithmic trading methods: Applications using advanced statistics, optimization, and machine learning techniques. Academic Press.",
+        "coverW": 1103,
+        "coverH": 1360
+      },
+      {
+        "title": "Python for finance (2nd ed.): Mastering data-driven finance",
+        "author": "Hilpisch",
+        "year": 2018,
+        "why": [
+          "The standard reference for doing finance with Python.",
+          "Covers data handling and derivatives analytics.",
+          "Includes Monte Carlo simulation.",
+          "Author: Yves Hilpisch, founder of The Python Quants and the Certificate in Python for Finance."
+        ],
+        "cover": "hilpisch-python-for-finance.jpg",
+        "citation": "Hilpisch, Y. J. (2018). Python for finance: Mastering data-driven finance. O’Reilly Media.",
+        "coverW": 1143,
+        "coverH": 1500
+      },
+      {
+        "title": "Python for algorithmic trading: From idea to cloud deployment",
+        "author": "Hilpisch",
+        "year": 2020,
+        "why": [
+          "An end-to-end guide to automated trading in Python.",
+          "Covers backtesting and broker APIs.",
+          "Includes cloud deployment of live strategies.",
+          "Author: Yves Hilpisch (The Python Quants)."
+        ],
+        "cover": "hilpisch-python-for-algorithmic-trading.jpg",
+        "citation": "Hilpisch, Y. J. (2020). Python for algorithmic trading: From idea to cloud deployment. O’Reilly Media.",
+        "coverW": 1143,
+        "coverH": 1500
+      },
+      {
+        "title": "Python for algorithmic trading cookbook",
+        "author": "Strimpel",
+        "year": 2024,
+        "why": [
+          "A modern cookbook for the algo-trading workflow in Python.",
+          "Up-to-date recipes for data, signals, and backtesting.",
+          "Covers execution.",
+          "Author: Jason Strimpel, founder of PyQuant News and a quant-finance practitioner."
+        ],
+        "cover": "strimpel-python-for-algorithmic-trading-cookbook.jpg",
+        "citation": "Strimpel, J. (2024). Python for algorithmic trading cookbook. Packt Publishing.",
+        "coverW": 1216,
+        "coverH": 1500
+      },
+      {
+        "title": "Machine learning for algorithmic trading (2nd ed.)",
+        "author": "Jansen",
+        "year": 2020,
+        "why": [
+          "A comprehensive, code-rich guide to ML for trading.",
+          "800+ pages spanning data sourcing to deployment.",
+          "Full ML workflow in Python.",
+          "Author: Stefan Jansen, founder of Applied AI; former fund manager and data scientist."
+        ],
+        "cover": "jansen-machine-learning-for-algorithmic-trading.jpg",
+        "citation": "Jansen, S. (2020). Machine learning for algorithmic trading. Packt Publishing. (3rd ed. release: 10/2026)",
+        "coverW": 1047,
+        "coverH": 1360
+      },
+      {
+        "title": "Machine learning in finance: From theory to practice",
+        "author": "Dixon & Bilokon",
+        "year": 2020,
+        "why": [
+          "The rigorous, comprehensive ML-in-finance textbook.",
+          "Covers supervised learning, deep learning, and reinforcement learning.",
+          "Roughly half the book is devoted to reinforcement learning.",
+          "Authors: Matthew Dixon (Illinois Tech), Igor Halperin (ex-Fidelity/JPMorgan quant), and Paul Bilokon (ex-Deutsche Bank; Imperial College; Thalesians founder)."
+        ],
+        "cover": "dixon-machine-learning-in-finance.jpg",
+        "citation": "Dixon, M. F., Halperin, I., & Bilokon, P. (2020). Machine learning in finance: From theory to practice. Springer.",
+        "coverW": 827,
+        "coverH": 1245
+      },
+      {
+        "title": "Advances in financial machine learning",
+        "author": "López de Prado",
+        "year": 2018,
+        "why": [
+          "A landmark text on rigorous ML in finance.",
+          "Exposes common backtesting pitfalls.",
+          "Introduces meta-labeling and purged cross-validation.",
+          "Author: Marcos López de Prado, ex-AQR/Guggenheim quant; now at ADIA Lab and Cornell."
+        ],
+        "cover": "l-pez-de-prado-advances-in-financial-machine-lea.jpg",
+        "citation": "López de Prado, M. (2018). Advances in financial machine learning. Wiley.",
+        "coverW": 256,
+        "coverH": 387
+      },
+      {
+        "title": "Machine learning for asset managers",
+        "author": "López de Prado",
+        "year": 2020,
+        "why": [
+          "A concise companion to Advances in Financial ML, focused on investment.",
+          "Covers denoising covariance matrices, clustering, and feature importance.",
+          "Emphasizes that ML complements, not replaces, classical methods.",
+          "Author: Marcos López de Prado (ADIA Lab; Cornell)."
+        ],
+        "cover": "lopez-de-prado-machine-learning-for-asset-managers.jpg",
+        "citation": "López de Prado, M. (2020). Machine learning for asset managers. Cambridge University Press.",
+        "coverW": 1000,
+        "coverH": 1500
+      }
+    ]
+  }
+]

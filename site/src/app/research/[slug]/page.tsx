@@ -10,6 +10,9 @@ import BrownianMotion from "@/content/articles/brownian-motion";
 import BlackScholesGreeks from "@/content/articles/black-scholes-greeks";
 import BondDurationConvexity from "@/content/articles/bond-duration-convexity";
 import TimeValueOfMoney from "@/content/articles/time-value-of-money";
+import MvoEfficientFrontier from "@/content/articles/mvo-efficient-frontier";
+import BlackLitterman from "@/content/articles/black-litterman";
+import RiskParityFutures from "@/content/articles/risk-parity-futures";
 import LedoitWolf from "@/content/articles/ledoit-wolf-shrinkage";
 import HierarchicalRiskParity from "@/content/articles/hierarchical-risk-parity";
 import EvtTCopulaVar from "@/content/articles/evt-t-copula-var";
@@ -22,6 +25,9 @@ const BODIES: Record<string, () => ReactElement> = {
   "black-scholes-greeks": BlackScholesGreeks,
   "bond-duration-convexity": BondDurationConvexity,
   "time-value-of-money": TimeValueOfMoney,
+  "mvo-efficient-frontier": MvoEfficientFrontier,
+  "black-litterman": BlackLitterman,
+  "risk-parity-futures": RiskParityFutures,
   "ledoit-wolf-shrinkage": LedoitWolf,
   "hierarchical-risk-parity": HierarchicalRiskParity,
   "evt-t-copula-var": EvtTCopulaVar,

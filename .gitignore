@@ -11,8 +11,7 @@ out/
 /Louis Chakkalakala Upwork-20260529T204855Z-3-001/
 
 # nginx runtime prefix (logs/temp/pid generated when serving locally)
-/deploy/nginx-runtime/
-/deploy/nginx-runtime-5500/
+/deploy/nginx-runtime*/
 
 # Dev capture artifacts — regenerable via site/shoot*.mjs
 /screenshots/

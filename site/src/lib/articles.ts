@@ -185,6 +185,7 @@ export const ARTICLES: Article[] = [
     level: "Foundational",
     notebook: "mvo-efficient-frontier.ipynb",
     project: "mvo-efficient-frontier.zip",
+    hero: "hero/mountain-sam-ferrara.jpg",
     excerpt:
       "Don't pick assets — pick the combination. We build the efficient frontier across six asset classes (2015–2024), see why every single ETF plots inside the cloud, and solve for the two portfolios everyone quotes: minimum variance and maximum Sharpe.",
     stack: ["NumPy", "pandas", "matplotlib", "PyPortfolioOpt"],
@@ -206,6 +207,7 @@ export const ARTICLES: Article[] = [
     level: "Intermediate",
     notebook: "black-litterman.ipynb",
     project: "black-litterman.zip",
+    hero: "hero/mountain-neil-rosenstech.jpg",
     excerpt:
       "Reverse-optimize the market's implied returns, state one view — Germany at 10%, half confidence — and watch the Bayesian blend tilt the whole book sensibly while naive MVO lurches 75% into one country. Includes the no-views-equals-market sanity check.",
     stack: ["NumPy", "pandas", "PyPortfolioOpt"],
@@ -227,6 +229,7 @@ export const ARTICLES: Article[] = [
     level: "Intermediate",
     notebook: "risk-parity-futures.ipynb",
     project: "risk-parity-futures.zip",
+    hero: "hero/mountain-nathan-anderson.jpg",
     excerpt:
       "The 60/40 secret: capital weight ≠ risk weight. We compute marginal risk contributions across five futures, solve the risk-parity weights from scratch, match Riskfolio-lib to 1e-6, and scale the book to a 10% vol target with 1.45x leverage — the All-Weather mechanism in miniature.",
     stack: ["NumPy", "SciPy", "Riskfolio-Lib"],

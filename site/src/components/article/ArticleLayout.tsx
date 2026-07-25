@@ -49,9 +49,12 @@ export function ArticleLayout({ article, children }: { article: Article; childre
           <img src={`/${article.hero}`} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover object-center brightness-[1.06]" />
           {/* the photo's own dark foreground merges into the page with a light assist */}
           <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(to_top,#151515_0%,rgba(21,21,21,0.55)_8%,transparent_20%)]" />
+          {/* top scrim — keeps the white title legible over bright skies; fades out before the mountains */}
+          <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(21,21,21,0.62)_0%,rgba(21,21,21,0.28)_28%,transparent_55%)]" />
           <div className="absolute inset-x-0 top-0 mx-auto max-w-7xl px-6 lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-14">
             <div className="hidden lg:block" aria-hidden="true" />
-            <div className="py-14 md:py-20">
+            {/* soft dark halo behind hero text — keeps it legible over bright areas (e.g. snow) without darkening the photo */}
+            <div className="py-14 md:py-20" style={{ textShadow: "0 1px 3px rgba(0,0,0,0.6), 0 2px 16px rgba(0,0,0,0.5)" }}>
               <TransitionLink
                 href={`/research#${category.slug}`}
                 className="t-mono text-xs uppercase tracking-[0.2em] text-aqua transition-colors hover:text-pearl"

@@ -30,3 +30,7 @@ out/
 .DS_Store
 Thumbs.db
 *.log
+
+# Python bytecode
+__pycache__/
+*.pyc

@@ -41,7 +41,7 @@ export function ArticleNav() {
         </ul>
         <div className="flex shrink-0 items-center gap-3">
           <Link
-            href="/#course"
+            href="/account"
             className="inline-flex w-[183px] items-center justify-center rounded-sm border border-pearl/30 py-2 t-mono text-xs font-semibold text-pearl transition-colors duration-300 hover:border-aqua hover:text-aqua"
           >
             Sign in

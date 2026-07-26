@@ -1,0 +1,21 @@
+{
+  "slug": "sma-crossover-backtest",
+  "category": "algorithmic-trading",
+  "format": "Tutorial",
+  "title": "SMA crossover, honestly backtested",
+  "dek": "The 50/200 golden cross on QQQ and Bitcoin — next-day execution, real costs, a parameter grid, and the in-sample caveats most crossover backtests skip.",
+  "date": "2026-07-25",
+  "readMinutes": 11,
+  "level": "Foundational",
+  "notebook": "sma-crossover-backtest.ipynb",
+  "excerpt": "The moving-average crossover is trend following's workhorse — and the perfect vehicle for backtesting discipline 101. We run the same long-or-flat rule on QQQ and BTC-USD over 2015–2024, close the lookahead gap with one shift(1), charge 10bp a side, then sweep a 4×4 parameter grid: QQQ's grid straddles buy-and-hold while BTC's sits above it. Trend behaves differently per asset.",
+  "stack": ["vectorbt", "Pandas", "Pyfolio"],
+  "sections": [
+    { "id": "signal", "title": "The rule: two moving averages" },
+    { "id": "lookahead", "title": "Next-day execution — the shift(1) that keeps you honest" },
+    { "id": "results", "title": "Same rule, two verdicts" },
+    { "id": "grid", "title": "Discipline 101: the parameter grid" },
+    { "id": "costs", "title": "The costs dial: 0 / 10 / 25 bp" },
+    { "id": "honesty", "title": "One sample, no walk-forward" }
+  ]
+}

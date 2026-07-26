@@ -1,0 +1,21 @@
+{
+  "slug": "kalman-filter-hedge-ratios",
+  "category": "algorithmic-trading",
+  "format": "Tutorial",
+  "title": "Kalman filters: dynamic hedge ratios",
+  "dek": "Building a Kalman filter from scratch in NumPy to track a drifting hedge ratio — and an honest accounting of what adaptivity buys after costs.",
+  "date": "2026-07-25",
+  "readMinutes": 12,
+  "level": "Advanced",
+  "notebook": "kalman-filter-hedge-ratios.ipynb",
+  "excerpt": "Static hedge ratios assume the relationship never moves; on EWA/EWC 2010–2024 it moves from 0.71 to 1.49. We treat beta as a random-walk state, filter it in five lines of NumPy, and trade the spread both ways — the Kalman beta wins as an estimator (gross Sharpe 0.55 vs 0.47, half the drawdown), while 10 bp costs on 2.7× turnover decide the net line.",
+  "stack": ["NumPy", "statsmodels", "Pandas"],
+  "sections": [
+    { "id": "drift", "title": "Why static hedge ratios die" },
+    { "id": "state-space", "title": "Beta as a state, not a constant" },
+    { "id": "filter", "title": "The filter in five lines of NumPy" },
+    { "id": "betas", "title": "Three betas, one pair" },
+    { "id": "trading", "title": "Trading the spread" },
+    { "id": "take", "title": "What the numbers actually say" }
+  ]
+}

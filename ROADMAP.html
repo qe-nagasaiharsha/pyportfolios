@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Roadmap — pyportfolios.com</title>
+<style>
+  :root{
+    --bg:#0a0e17; --card:#111624; --line:#1e2638; --text:#e8ecf4; --muted:#8b94a7;
+    --cyan:#22d3ee; --orange:#f59e0b; --purple:#a78bfa; --green:#34d399; --red:#f87171;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--text); font-family:Georgia,'Times New Roman',serif; padding:48px 56px; max-width:1240px; margin:0 auto;}
+  .mono{font-family:'Courier New',monospace; letter-spacing:.12em; text-transform:uppercase; font-size:11px;}
+  h1{font-family:Arial,Helvetica,sans-serif; font-weight:800; font-size:34px; margin:6px 0 4px;}
+  h1 .accent{color:var(--cyan);}
+  .sub{color:var(--muted); font-size:14px; margin-bottom:30px;}
+  .cat-label{color:var(--cyan); margin:36px 0 14px; font-family:'Courier New',monospace; letter-spacing:.12em; text-transform:uppercase; font-size:11px;}
+  .cat-label .num{color:var(--muted);}
+
+  .stats{display:grid; grid-template-columns:repeat(5,1fr); gap:14px;}
+  .stat{background:var(--card); border:1px solid var(--line); border-top:3px solid var(--cyan); border-radius:12px; padding:14px 16px;}
+  .stat .k{font-family:'Courier New',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted);}
+  .stat .v{font-family:Arial,Helvetica,sans-serif; font-weight:800; font-size:21px; margin-top:5px;}
+  .stat .n{font-size:11.5px; color:var(--muted); margin-top:2px;}
+
+  .doneblock{background:var(--card); border:1px solid var(--line); border-left:3px solid var(--green); border-radius:12px; padding:16px 20px;}
+  .doneblock h3{font-family:Arial,Helvetica,sans-serif; font-size:15px; margin-bottom:10px;}
+  .doneblock ul{list-style:none; font-size:12.5px; color:var(--muted); display:grid; grid-template-columns:1fr 1fr; gap:5px 24px;}
+  .doneblock li:before{content:"✔ "; color:var(--green);}
+  .doneblock .who{font-family:'Courier New',monospace; font-size:10px; letter-spacing:.08em;}
+
+  table{width:100%; border-collapse:separate; border-spacing:0 8px;}
+  thead th{font-family:'Courier New',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); text-align:left; padding:0 12px 4px; font-weight:400;}
+  thead th.c-l{color:var(--orange);} thead th.c-h{color:var(--purple);}
+  thead th.c-b{color:var(--cyan);} thead th.c-c{color:var(--green);}
+  tbody tr{background:var(--card);}
+  tbody td{border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:12px; vertical-align:top; font-size:12.5px; line-height:1.45;}
+  tbody td:first-child{border-left:1px solid var(--line); border-radius:10px 0 0 10px; width:118px;}
+  tbody td:last-child{border-right:1px solid var(--line); border-radius:0 10px 10px 0;}
+  tr.is-done td:first-child{border-left:3px solid var(--green);}
+  tr.is-now  td:first-child{border-left:3px solid var(--red);}
+  tr.is-buf  td:first-child{border-left:3px solid var(--muted);}
+  tr.is-live td:first-child{border-left:3px solid var(--orange);}
+  .cw{font-family:'Courier New',monospace; font-size:13px; font-weight:700; letter-spacing:.06em;}
+  .dt{font-size:11px; color:var(--muted); margin-top:2px;}
+  .amt{font-family:'Courier New',monospace; font-size:10.5px; color:var(--cyan); margin-top:5px;}
+  .amt.z{color:var(--muted);} .amt.p{color:var(--green);}
+  .now-tag{display:inline-block; font-family:'Courier New',monospace; font-size:9px; letter-spacing:.1em; background:rgba(248,113,113,.15); color:var(--red); padding:1px 6px; border-radius:3px; margin-top:5px;}
+  .tk{font-family:'Courier New',monospace; font-size:11px;}
+  .l{color:var(--orange);} .h{color:var(--purple);} .b{color:var(--cyan);} .c{color:var(--green);}
+  .due{color:var(--red); font-family:'Courier New',monospace; font-size:10.5px; display:block; margin-top:5px;}
+  .em{display:block; color:var(--muted); font-size:11.5px; margin-top:3px;}
+  .idle{color:#41495c;}
+
+  .agrid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px;}
+  .a{background:var(--card); border:1px solid var(--line); border-top:3px solid var(--cyan); border-radius:10px; padding:11px 13px;}
+  .a.f-T{border-top-color:var(--cyan);} .a.f-CS{border-top-color:var(--orange);}
+  .a.f-QI{border-top-color:var(--purple);} .a.f-RN{border-top-color:var(--green);}
+  .a .n{font-family:'Courier New',monospace; font-size:9.5px; color:var(--muted); letter-spacing:.1em;}
+  .a h4{font-family:Arial,Helvetica,sans-serif; font-size:12.5px; font-weight:700; margin:4px 0 7px; line-height:1.3;}
+  .a .meta{font-family:'Courier New',monospace; font-size:9.5px; letter-spacing:.05em; display:block;}
+  .a .up{font-family:'Courier New',monospace; font-size:9.5px; color:var(--muted); display:block; margin-top:2px;}
+  .s-live{color:var(--green);} .s-draft{color:var(--cyan);} .s-todo{color:var(--muted);}
+
+  .led{width:100%; border-collapse:collapse; font-size:12.5px;}
+  .led th{font-family:'Courier New',monospace; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); text-align:left; padding:8px 12px; border-bottom:1px solid var(--line); font-weight:400;}
+  .led td{padding:11px 12px; border-bottom:1px solid var(--line); vertical-align:top;}
+  .led td.amt-c{font-family:'Courier New',monospace; white-space:nowrap;}
+  .led tr.tot td{border-bottom:none; padding-top:14px; font-family:Arial,Helvetica,sans-serif; font-weight:700;}
+  .pill{font-family:'Courier New',monospace; font-size:9.5px; letter-spacing:.08em; padding:2px 7px; border-radius:3px; white-space:nowrap;}
+  .p-paid{background:rgba(52,211,153,.14); color:var(--green);}
+  .p-today{background:rgba(34,211,238,.14); color:var(--cyan);}
+  .p-held{background:rgba(248,113,113,.14); color:var(--red);}
+  .p-fut{background:rgba(139,148,167,.14); color:var(--muted);}
+
+  .note{background:var(--card); border:1px solid var(--line); border-left:3px solid var(--orange); border-radius:12px; padding:16px 20px; font-size:12.5px; line-height:1.6;}
+  .note b{font-family:Arial,Helvetica,sans-serif;}
+  .note p{margin-bottom:10px;} .note p:last-child{margin-bottom:0;}
+  .teamnote{background:var(--card); border:1px solid var(--line); border-left:3px solid var(--green); border-radius:12px; padding:20px 24px; font-size:13px; line-height:1.65; text-align:justify;}
+  .teamnote .hi{font-family:Arial,Helvetica,sans-serif; font-weight:700; font-size:15px; margin-bottom:12px;}
+  .teamnote p{margin-bottom:11px;} .teamnote p:last-child{margin-bottom:0;}
+  .teamnote b{font-family:Arial,Helvetica,sans-serif; color:var(--text);}
+  .teamnote .sign{color:var(--muted); font-style:italic; margin-top:14px;}
+  .footer{color:var(--muted); font-size:12px; margin-top:40px; border-top:1px solid var(--line); padding-top:14px;}
+</style>
+</head>
+<body>
+
+<div class="mono" style="color:var(--cyan);">// pyportfolios.com &nbsp;·&nbsp; delivery roadmap</div>
+<h1>Road to <span class="accent">go-live.</span></h1>
+<div class="sub">June – September 2026 · calendar weeks 23–37 · target launch Monday 14 September</div>
+
+<div class="stats">
+  <div class="stat"><div class="k">Timeline</div><div class="v">CW 23 → 37</div><div class="n">1 Jun – 14 Sep 2026</div></div>
+  <div class="stat" style="border-top-color:var(--orange);"><div class="k">Budget</div><div class="v">$1,700–2,100</div><div class="n">4 packages, June–Sep</div></div>
+  <div class="stat" style="border-top-color:var(--purple);"><div class="k">Articles</div><div class="v">2 / 16 live</div><div class="n">14 uploads to schedule</div></div>
+  <div class="stat" style="border-top-color:var(--green);"><div class="k">Team</div><div class="v">2 → 3</div><div class="n">Chaitanya joins CW 32</div></div>
+  <div class="stat" style="border-top-color:var(--cyan);"><div class="k">Buffer</div><div class="v">2 weeks</div><div class="n">CW 36–37, fixes only</div></div>
+</div>
+
+<div class="cat-label"><span class="num">01 ·</span> June package — CW 23–26 · $400 · complete · milestone contract, closed 4 Jul</div>
+<table>
+<thead><tr>
+  <th>Week</th><th class="c-l">Louis — editorial</th><th class="c-h">Harsha — quant</th><th class="c-b">Bhavya — web &amp; upload</th><th class="c-c">Chaitanya — platform</th>
+</tr></thead>
+<tbody>
+
+<tr class="is-done">
+  <td><div class="cw">CW 23</div><div class="dt">1 – 7 Jun</div><div class="amt p">$100 · paid</div></td>
+  <td><span class="tk l">Brand guidelines · direction</span></td>
+  <td><span class="tk h">Website build · oversight</span></td>
+  <td><span class="tk b">Website — first draft</span></td>
+  <td class="idle">—</td>
+</tr>
+
+<tr class="is-done">
+  <td><div class="cw">CW 24</div><div class="dt">8 – 14 Jun</div><div class="amt p">$100 · paid</div></td>
+  <td><span class="tk l">Landing page fine-tuning</span></td>
+  <td><span class="tk h">Oversight</span></td>
+  <td><span class="tk b">Landing page</span><span class="em">To brand guidelines</span></td>
+  <td class="idle">—</td>
+</tr>
+
+<tr class="is-done">
+  <td><div class="cw">CW 25</div><div class="dt">15 – 21 Jun</div><div class="amt p">$100 · paid</div></td>
+  <td><span class="tk l">Top 50 journals list</span></td>
+  <td><span class="tk h">Oversight</span></td>
+  <td><span class="tk b">Top 50 journals — upload</span><span class="em">Louis's list onto the site</span></td>
+  <td class="idle">—</td>
+</tr>
+
+<tr class="is-done">
+  <td><div class="cw">CW 26</div><div class="dt">22 – 28 Jun</div><div class="amt p">$100 · paid</div></td>
+  <td><span class="tk l">Top 50 books list</span></td>
+  <td><span class="tk h">Oversight</span></td>
+  <td><span class="tk b">Top 50 books — upload</span><span class="em">Louis's list onto the site</span></td>
+  <td class="idle">—</td>
+</tr>
+
+</tbody>
+</table>
+<div class="em" style="margin:-2px 0 0 2px;">CW 27 (29 Jun – 5 Jul) — gap week, no contract in force.</div>
+
+<div class="cat-label"><span class="num">02 ·</span> July package — CW 28–31 · $500 · in progress</div>
+<table>
+<thead><tr>
+  <th>Week</th><th class="c-l">Louis — editorial</th><th class="c-h">Harsha — quant</th><th class="c-b">Bhavya — web &amp; upload</th><th class="c-c">Chaitanya — platform</th>
+</tr></thead>
+<tbody>
+
+<tr class="is-done">
+  <td><div class="cw">CW 28</div><div class="dt">6 – 12 Jul</div><div class="amt p">$125 · paid</div></td>
+  <td><span class="tk l">3 tutorials written</span><span class="em">T01 GBM · T02 Black-Scholes · T03 Bonds</span></td>
+  <td><span class="tk h">Oversight</span></td>
+  <td><span class="tk b">1 tutorial uploaded</span><span class="em">Live on site</span></td>
+  <td class="idle">—</td>
+</tr>
+
+<tr class="is-done">
+  <td><div class="cw">CW 29</div><div class="dt">13 – 19 Jul</div><div class="amt p">$125 · paid</div></td>
+  <td><span class="tk l">3 tutorials written</span><span class="em">T05 MVO · T06 Black-Litterman · T07 Risk Parity</span></td>
+  <td><span class="tk h">Oversight · embed graphs</span><span class="em">Charts embedded live, not as static images</span></td>
+  <td><span class="tk b">1 tutorial uploaded</span><span class="em">Live on site</span><span class="tk b" style="display:block; margin-top:7px;">Cross-machine UX setup</span><span class="em">Notebooks run on Win / Linux</span></td>
+  <td class="idle">—</td>
+</tr>
+
+<tr class="is-now">
+  <td><div class="cw">CW 30</div><div class="dt">20 – 26 Jul</div><div class="amt">$125</div><div class="now-tag">THIS WEEK</div></td>
+  <td><span class="tk l">QI04 · Heston vs Black-Scholes</span></td>
+  <td><span class="tk h">T09 · VaR Three Ways</span><span class="due">▲ DUE THIS WEEK — Polars / DuckDB example</span></td>
+  <td><span class="tk b">Upload T03 Bonds · T05 MVO</span><span class="due">▲ DUE THIS WEEK — journal logos</span></td>
+  <td class="idle">—</td>
+</tr>
+
+<tr class="is-now">
+  <td><div class="cw">CW 31</div><div class="dt">27 Jul – 2 Aug</div><div class="amt">$125</div></td>
+  <td><span class="tk l">CS08 · 60/40 in 2022</span></td>
+  <td><span class="tk h">T10 · CVaR / Expected Shortfall</span></td>
+  <td><span class="tk b">Upload T06 Black-Litterman · T07 Risk Parity</span><span class="tk b" style="display:block; margin-top:7px;">Project cards — all 16</span><span class="em">Topic report cards for every project</span></td>
+  <td class="idle">—</td>
+</tr>
+
+</tbody>
+</table>
+
+<div class="cat-label"><span class="num">03 ·</span> August package — CW 32–35 · $800 · scheduled · Chaitanya joins</div>
+<table>
+<thead><tr>
+  <th>Week</th><th class="c-l">Louis — editorial</th><th class="c-h">Harsha — quant</th><th class="c-b">Bhavya — web &amp; upload</th><th class="c-c">Chaitanya — platform</th>
+</tr></thead>
+<tbody>
+
+<tr>
+  <td><div class="cw">CW 32</div><div class="dt">3 – 9 Aug</div><div class="amt">$200</div></td>
+  <td><span class="tk l">QI12 · Gaussian vs t-Copula</span></td>
+  <td><span class="tk h">T11 · Copulas &amp; Tail Dependence</span></td>
+  <td><span class="tk b">Upload T09 VaR · QI04 Heston</span><span class="em">Subscription UI front-end</span></td>
+  <td><span class="tk c">Onboard · architecture</span><span class="em">Customer database design</span></td>
+</tr>
+
+<tr>
+  <td><div class="cw">CW 33</div><div class="dt">10 – 16 Aug</div><div class="amt">$200</div></td>
+  <td><span class="tk l">CS15 · GameStop</span></td>
+  <td><span class="tk h">T13 · SMA Crossover Backtest</span></td>
+  <td><span class="tk b">Upload T10 CVaR · CS08 60/40</span><span class="em">Checkout &amp; paywall pages</span></td>
+  <td><span class="tk c">Subscription mechanics</span><span class="em">Payment integration</span></td>
+</tr>
+
+<tr>
+  <td><div class="cw">CW 34</div><div class="dt">17 – 23 Aug</div><div class="amt">$200</div></td>
+  <td><span class="tk l">RN16 · Alpha Decay</span></td>
+  <td><span class="tk h">T14 · Kalman Filters</span><span class="em">Oversight of Bhavya throughout</span></td>
+  <td><span class="tk b">Upload T11 Copulas · QI12 t-Copula</span><span class="em">Member area / gated content</span></td>
+  <td><span class="tk c">Auth + subscriber engagement</span></td>
+</tr>
+
+<tr>
+  <td><div class="cw">CW 35</div><div class="dt">24 – 30 Aug</div><div class="amt">$200</div></td>
+  <td><span class="tk l">Marketing strategy — initiation</span></td>
+  <td><span class="tk h">Notebook QA · technical requirements page</span></td>
+  <td><span class="tk b">Upload T13 · CS15 · T14 · RN16</span><span class="em">→ all 16 live · full-site QA</span></td>
+  <td><span class="tk c">Payments live · end-to-end test · DB hardening</span></td>
+</tr>
+
+</tbody>
+</table>
+
+<div class="cat-label"><span class="num">04 ·</span> September buffer — CW 36–37 · paid as per need · GO LIVE</div>
+<table>
+<thead><tr>
+  <th>Week</th><th class="c-l">Louis — editorial</th><th class="c-h">Harsha — quant</th><th class="c-b">Bhavya — web &amp; upload</th><th class="c-c">Chaitanya — platform</th>
+</tr></thead>
+<tbody>
+
+<tr class="is-buf">
+  <td><div class="cw">CW 36</div><div class="dt">31 Aug – 6 Sep</div><div class="amt z">$0–200</div></td>
+  <td colspan="4"><span class="tk" style="color:var(--muted);">BUFFER — ironing out</span><span class="em">Time for small fixes or August carry-over. Up to $200 for new or other major additions done well.</span></td>
+</tr>
+
+<tr class="is-live">
+  <td><div class="cw">CW 37</div><div class="dt">7 – 13 Sep</div><div class="amt z">$0–200</div></td>
+  <td colspan="4"><span class="tk" style="color:var(--orange);">BUFFER → GO LIVE · Monday 14 September</span><span class="em">Final fixes, launch checklist, site public.</span></td>
+</tr>
+
+</tbody>
+</table>
+
+<div class="cat-label"><span class="num">05 ·</span> Payment ledger — what each package buys</div>
+<table class="led">
+<thead><tr><th style="width:96px;">Period</th><th style="width:96px;">Amount</th><th style="width:104px;">Status</th><th>Covers</th></tr></thead>
+<tbody>
+<tr>
+  <td>June<br><span class="em">CW 23–26</span></td>
+  <td class="amt-c">$400</td>
+  <td><span class="pill p-paid">PAID</span></td>
+  <td>Website first draft · landing page · literature site — top 50 journals + top 50 books uploaded. Bhavya build &amp; upload, Harsha website build &amp; oversight, Louis the journal + book lists. <span class="em">8 article pages and course structure were not delivered in this package.</span></td>
+</tr>
+<tr>
+  <td>July<br><span class="em">CW 28–29</span></td>
+  <td class="amt-c">$250</td>
+  <td><span class="pill p-paid">PAID NOW</span></td>
+  <td><b>Done:</b> 2 tutorials <b>uploaded</b> by Bhavya (1 per week) + cross-machine UX setup so notebooks run on Windows and Linux. <span class="em">6 tutorials written, not yet uploaded. Journal logos and the Polars/DuckDB example pending.</span></td>
+</tr>
+<tr>
+  <td>July<br><span class="em">CW 30–31</span></td>
+  <td class="amt-c">$250</td>
+  <td><span class="pill p-held">PENDING</span></td>
+  <td>Pending: the two carry-over items (Polars/DuckDB — Harsha; journal logos — Bhavya) <b>plus</b> 4 tutorials uploaded live (T03, T05, T06, T07) and 2 new tutorials written (T09, T10).</td>
+</tr>
+<tr>
+  <td>August<br><span class="em">CW 32–35</span></td>
+  <td class="amt-c">$800</td>
+  <td><span class="pill p-fut">SCHEDULED</span></td>
+  <td>3 people, 4 weeks. Platform: subscription mechanics, payments, customer database, auth. Content: final 3 tutorials + 10 uploads → all 16 live. Marketing strategy initiated.</td>
+</tr>
+<tr>
+  <td>September<br><span class="em">CW 36–37</span></td>
+  <td class="amt-c">$0–400</td>
+  <td><span class="pill p-fut">AS PER NEED</span></td>
+  <td>Time for small fixes or August carry-over. Up to $200 for new or other major additions done well.</td>
+</tr>
+<tr class="tot">
+  <td>Total</td><td class="amt-c">$1,700–2,100</td><td></td>
+  <td>Against your May framework of $1,500–2,100 over 2–5 months.</td>
+</tr>
+</tbody>
+</table>
+
+<div class="cat-label"><span class="num">06 ·</span> The 16 articles — author, and Bhavya's upload week</div>
+<div class="agrid">
+
+<div class="a f-T"><div class="n">01 / 16</div><h4>GBM: Simulating Price Paths</h4><span class="meta s-live">● LIVE</span></div>
+<div class="a f-T"><div class="n">02 / 16</div><h4>Black-Scholes &amp; the Greeks</h4><span class="meta s-live">● LIVE</span></div>
+<div class="a f-T"><div class="n">03 / 16</div><h4>Bond Pricing, Duration &amp; Convexity</h4><span class="meta s-draft">◐ WRITTEN</span><span class="up">↑ upload CW30</span></div>
+<div class="a f-QI"><div class="n">04 / 16</div><h4>Heston vs Black-Scholes</h4><span class="meta s-todo">○ LOUIS · CW30</span><span class="up">↑ upload CW32</span></div>
+
+<div class="a f-T"><div class="n">05 / 16</div><h4>MVO &amp; the Efficient Frontier</h4><span class="meta s-draft">◐ WRITTEN</span><span class="up">↑ upload CW30</span></div>
+<div class="a f-T"><div class="n">06 / 16</div><h4>Black-Litterman</h4><span class="meta s-draft">◐ WRITTEN</span><span class="up">↑ upload CW31</span></div>
+<div class="a f-T"><div class="n">07 / 16</div><h4>Risk Parity from Scratch</h4><span class="meta s-draft">◐ WRITTEN</span><span class="up">↑ upload CW31</span></div>
+<div class="a f-CS"><div class="n">08 / 16</div><h4>60/40 in 2022</h4><span class="meta s-todo">○ LOUIS · CW31</span><span class="up">↑ upload CW33</span></div>
+
+<div class="a f-T"><div class="n">09 / 16</div><h4>VaR Three Ways</h4><span class="meta s-todo">○ HARSHA · CW30</span><span class="up">↑ upload CW32</span></div>
+<div class="a f-T"><div class="n">10 / 16</div><h4>CVaR / Expected Shortfall</h4><span class="meta s-todo">○ HARSHA · CW31</span><span class="up">↑ upload CW33</span></div>
+<div class="a f-T"><div class="n">11 / 16</div><h4>Copulas &amp; Tail Dependence</h4><span class="meta s-todo">○ HARSHA · CW32</span><span class="up">↑ upload CW34</span></div>
+<div class="a f-QI"><div class="n">12 / 16</div><h4>Gaussian vs t-Copula</h4><span class="meta s-todo">○ LOUIS · CW32</span><span class="up">↑ upload CW34</span></div>
+
+<div class="a f-T"><div class="n">13 / 16</div><h4>SMA Crossover Backtest</h4><span class="meta s-todo">○ HARSHA · CW33</span><span class="up">↑ upload CW35</span></div>
+<div class="a f-T"><div class="n">14 / 16</div><h4>Kalman Filters</h4><span class="meta s-todo">○ HARSHA · CW34</span><span class="up">↑ upload CW35</span></div>
+<div class="a f-CS"><div class="n">15 / 16</div><h4>GameStop</h4><span class="meta s-todo">○ LOUIS · CW33</span><span class="up">↑ upload CW35</span></div>
+<div class="a f-RN"><div class="n">16 / 16</div><h4>Alpha Decay</h4><span class="meta s-todo">○ LOUIS · CW34</span><span class="up">↑ upload CW35</span></div>
+
+</div>
+
+<div class="footer mono">Tutorial (cyan) · Case Study (orange) · Quant Insights (purple) · Research Note (green) &nbsp;//&nbsp; Louis editorial · Harsha quant · Bhavya web &amp; upload · Chaitanya platform</div>
+
+</body>
+</html>

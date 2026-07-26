@@ -1,8 +1,8 @@
 "use client";
 
-/* Pricing — three tiers with a monthly/yearly billing toggle. Plans are still
-   aspirational while subscription mechanics are a later milestone, so every CTA
-   routes to the early-access capture. */
+/* Pricing — three tiers with a monthly/yearly billing toggle. Subscription
+   mechanics are live (platform API + /checkout); CTAs route to checkout with
+   the right plan code, Starter to the free account page. */
 
 import { useState } from "react";
 import type { CSSProperties } from "react";
@@ -16,6 +16,8 @@ interface Tier {
   cta: string;
   featured?: boolean;
   badge?: string;
+  /** checkout href per billing period (subscription mechanics are live). */
+  href: { monthly: string; yearly: string };
 }
 
 const TIERS: Tier[] = [
@@ -26,6 +28,7 @@ const TIERS: Tier[] = [
     blurb: "Perfect for exploring the curriculum with foundational lessons and starter notebooks.",
     features: ["Foundations & Data Layer module", "5 backtests per month", "Community forum access"],
     cta: "Start for Free",
+    href: { monthly: "/account", yearly: "/account" },
   },
   {
     name: "Pro",
@@ -41,6 +44,7 @@ const TIERS: Tier[] = [
     cta: "Upgrade to Pro",
     featured: true,
     badge: "Popular",
+    href: { monthly: "/checkout?plan=pro-monthly", yearly: "/checkout?plan=pro-annual" },
   },
   {
     name: "Lifetime",
@@ -53,7 +57,8 @@ const TIERS: Tier[] = [
       "Dedicated support & private community",
       "Certificate of completion",
     ],
-    cta: "Contact Sales",
+    cta: "Get Lifetime",
+    href: { monthly: "/checkout?plan=lifetime", yearly: "/checkout?plan=lifetime" },
   },
 ];
 
@@ -159,7 +164,7 @@ export function Pricing() {
                 {/* cta */}
                 <div className="mt-1 flex h-12 items-center">
                   <a
-                    href="#early-access"
+                    href={yearly ? t.href.yearly : t.href.monthly}
                     onClick={() => setSelected(t.name)}
                     className={`transition-colors duration-300 ${
                       t.featured
@@ -195,7 +200,7 @@ export function Pricing() {
         </div>
 
         <p className="mt-8 t-mono text-xs text-steel">
-          Plans are indicative while the platform is in build — join early access and you&apos;ll be first to know when they go live.
+          Pre-launch test mode — checkout runs against the payment simulator and no card is charged until launch.
         </p>
       </div>
     </section>

@@ -136,9 +136,12 @@ export default function ContentPage() {
                     ))}
                   </ul>
 
-                  <span className="mt-7 inline-flex items-center gap-1.5 t-mono text-[0.66rem] uppercase tracking-[0.18em] text-steel/70">
-                    Coming soon
-                  </span>
+                  <Link
+                    href="/topics"
+                    className="mt-7 inline-flex items-center gap-1.5 t-mono text-[0.66rem] uppercase tracking-[0.18em] text-aqua transition-transform duration-300 hover:translate-x-0.5"
+                  >
+                    See the topic pipeline <span aria-hidden="true">↗</span>
+                  </Link>
                 </article>
               ))}
             </div>

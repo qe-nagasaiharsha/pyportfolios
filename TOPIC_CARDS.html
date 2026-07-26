@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Topic Report Cards — pyportfolios.com</title>
+<style>
+  :root{
+    --bg:#0a0e17; --card:#111624; --line:#1e2638; --text:#e8ecf4; --muted:#8b94a7;
+    --cyan:#22d3ee; --orange:#f59e0b; --purple:#a78bfa; --green:#34d399; --red:#f87171;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--text); font-family:Georgia,'Times New Roman',serif; padding:48px 56px; max-width:1200px; margin:0 auto;}
+  .mono{font-family:'Courier New',monospace; letter-spacing:.12em; text-transform:uppercase; font-size:11px;}
+  h1{font-family:Arial,Helvetica,sans-serif; font-weight:800; font-size:34px; margin:6px 0 4px;}
+  h1 .accent{color:var(--cyan);}
+  .sub{color:var(--muted); font-size:14px; margin-bottom:32px;}
+  .cat-label{color:var(--cyan); margin:34px 0 14px; font-family:'Courier New',monospace; letter-spacing:.12em; text-transform:uppercase; font-size:11px;}
+  .cat-label .num{color:var(--muted);}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  .card{background:var(--card); border:1px solid var(--line); border-top:3px solid var(--cyan); padding:18px 20px; border-radius:12px;}
+  .card.fmt-T{border-top-color:var(--cyan);}
+  .card.fmt-CS{border-top-color:var(--orange);}
+  .card.fmt-QI{border-top-color:var(--purple);}
+  .card.fmt-RN{border-top-color:var(--green);}
+  .card-head{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;}
+  .card-num{font-family:'Courier New',monospace; font-size:10.5px; color:var(--muted); letter-spacing:.1em;}
+  .card h3{font-family:Arial,Helvetica,sans-serif; font-size:16.5px; font-weight:700; margin:2px 0 10px;}
+  .tag{display:inline-block; font-family:'Courier New',monospace; font-size:10px; letter-spacing:.08em; padding:2px 8px; border-radius:3px; white-space:nowrap;}
+  .t-T{background:rgba(34,211,238,.12); color:var(--cyan);}
+  .t-CS{background:rgba(245,158,11,.14); color:var(--orange);}
+  .t-QI{background:rgba(167,139,250,.14); color:var(--purple);}
+  .t-RN{background:rgba(52,211,153,.14); color:var(--green);}
+  .done{color:var(--green); font-family:'Courier New',monospace; font-size:10px; letter-spacing:.08em;}
+  dl{display:grid; grid-template-columns:92px 1fr; row-gap:5px; font-size:12.5px;}
+  dt{font-family:'Courier New',monospace; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); padding-top:2px;}
+  dd{color:var(--text);}
+  dd .tk{font-family:'Courier New',monospace; font-size:11.5px; color:var(--cyan);}
+  dd.folder{font-family:'Courier New',monospace; font-size:10.5px; color:var(--muted);}
+  .footer{color:var(--muted); font-size:12px; margin-top:40px; border-top:1px solid var(--line); padding-top:14px;}
+</style>
+</head>
+<body>
+
+<div class="mono" style="color:var(--cyan);">// pyportfolios.com &nbsp;·&nbsp; content pipeline</div>
+<h1>Topic report <span class="accent">cards.</span></h1>
+<div class="sub">Batch 1 — 16 topics across 4 website categories × 4 content formats. Instruments per INSTRUMENTS.md.</div>
+
+<div class="cat-label"><span class="num">01 ·</span> Quant Foundations &amp; Derivatives</div>
+<div class="grid">
+
+<div class="card fmt-T">
+  <div class="card-head"><span class="card-num">01 / 16</span><span><span class="tag t-T">Tutorial</span> <span class="done">✔ DONE</span></span></div>
+  <h3>GBM: Simulating Price Paths</h3>
+  <dl>
+    <dt>Category</dt><dd>Quant Foundations &amp; Derivatives</dd>
+    <dt>Libraries</dt><dd><span class="tk">NumPy · Pandas · Matplotlib · yfinance · SciPy</span></dd>
+    <dt>Assets</dt><dd>SPY (S&amp;P 500 ETF, State Street)</dd>
+    <dt>Timeframe</dt><dd>Jan 2018 – Dec 2024</dd>
+    <dt>Use</dt><dd>Scenario cones for wealth projections; the engine inside Monte-Carlo pricing &amp; risk systems</dd>
+  </dl>
+</div>
+
+<div class="card fmt-T">
+  <div class="card-head"><span class="card-num">02 / 16</span><span><span class="tag t-T">Tutorial</span> <span class="done">✔ DONE</span></span></div>
+  <h3>Black-Scholes &amp; the Greeks</h3>
+  <dl>
+    <dt>Category</dt><dd>Quant Foundations &amp; Derivatives</dd>
+    <dt>Libraries</dt><dd><span class="tk">NumPy · SciPy · Matplotlib</span></dd>
+    <dt>Assets</dt><dd>QQQ options (Nasdaq 100 ETF, Invesco)</dd>
+    <dt>Timeframe</dt><dd>Jan 2018 – Dec 2024 (trailing 1y vol)</dd>
+    <dt>Use</dt><dd>Pricing &amp; hedging options; implied vol is how the entire options market quotes prices</dd>
+  </dl>
+</div>
+
+<div class="card fmt-T">
+  <div class="card-head"><span class="card-num">03 / 16</span><span><span class="tag t-T">Tutorial</span> <span class="done">✔ DONE</span></span></div>
+  <h3>Bond Pricing, Duration &amp; Convexity</h3>
+  <dl>
+    <dt>Category</dt><dd>Quant Foundations &amp; Derivatives</dd>
+    <dt>Libraries</dt><dd><span class="tk">NumPy · Pandas · Matplotlib · yfinance</span></dd>
+    <dt>Assets</dt><dd>US Treasuries (2y–30y) + SHY / IEF / TLT (iShares)</dd>
+    <dt>Timeframe</dt><dd>Static pricing + calendar year 2022</dd>
+    <dt>Use</dt><dd>Measuring rate risk; duration targeting and the ±100bp stress tests in every risk report</dd>
+  </dl>
+</div>
+
+<div class="card fmt-QI">
+  <div class="card-head"><span class="card-num">04 / 16</span><span class="tag t-QI">Quant Insights</span></div>
+  <h3>Heston vs Black-Scholes: Fitting the Vol Smile</h3>
+  <dl>
+    <dt>Category</dt><dd>Quant Foundations &amp; Derivatives</dd>
+    <dt>Libraries</dt><dd><span class="tk">QuantLib · SciPy · NumPy</span></dd>
+    <dt>Assets</dt><dd>SPX / SPY options</dd>
+    <dt>Timeframe</dt><dd>2019 – 2024 + recent option chain</dd>
+    <dt>Use</dt><dd>Pricing options consistently across strikes — the vol desk's answer to the smile BS can't fit</dd>
+  </dl>
+</div>
+
+</div>
+
+<div class="cat-label"><span class="num">02 ·</span> Portfolio Optimization</div>
+<div class="grid">
+
+<div class="card fmt-T">
+  <div class="card-head"><span class="card-num">05 / 16</span><span class="tag t-T">Tutorial</span></div>
+  <h3>MVO &amp; the Efficient Frontier</h3>
+  <dl>
+    <dt>Category</dt><dd>Portfolio Optimization</dd>
+    <dt>Libraries</dt><dd><span class="tk">PyPortfolioOpt · Pandas · Matplotlib</span></dd>
+    <dt>Assets</dt><dd>SPY · TLT · GLD · VNQ · VEA · VWO</dd>
+    <dt>Timeframe</dt><dd>Jan 2015 – Dec 2024</dd>
+    <dt>Use</dt><dd>Core asset allocation: finding the best return per unit of risk across a portfolio</dd>
+  </dl>
+</div>
+
+<div class="card fmt-T">
+  <div class="card-head"><span class="card-num">06 / 16</span><span class="tag t-T">Tutorial</span></div>
+  <h3>Black-Litterman: Equilibrium + Views</h3>
+  <dl>
+    <dt>Category</dt><dd>Portfolio Optimization</dd>
+    <dt>Libraries</dt><dd><span class="tk">PyPortfolioOpt (BL) · NumPy</span></dd>
+    <dt>Assets</dt><dd>EWJ · EWG · EWU · EWA · EWC (iShares country ETFs)</dd>
+    <dt>Timeframe</dt><dd>Jan 2015 – Dec 2024</dd>
+    <dt>Use</dt><dd>Blending market-implied returns with your own views — stable weights without extreme bets</dd>
+  </dl>
+</div>
+
+<div class="card fmt-T">
+  <div class="card-head"><span class="card-num">07 / 16</span><span class="tag t-T">Tutorial</span></div>
+  <h3>Risk Parity from Scratch</h3>
+  <dl>
+    <dt>Category</dt><dd>Portfolio Optimization</dd>
+    <dt>Libraries</dt><dd><span class="tk">SciPy (build) · Riskfolio-lib (validate)</span></dd>
+    <dt>Assets</dt><dd>SPY · TLT · GLD · DBC</dd>
+    <dt>Timeframe</dt><dd>Jan 2010 – Dec 2024</dd>
+    <dt>Use</dt><dd>Allocating by risk contribution instead of capital — the all-weather portfolio blueprint</dd>
+  </dl>
+</div>
+
+<div class="card fmt-CS">
+  <div class="card-head"><span class="card-num">08 / 16</span><span class="tag t-CS">Case Study</span></div>
+  <h3>60/40 in 2022: When Correlation Flipped</h3>
+  <dl>
+    <dt>Category</dt><dd>Portfolio Optimization</dd>
+    <dt>Libraries</dt><dd><span class="tk">Pandas · statsmodels · seaborn</span></dd>
+    <dt>Assets</dt><dd>SPY + AGG (+ TLT for the long-duration pain)</dd>
+    <dt>Timeframe</dt><dd>Jan 2000 – Dec 2023, focus 2022</dd>
+    <dt>Use</dt><dd>Stress-testing the diversification assumption every balanced portfolio silently relies on</dd>
+  </dl>
+</div>
+
+</div>
+
+<div class="cat-label"><span class="num">03 ·</span> Risk Management</div>
+<div class="grid">
+
+<div class="card fmt-T">
+  <div class="card-head"><span class="card-num">09 / 16</span><span class="tag t-T">Tutorial</span></div>
+  <h3>VaR Three Ways</h3>
+  <dl>
+    <dt>Category</dt><dd>Risk Management</dd>
+    <dt>Libraries</dt><dd><span class="tk">NumPy · SciPy · Pandas</span></dd>
+    <dt>Assets</dt><dd>DAX (^GDAXI)</dd>
+    <dt>Timeframe</dt><dd>Jan 2010 – Dec 2024</dd>
+    <dt>Use</dt><dd>Daily loss limits and regulatory capital — the industry's standard downside risk number</dd>
+  </dl>
+</div>
+
+<div class="card fmt-T">
+  <div class="card-head"><span class="card-num">10 / 16</span><span class="tag t-T">Tutorial</span></div>
+  <h3>CVaR / Expected Shortfall</h3>
+  <dl>
+    <dt>Category</dt><dd>Risk Management</dd>
+    <dt>Libraries</dt><dd><span class="tk">SciPy · Riskfolio-lib</span></dd>
+    <dt>Assets</dt><dd>HYG + VWO (fat-tailed assets)</dd>
+    <dt>Timeframe</dt><dd>Jan 2007 – Dec 2024 (incl. GFC)</dd>
+    <dt>Use</dt><dd>Sizing tail risk when the losses beyond VaR are what actually hurt — Basel's chosen measure</dd>
+  </dl>
+</div>
+
+<div class="card fmt-T">
+  <div class="card-head"><span class="card-num">11 / 16</span><span class="tag t-T">Tutorial</span></div>
+  <h3>Copulas &amp; Tail Dependence</h3>
+  <dl>
+    <dt>Category</dt><dd>Risk Management</dd>
+    <dt>Libraries</dt><dd><span class="tk">SciPy · statsmodels · seaborn</span></dd>
+    <dt>Assets</dt><dd>S&amp;P 500 vs FTSE 100 vs Nikkei 225</dd>
+    <dt>Timeframe</dt><dd>Jan 2000 – Dec 2024</dd>
+    <dt>Use</dt><dd>Modelling joint crashes across markets for multi-asset stress scenarios</dd>
+  </dl>
+</div>
+
+<div class="card fmt-QI">
+  <div class="card-head"><span class="card-num">12 / 16</span><span class="tag t-QI">Quant Insights</span></div>
+  <h3>Gaussian vs t-Copula: Joint Crashes</h3>
+  <dl>
+    <dt>Category</dt><dd>Risk Management</dd>
+    <dt>Libraries</dt><dd><span class="tk">SciPy · NumPy · seaborn</span></dd>
+    <dt>Assets</dt><dd>XLF vs XLK (SPDR sectors)</dd>
+    <dt>Timeframe</dt><dd>Jan 2007 – Dec 2024</dd>
+    <dt>Use</dt><dd>Choosing a dependence model that doesn't underestimate crash correlation (2008's lesson)</dd>
+  </dl>
+</div>
+
+</div>
+
+<div class="cat-label"><span class="num">04 ·</span> Algorithmic Trading</div>
+<div class="grid">
+
+<div class="card fmt-T">
+  <div class="card-head"><span class="card-num">13 / 16</span><span class="tag t-T">Tutorial</span></div>
+  <h3>SMA Crossover Backtest</h3>
+  <dl>
+    <dt>Category</dt><dd>Algorithmic Trading</dd>
+    <dt>Libraries</dt><dd><span class="tk">vectorbt · Pandas · Pyfolio</span></dd>
+    <dt>Assets</dt><dd>QQQ + BTC-USD (trend behaves differently per asset)</dd>
+    <dt>Timeframe</dt><dd>Jan 2015 – Dec 2024</dd>
+    <dt>Use</dt><dd>The systematic trend-following workhorse — and backtesting discipline 101</dd>
+  </dl>
+</div>
+
+<div class="card fmt-T">
+  <div class="card-head"><span class="card-num">14 / 16</span><span class="tag t-T">Tutorial</span></div>
+  <h3>Kalman Filters: Dynamic Hedge Ratios</h3>
+  <dl>
+    <dt>Category</dt><dd>Algorithmic Trading</dd>
+    <dt>Libraries</dt><dd><span class="tk">NumPy (build the filter) · statsmodels · Pandas</span></dd>
+    <dt>Assets</dt><dd>EWA / EWC pair (Australia / Canada)</dd>
+    <dt>Timeframe</dt><dd>Jan 2010 – Dec 2024</dd>
+    <dt>Use</dt><dd>Adaptive hedge ratios for pairs trading — reacting to relationships that drift over time</dd>
+  </dl>
+</div>
+
+<div class="card fmt-CS">
+  <div class="card-head"><span class="card-num">15 / 16</span><span class="tag t-CS">Case Study</span></div>
+  <h3>GameStop: When Momentum Models Broke</h3>
+  <dl>
+    <dt>Category</dt><dd>Algorithmic Trading</dd>
+    <dt>Libraries</dt><dd><span class="tk">Pandas · Matplotlib · yfinance</span></dd>
+    <dt>Assets</dt><dd>GME + XRT + ^VIX</dd>
+    <dt>Timeframe</dt><dd>Oct 2020 – Mar 2021 (event window)</dd>
+    <dt>Use</dt><dd>Understanding crowding and short-squeeze risk before your systematic strategy meets one</dd>
+  </dl>
+</div>
+
+<div class="card fmt-RN">
+  <div class="card-head"><span class="card-num">16 / 16</span><span class="tag t-RN">Research Note</span></div>
+  <h3>Alpha Decay: Momentum's Half-Life</h3>
+  <dl>
+    <dt>Category</dt><dd>Algorithmic Trading</dd>
+    <dt>Libraries</dt><dd><span class="tk">Alphalens · Pandas · statsmodels</span></dd>
+    <dt>Assets</dt><dd>11 SPDR sector ETFs</dd>
+    <dt>Timeframe</dt><dd>Jan 2005 – Dec 2024</dd>
+    <dt>Use</dt><dd>Deciding how fast to trade a signal before its edge evaporates — sets turnover &amp; capacity</dd>
+  </dl>
+</div>
+
+</div>
+
+<div class="footer mono">Tutorial (cyan) · Case Study (orange) · Quant Insights (purple) · Research Note (green) &nbsp;//&nbsp; 3 of 16 done</div>
+
+</body>
+</html>

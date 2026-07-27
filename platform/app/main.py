@@ -17,6 +17,7 @@ from .db import init_db
 from .routes import auth as auth_routes
 from .routes import checkout as checkout_routes
 from .routes import content as content_routes
+from .routes import early_access as early_access_routes
 from .routes import entitlements as entitlement_routes
 from .routes import plans as plan_routes
 from .routes import subscription as subscription_routes
@@ -56,6 +57,7 @@ app.include_router(subscription_routes.router)
 app.include_router(webhook_routes.router)
 app.include_router(content_routes.router)
 app.include_router(entitlement_routes.router)
+app.include_router(early_access_routes.router)
 
 
 @app.get("/api/health")

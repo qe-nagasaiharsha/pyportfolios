@@ -8,7 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { ArticleNav } from "@/components/article/ArticleNav";
 import { ARTICLES } from "@/lib/articles";
-import { api, ApiError, type Entitlements, type Me, type SubscriptionInfo } from "@/lib/api";
+import { api, ApiError, saveBlob, type Entitlements, type Me, type SubscriptionInfo } from "@/lib/api";
 
 const input =
   "w-full rounded-md border border-pearl/15 bg-navy-sunken/60 px-4 py-3 text-pearl placeholder:text-steel/60 outline-none transition-colors focus:border-aqua/50";
@@ -96,6 +96,92 @@ function AuthForms({ onAuthed }: { onAuthed: (me: Me) => void }) {
           {busy ? "…" : mode === "signin" ? "Sign in" : "Create account"}
         </button>
       </form>
+      {mode === "signin" ? <ForgotPassword /> : null}
+    </div>
+  );
+}
+
+function ForgotPassword() {
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  if (!open) {
+    return (
+      <button onClick={() => setOpen(true)} className="mt-4 t-mono text-[0.66rem] uppercase tracking-[0.14em] text-steel hover:text-aqua">
+        Forgot password?
+      </button>
+    );
+  }
+  return sent ? (
+    <p className="mt-5 rounded-md border border-aqua/30 bg-aqua/5 px-4 py-3 text-sm text-mist">
+      If that address has an account, a reset link is on its way. Open it, then set your new
+      password at <span className="t-mono text-aqua">/account/reset</span>.
+    </p>
+  ) : (
+    <form
+      className="mt-5 flex gap-2"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setBusy(true);
+        await api.requestPasswordReset(email).catch(() => null); // always OK — no enumeration
+        setBusy(false);
+        setSent(true);
+      }}
+    >
+      <label htmlFor="fp-email" className="sr-only">Email for password reset</label>
+      <input id="fp-email" type="email" required className={input} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+      <button type="submit" disabled={busy} className={btnGhost}>{busy ? "…" : "Send reset"}</button>
+    </form>
+  );
+}
+
+function ChangePassword() {
+  const [current, setCurrent] = useState("");
+  const [next, setNext] = useState("");
+  const [msg, setMsg] = useState<string | null>(null);
+  const [ok, setOk] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  return (
+    <div className="mt-10">
+      <h2 className="font-serif text-xl text-pearl md:text-2xl">Security</h2>
+      <form
+        className="mt-4 grid gap-4 rounded-lg border border-pearl/10 bg-navy-elevated/50 p-6 sm:grid-cols-[1fr_1fr_auto]"
+        onSubmit={async (e) => {
+          e.preventDefault();
+          setBusy(true);
+          setMsg(null);
+          try {
+            await api.changePassword(current, next);
+            setOk(true);
+            setMsg("Password changed. Other devices were signed out.");
+            setCurrent("");
+            setNext("");
+          } catch (ex) {
+            setOk(false);
+            setMsg(ex instanceof ApiError ? ex.message : "Could not change password.");
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        <div>
+          <label htmlFor="cp-cur" className={label}>Current password</label>
+          <input id="cp-cur" type="password" required className={`${input} mt-2`} value={current} onChange={(e) => setCurrent(e.target.value)} autoComplete="current-password" />
+        </div>
+        <div>
+          <label htmlFor="cp-new" className={label}>New password</label>
+          <input id="cp-new" type="password" required minLength={8} className={`${input} mt-2`} value={next} onChange={(e) => setNext(e.target.value)} autoComplete="new-password" />
+        </div>
+        <div className="flex items-end">
+          <button type="submit" disabled={busy} className={btnGhost}>{busy ? "…" : "Change"}</button>
+        </div>
+        {msg ? (
+          <p className={`sm:col-span-3 text-sm ${ok ? "text-aqua" : "text-red-300"}`}>{msg}</p>
+        ) : null}
+      </form>
     </div>
   );
 }
@@ -130,16 +216,11 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
     }
   };
 
-  const download = async (slug: string) => {
+  const download = async (slug: string, kind: "notebook" | "bundle") => {
     setMsg(null);
     try {
-      const blob = await api.notebook(slug);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${slug}.ipynb`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const blob = kind === "bundle" ? await api.bundle(slug) : await api.notebook(slug);
+      saveBlob(blob, kind === "bundle" ? `${slug}.zip` : `${slug}.ipynb`);
     } catch (ex) {
       setMsg(ex instanceof ApiError ? ex.message : "Download failed.");
     }
@@ -215,12 +296,20 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
                 <p className="t-mono text-[0.66rem] text-steel">{a.notebook}</p>
               </div>
               {isPro ? (
-                <button
-                  onClick={() => download(a.slug)}
-                  className="shrink-0 t-mono text-[0.66rem] uppercase tracking-[0.14em] text-aqua transition-transform hover:translate-x-0.5"
-                >
-                  Download ↓
-                </button>
+                <span className="flex shrink-0 items-center gap-4">
+                  <button
+                    onClick={() => download(a.slug, "bundle")}
+                    className="t-mono text-[0.66rem] uppercase tracking-[0.14em] text-aqua transition-transform hover:translate-x-0.5"
+                  >
+                    Bundle ↓
+                  </button>
+                  <button
+                    onClick={() => download(a.slug, "notebook")}
+                    className="t-mono text-[0.66rem] uppercase tracking-[0.14em] text-steel hover:text-aqua"
+                  >
+                    .ipynb ↓
+                  </button>
+                </span>
               ) : (
                 <span className="shrink-0 t-mono text-[0.66rem] uppercase tracking-[0.14em] text-steel/60">Locked</span>
               )}
@@ -228,6 +317,8 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
           ))}
         </ul>
       </div>
+
+      <ChangePassword />
     </div>
   );
 }

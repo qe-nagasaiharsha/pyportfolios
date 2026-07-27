@@ -1,4 +1,11 @@
 import { Section, Lead, P, InlineCode, Term, Callout, PullQuote, CodeBlock, DataTable, Figure, References } from "@/components/article/prose";
+import { LineChart, ScatterChart } from "@/components/charts/DataCharts";
+import d from "./data/gold-war-and-inflation";
+
+/* RN — every figure below renders REAL computed results (GLD, SPY, TIP, IEF daily,
+   Nov 2004 – Dec 2024) baked in by quant/legacy/gold.py from the self-cached CSV. */
+
+const pc = (v: number, dp = 1) => `${v >= 0 ? "+" : ""}${(v * 100).toFixed(dp)}%`;
 
 export default function GoldWarAndInflation() {
   return (
@@ -14,39 +21,65 @@ export default function GoldWarAndInflation() {
         <P>
           A research note is not a methodology lecture — it is an empirical read with a practical
           implication. The claim under test: <Term>&ldquo;gold hedges inflation and war.&rdquo;</Term>
-          {" "}We check three things against the data — gold versus real yields, gold&rsquo;s behaviour
-          across inflation regimes, and gold&rsquo;s path around the onset of armed conflict — and ask
-          what each implies for a portfolio.
+          {" "}We check three things against {d.stats.years} years of daily data ({d.params.start} →{" "}
+          {d.params.end}, {d.params.nObs.toLocaleString()} observations) — gold versus real yields,
+          gold&rsquo;s behaviour across inflation regimes, and gold&rsquo;s path around the onset of
+          crisis and armed conflict — and ask what each implies for a portfolio. Over the full sample
+          GLD compounded {pc(d.stats.cagr)} a year (a {d.stats.total}× total multiple) at{" "}
+          {(d.stats.vol * 100).toFixed(1)}% annualised volatility.
         </P>
+        <Figure
+          caption={`GLD close, ${d.params.start} → ${d.params.end} — the full sample`}
+          legend={[{ label: "GLD", tone: "aqua" }]}
+        >
+          <LineChart
+            ariaLabel="GLD price from 2004 to 2024: rising through 2011, falling to 2015, flat, then climbing steeply from 2019 to new highs in 2024."
+            series={[{ y: d.history.y as unknown as number[], area: true }]}
+            xLabels={d.history.xLabels as unknown as [number, string][]}
+          />
+        </Figure>
       </Section>
 
       <Section id="realyields" n={2} title="Gold tracks real yields">
         <P>
           Gold pays no coupon, so its opportunity cost is the <Term>real yield</Term> — the return you
-          forgo by holding metal instead of an inflation-protected bond. Empirically this is gold&rsquo;s
-          strongest relationship: when real yields fall, gold rises, and vice versa. It explains far more
-          of gold&rsquo;s variation than headline CPI does.
+          forgo by holding metal instead of an inflation-protected bond. The cleanest tradable proxy is
+          the TIP ETF, whose price moves inversely to 10-year real yields. Empirically this is
+          gold&rsquo;s strongest relationship: on {d.params.nMonths} monthly observations, gold&rsquo;s
+          beta to TIP returns is <InlineCode>{d.proxy.beta}</InlineCode> with a correlation of{" "}
+          <InlineCode>{d.proxy.corr}</InlineCode> — real-yield moves alone explain{" "}
+          {Math.round(d.proxy.r2 * 100)}% of the variance of monthly gold returns, far more than
+          headline CPI does.
         </P>
         <CodeBlock
           file="realyields.py"
-          code={`import numpy as np, pandas as pd
+          code={`import numpy as np, pandas as pd, yfinance as yf
 
-# monthly: gold spot, and the 10y TIPS (real) yield
-df = pd.concat([gold, real_yield], axis=1).dropna()
-df["gold_ret"]   = np.log(df["gold"]).diff()
-df["dreal"]      = df["real_yield"].diff()      # change in real yield
+# daily: GLD, and TIP as the (inverse) 10y real-yield proxy
+px = yf.download(["GLD", "TIP"], start="2004-11-18", end="2025-01-01",
+                 auto_adjust=True, progress=False)["Close"].dropna()
+mret = np.log(px.resample("ME").last()).diff().dropna()
 
-# regress gold returns on changes in the real yield
-beta = np.polyfit(df["dreal"].dropna(), df["gold_ret"].dropna(), 1)[0]
-corr = df[["gold_ret", "dreal"]].dropna().corr().iloc[0, 1]
-print(f"beta to d(real yield) {beta:.2f}   corr {corr:.2f}")  # negative`}
+# regress gold returns on TIP returns (TIP up = real yields falling)
+beta = np.polyfit(mret["TIP"], mret["GLD"], 1)[0]   # ${d.proxy.beta}
+corr = mret["GLD"].corr(mret["TIP"])                # ${d.proxy.corr}
+print(f"beta {beta:.2f}   corr {corr:.2f}   R^2 {corr**2:.2f}")`}
         />
-        <Figure caption="Gold vs the inverted real yield — they move together (illustrative)" legend={[{ label: "Gold", tone: "aqua" }, { label: "Real yield (inv.)", tone: "muted" }]}>
-          <svg viewBox="0 0 600 200" className="w-full" role="img" aria-label="Gold and the inverted real yield trace similar paths over time.">
-            <line x1="30" y1="170" x2="580" y2="170" stroke="#4a4a42" strokeOpacity="0.4" strokeWidth="1" />
-            <path d="M30,140 C120,120 180,90 240,80 C320,66 380,110 440,70 C500,40 540,60 580,48" fill="none" stroke="#0a8a8a" strokeWidth="2" />
-            <path d="M30,150 C120,128 180,96 240,92 C320,78 380,118 440,80 C500,52 540,72 580,60" fill="none" stroke="#4a4a42" strokeOpacity="0.5" strokeWidth="1.5" strokeDasharray="4 4" />
-          </svg>
+        <Figure
+          caption={`Monthly returns, GLD vs TIP, ${d.params.start.slice(0, 4)}–${d.params.end.slice(0, 4)} — β = ${d.proxy.beta}, ρ = ${d.proxy.corr}`}
+          legend={[
+            { label: "fitted line", tone: "aqua" },
+            { label: "months", tone: "muted" },
+          ]}
+        >
+          <ScatterChart
+            ariaLabel="Scatter of monthly gold returns against monthly TIP returns with a clearly upward-sloping fitted line: months when real yields fall are months when gold rises."
+            points={[{ xy: d.proxy.scatter as unknown as [number, number][], r: 2, opacity: 0.35 }]}
+            lines={[{ xy: d.proxy.fit as unknown as [number, number][], color: "teal", width: 2 }]}
+            xFmt={(v) => `${v.toFixed(0)}%`}
+            yFmt={(v) => `${v.toFixed(0)}%`}
+            xLabel="TIP monthly return (real yields falling →)"
+          />
         </Figure>
       </Section>
 
@@ -54,17 +87,19 @@ print(f"beta to d(real yield) {beta:.2f}   corr {corr:.2f}")  # negative`}
         <P>
           The clean &ldquo;gold = inflation hedge&rdquo; story is weaker than the marketing. Over very
           long horizons gold roughly preserves purchasing power, but over the horizons investors actually
-          hold it, the hedge is <Term>regime-dependent</Term>: gold tends to work when inflation is high{" "}
-          <em>and</em> real yields are falling (the 1970s, 2020&ndash;2021), and disappoints when central
-          banks respond by pushing real yields up (much of 2022). Sort the months by inflation regime and
-          the conditionality is obvious.
+          hold it, the hedge is <Term>regime-dependent</Term>. Proxy inflation expectations with the
+          trailing-12-month TIP-minus-IEF relative return (a tradable breakeven), split the high-inflation
+          months by the direction of real yields, and the conditionality is stark: gold pays{" "}
+          {pc(d.regimes.hiFall.annRet)} annualised when inflation is high <em>and</em> real yields are
+          falling, and loses {pc(d.regimes.hiRise.annRet)} annualised when central banks respond by
+          pushing real yields up — exactly the 2022 experience.
         </P>
         <DataTable
-          head={["Regime", "Avg. real gold return", "Reading"]}
+          head={["Regime", "Months", "Avg. gold return (ann.)", "Reading"]}
           rows={[
-            ["High inflation, falling real yields", "Strong +", "The classic hedge works"],
-            ["High inflation, rising real yields", "Flat / −", "Hedge fails — real yields dominate"],
-            ["Low, stable inflation", "≈ 0", "Gold drifts; no premium"],
+            ["High inflation, falling real yields", d.regimes.hiFall.n, pc(d.regimes.hiFall.annRet), "The classic hedge works"],
+            ["High inflation, rising real yields", d.regimes.hiRise.n, pc(d.regimes.hiRise.annRet), "Hedge fails — real yields dominate"],
+            ["Low, stable inflation", d.regimes.low.n, pc(d.regimes.low.annRet), "Gold drifts; no premium"],
           ]}
         />
         <PullQuote>
@@ -75,38 +110,88 @@ print(f"beta to d(real yield) {beta:.2f}   corr {corr:.2f}")  # negative`}
 
       <Section id="war" n={4} title="What war adds">
         <P>
-          Geopolitical shock adds a distinct, <Term>transient</Term> premium. An event study around the
-          onset of major conflicts shows a fast safe-haven bid in the first days to weeks, which then
-          fades as the shock is priced and real-yield dynamics reassert control. The war premium is real
-          for tactical risk-off, but it is not a durable allocation thesis.
+          Geopolitical shock adds a distinct, <Term>transient</Term> premium. An event study around three
+          modern shock onsets — Lehman&rsquo;s filing, the COVID crash, and the invasion of Ukraine —
+          shows a fast safe-haven bid in the first days to weeks, which then fades as the shock is priced
+          and real-yield dynamics reassert control. Ukraine is the archetype: gold was up{" "}
+          {pc(d.events.rows[2].peak20)} at its peak within a month of the invasion, yet{" "}
+          {pc(d.events.rows[2].d60)} sixty trading days out.
         </P>
         <CodeBlock
           file="eventstudy.py"
           code={`import numpy as np, pandas as pd
 
-# event_dates: onset of major geopolitical shocks
-def car(prices, date, pre=5, post=20):
-    r = np.log(prices).diff()
-    window = r.loc[date:].iloc[:post]
-    return window.cumsum()                 # cumulative abnormal-ish return
+events = {"GFC / Lehman": "2008-09-15", "COVID": "2020-02-19",
+          "Ukraine": "2022-02-24"}
 
-paths = pd.concat({d: car(gold, d) for d in event_dates}, axis=1)
-print(paths.mean(axis=1).round(3))         # average path: quick pop, then fade`}
+def window(px, date, pre=10, post=60):
+    i = px.index.searchsorted(pd.Timestamp(date))
+    w = px.iloc[i - pre : i + post + 1]
+    return 100 * w / px.iloc[i]           # = 100 at the event date
+
+paths = {name: window(gld, d0) for name, d0 in events.items()}
+# quick pop, then fade: +5d / +20d / +60d returns per event below`}
         />
+        <Figure
+          caption="GLD around shock onsets, rebased to 100 at the event date (t = 0)"
+          legend={[
+            { label: "GFC", tone: "aqua" },
+            { label: "COVID / Ukraine", tone: "muted" },
+          ]}
+        >
+          <LineChart
+            ariaLabel="Three gold price paths rebased to 100 at each event date: a sharp 15 percent Lehman spike that fades, a COVID dip then recovery, and a Ukraine pop of 8 percent that fully fades within sixty trading days."
+            series={[
+              { y: d.events.series.gfc as unknown as number[], color: "teal", width: 2 },
+              { y: d.events.series.covid as unknown as number[], color: "graphite", width: 1.4, opacity: 0.75 },
+              { y: d.events.series.ukraine as unknown as number[], color: "amber", width: 1.6 },
+            ]}
+            xLabels={d.events.xLabels as unknown as [number, string][]}
+            hLines={[{ v: 100, color: "graphite", dash: "3 3" }]}
+          />
+        </Figure>
+        <DataTable
+          head={["Event", "t+5d", "t+20d", "t+60d", "Peak ≤ 20d"]}
+          rows={d.events.rows.map((e) => [e.label, pc(e.d5), pc(e.d20), pc(e.d60), pc(e.peak20)])}
+        />
+        <P>
+          Note the COVID row: in the first liquidity-panic weeks gold <em>fell</em>{" "}
+          {pc(d.events.rows[1].d20)} as everything was sold for cash — the safe haven only reasserted
+          itself once real yields collapsed. The war premium is real for tactical risk-off, but it is
+          not a durable allocation thesis.
+        </P>
       </Section>
 
       <Section id="takeaways" n={5} title="What it implies">
         <P>
           For allocation: treat gold as a <Term>real-rate trade</Term> first and a tail hedge second.
           Expect it to help when real yields fall, to struggle when central banks force them up, and to
-          spike-then-fade around conflict. That makes it a useful diversifier against a falling-real-yield
-          regime — not a set-and-forget inflation insurance policy.
+          spike-then-fade around conflict. The durable portfolio property is the correlation: over
+          twenty years the 252-day rolling correlation of daily GLD and SPY returns averaged{" "}
+          <InlineCode>{d.rollCorr.mean.toFixed(2)}</InlineCode>, ranging {d.rollCorr.min} to{" "}
+          {d.rollCorr.max} and rarely staying far from zero. That makes gold a useful diversifier
+          against a falling-real-yield regime — not a set-and-forget inflation insurance policy. In
+          nominal terms GLD&rsquo;s {pc(d.stats.cagr)} a year trailed SPY&rsquo;s {pc(d.stats.spyCagr)}{" "}
+          over the same span; in real terms (CPI averaged roughly 2.5% a year over the sample) gold
+          earned a positive but modest premium for its zero-coupon risk.
         </P>
+        <Figure
+          caption="GLD vs SPY — 252-day rolling correlation of daily returns"
+          legend={[{ label: "rolling ρ", tone: "aqua" }]}
+        >
+          <LineChart
+            ariaLabel="Rolling one-year correlation between gold and equities oscillating between minus 0.35 and plus 0.44 around a mean near zero."
+            series={[{ y: d.rollCorr.y as unknown as number[], color: "teal", width: 1.6 }]}
+            xLabels={d.rollCorr.xLabels as unknown as [number, string][]}
+            hLines={[{ v: 0, color: "graphite", dash: "3 3" }]}
+          />
+        </Figure>
         <Callout kind="How to read a research note like this">
-          What is the empirical claim, and over what horizon? What is the true driver once you control for
-          it (here: real yields)? Is the effect conditional on a regime? Is it durable or transient?
-          Figures are illustrative; the notebook pulls gold, CPI and the TIPS real yield and reproduces
-          the regression, the regime table, and the event study.
+          What is the empirical claim, and over what horizon? What is the true driver once you control
+          for it (here: real yields, β = {d.proxy.beta} to TIP)? Is the effect conditional on a regime
+          ({pc(d.regimes.hiFall.annRet)} vs {pc(d.regimes.hiRise.annRet)} annualised)? Is it durable or
+          transient? The companion notebook pulls GLD, SPY, TIP and IEF and reproduces the regression,
+          the regime table, and the event study.
         </Callout>
       </Section>
 

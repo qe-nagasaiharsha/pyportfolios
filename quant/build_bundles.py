@@ -29,8 +29,9 @@ import zipfile
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-NB_DIR = REPO / "site" / "public" / "notebooks"
-OUT = REPO / "site" / "public" / "bundles"
+# vault/ = the paid product, served only through the gated platform API
+NB_DIR = REPO / "vault" / "notebooks"
+OUT = REPO / "vault" / "bundles"
 META = REPO / "quant" / "meta"
 
 CORE = ["numpy", "pandas", "scipy", "matplotlib", "yfinance", "jupyterlab"]

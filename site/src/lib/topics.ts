@@ -68,7 +68,7 @@ export const TOPIC_CARDS: TopicCard[] = [
   },
   {
     no: 4,
-    format: "Research Article",
+    format: "Quant Insights",
     title: "Heston vs Black–Scholes: Fitting the Vol Smile",
     category: "finance-fundamentals",
     libraries: ["QuantLib", "SciPy", "NumPy"],
@@ -168,7 +168,7 @@ export const TOPIC_CARDS: TopicCard[] = [
   },
   {
     no: 12,
-    format: "Research Article",
+    format: "Quant Insights",
     title: "Gaussian vs t-Copula: Joint Crashes",
     category: "risk-management",
     libraries: ["SciPy", "NumPy", "seaborn"],

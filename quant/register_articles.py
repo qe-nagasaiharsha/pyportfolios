@@ -112,7 +112,7 @@ def main() -> None:
         # only register when the body + data actually exist
         body = REPO / "site" / "src" / "content" / "articles" / f"{m['slug']}.tsx"
         data = REPO / "site" / "src" / "content" / "articles" / "data" / f"{m['slug']}.ts"
-        nb = REPO / "site" / "public" / "notebooks" / m["notebook"]
+        nb = REPO / "vault" / "notebooks" / m["notebook"]
         missing = [x.name for x in (body, data, nb) if not x.exists()]
         if missing:
             print(f"  {m['slug']}: missing {missing} - skip")

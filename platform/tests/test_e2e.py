@@ -34,7 +34,8 @@ def client(tmp_path, monkeypatch):
     (notebooks / f"{NOTEBOOK_SLUG}.ipynb").write_text(NOTEBOOK_BODY, encoding="utf-8")
 
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{db_path.as_posix()}")
-    monkeypatch.setenv("NOTEBOOKS_DIR", str(notebooks))
+    monkeypatch.setenv("CONTENT_NOTEBOOKS_DIR", str(notebooks))
+    monkeypatch.setenv("CONTENT_BUNDLES_DIR", str(tmp_path / "bundles"))
     monkeypatch.setenv("PAYMENT_PROVIDER", "mock")
     get_settings.cache_clear()
     mock_provider._checkouts.clear()

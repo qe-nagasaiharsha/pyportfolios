@@ -95,4 +95,28 @@ export const api = {
     if (!res.ok) throw new ApiError(res.status, res.status === 402 ? "Pro subscription required" : res.statusText);
     return res.blob();
   },
+  /** Gated run-anywhere ZIP bundle (notebook + launchers). */
+  bundle: async (slug: string): Promise<Blob> => {
+    const res = await fetch(`${BASE}/content/bundles/${slug}`, { credentials: "include" });
+    if (!res.ok) throw new ApiError(res.status, res.status === 402 ? "Pro subscription required" : res.statusText);
+    return res.blob();
+  },
+  earlyAccess: (email: string) =>
+    req<{ ok: boolean; duplicate?: boolean }>("/early-access", { method: "POST", body: JSON.stringify({ email }) }),
+  requestPasswordReset: (email: string) =>
+    req<{ ok: boolean }>("/auth/request-password-reset", { method: "POST", body: JSON.stringify({ email }) }),
+  resetPassword: (token: string, new_password: string) =>
+    req<{ ok: boolean }>("/auth/reset-password", { method: "POST", body: JSON.stringify({ token, new_password }) }),
+  changePassword: (current_password: string, new_password: string) =>
+    req<{ ok: boolean }>("/auth/change-password", { method: "POST", body: JSON.stringify({ current_password, new_password }) }),
 };
+
+/** Trigger a browser download from a fetched Blob. */
+export function saveBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}

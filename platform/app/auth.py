@@ -46,6 +46,13 @@ def _token_hash(token: str) -> str:
     return hmac.new(secret, token.encode(), hashlib.sha256).hexdigest()
 
 
+def hash_token(token: str) -> str:
+    """Public alias for the keyed token hash — shared by sessions and
+    password-reset tokens (both are random 256-bit values; only the
+    HMAC-SHA256 keyed with SESSION_SECRET is ever stored)."""
+    return _token_hash(token)
+
+
 def create_session(db: Session, user: User, response: Response) -> None:
     token = secrets.token_urlsafe(32)
     settings = get_settings()

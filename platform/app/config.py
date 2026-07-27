@@ -37,8 +37,19 @@ class Settings(BaseSettings):
     stripe_price_pro_annual: str = ""
     stripe_price_lifetime: str = ""
 
-    # Directory containing the gated .ipynb files.
-    notebooks_dir: str = "../site/public/notebooks"
+    # Gated content directories. The paid content moved out of the static
+    # site into the vault — the API is the only way users obtain these files.
+    content_notebooks_dir: str = "../vault/notebooks"
+    content_bundles_dir: str = "../vault/bundles"
+
+    # Email backend: "console" (default; DEV ONLY, logs emails via logging)
+    # or "smtp" (requires the SMTP_* settings below).
+    email_backend: str = "console"
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_username: str = ""
+    smtp_password: str = ""
+    smtp_from: str = "no-reply@pyportfolios.com"
 
 
 @lru_cache

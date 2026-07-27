@@ -1,4 +1,13 @@
 import { Section, Lead, P, InlineCode, Term, Callout, PullQuote, CodeBlock, DataTable, Figure, References } from "@/components/article/prose";
+import { LineChart, ScatterChart } from "@/components/charts/DataCharts";
+import d from "./data/kelly-criterion-position-sizing";
+
+/* Research article — all figures below render REAL computed results
+   (SPY 2000–2024, seeded bootstrap) baked in by quant/legacy/kelly.py. */
+
+const pc = (v: number, dp = 1) => `${(v * 100).toFixed(dp)}%`;
+const gc = d.growthCurve;
+const curveXY = gc.f.map((f, i) => [f, gc.g[i]] as [number, number]);
 
 export default function KellyCriterionPositionSizing() {
   return (
@@ -7,8 +16,8 @@ export default function KellyCriterionPositionSizing() {
         Two traders can hold the exact same signal and end the decade in opposite places — one
         compounding, one ruined — purely because of how much they bet each time. The Kelly criterion
         is the answer to &ldquo;how much?&rdquo;: the position size that maximises the long-run growth
-        rate of wealth. We derive it from first principles, code both forms, and explain why almost
-        nobody runs full Kelly.
+        rate of wealth. We derive it from first principles, compute it on twenty-five years of real
+        SPY data, and show — with real drawdowns — why almost nobody runs full Kelly.
       </Lead>
 
       <Section id="idea" n={1} title="The question Kelly answers">
@@ -29,7 +38,7 @@ export default function KellyCriterionPositionSizing() {
 
       <Section id="derivation" n={2} title="Maximising log-growth">
         <P>
-          Take the simplest case: a bet that wins with probability <InlineCode>p</InlineCode>, paying
+          Take the simplest case: a bet that wins with probability <InlineCode>p</InlineCode>, paying{" "}
           <InlineCode>b</InlineCode> to 1, and loses your stake with probability{" "}
           <InlineCode>q = 1 − p</InlineCode>. Bet a fraction <InlineCode>f</InlineCode> of wealth. After
           one round your wealth multiplies by <InlineCode>(1 + b·f)</InlineCode> on a win or{" "}
@@ -72,7 +81,10 @@ export default function KellyCriterionPositionSizing() {
       <Section id="code" n={4} title="Kelly in code">
         <P>
           Both forms are a couple of lines. The continuous version is what a systematic book uses: feed it
-          the strategy&rsquo;s estimated mean and volatility and it returns the growth-optimal leverage.
+          the strategy&rsquo;s estimated mean and volatility and it returns the growth-optimal leverage. On
+          real SPY data, {d.params.start} to {d.params.end} ({d.params.nObs.toLocaleString()} trading
+          days), the estimates are <InlineCode>μ = {pc(d.params.muAnnual)}</InlineCode> and{" "}
+          <InlineCode>σ = {pc(d.params.sigmaAnnual)}</InlineCode> a year:
         </P>
         <CodeBlock
           file="kelly.py"
@@ -91,62 +103,111 @@ def kelly_continuous(mu: float, sigma: float) -> float:
 # 55% edge at even money -> bet 10% of capital
 print(kelly_discrete(0.55, 1.0))          # 0.10
 
-# a strategy: 8% excess return, 16% vol -> ~3.1x... too hot
-print(kelly_continuous(0.08, 0.16))       # 3.125`}
+# SPY 2000-2024: mu = ${d.params.muAnnual.toFixed(4)}, sigma = ${d.params.sigmaAnnual.toFixed(4)}
+print(kelly_continuous(${d.params.muAnnual.toFixed(4)}, ${d.params.sigmaAnnual.toFixed(4)}))   # ${d.params.fStar.toFixed(2)}`}
         />
         <P>
-          That <InlineCode>3.1x</InlineCode> is the warning the formula always gives in practice: full
-          Kelly on estimated parameters is wildly aggressive, because <InlineCode>μ</InlineCode> is
-          never known as precisely as the maths assumes.
+          That <InlineCode>{d.params.fStar.toFixed(2)}x</InlineCode>{" "}is the warning the formula always
+          gives in practice: full Kelly on estimated parameters says to run the S&amp;P 500 at two and a
+          half times leverage — through 2008. It is wildly aggressive, because{" "}
+          <InlineCode>μ</InlineCode> is never known as precisely as the maths assumes.
         </P>
       </Section>
 
       <Section id="fractional" n={5} title="Why bet fractional Kelly">
         <P>
-          Full Kelly is optimal only if you know <InlineCode>p</InlineCode>, <InlineCode>b</InlineCode>,
-          <InlineCode>μ</InlineCode> and <InlineCode>σ</InlineCode> exactly. You don&rsquo;t — you estimate
+          Full Kelly is optimal only if you know <InlineCode>p</InlineCode>, <InlineCode>b</InlineCode>,{" "}
+          <InlineCode>μ</InlineCode> and <InlineCode>σ</InlineCode>{" "}exactly. You don&rsquo;t — you estimate
           them, with error. Overestimate the edge and you sail past the peak of the growth curve into the
-          region where growth <em>falls</em> and drawdowns explode. Because the curve is flat near its
-          top, <Term>half-Kelly</Term> captures about three-quarters of the growth for a quarter of the
-          variance — a trade almost everyone takes.
+          region where growth <em>falls</em> and drawdowns explode. The curve below is not a sketch: it is
+          the realised growth rate <InlineCode>g(f) = 252·E[ln(1 + f·r)]</InlineCode> on the actual{" "}
+          {d.params.years.toFixed(0)} years of SPY daily returns, fat tails included.
+        </P>
+        <Figure
+          caption="Realised long-run growth rate vs bet fraction, SPY 2000–2024 — the peak is full Kelly"
+          legend={[{ label: "Kelly peak", tone: "aqua" }, { label: "g(f)", tone: "muted" }]}
+        >
+          <ScatterChart
+            ariaLabel="Growth rises to a peak of about 11 percent a year at a fraction near 2.5, then falls and turns negative as the bet fraction approaches 5."
+            points={[]}
+            lines={[{ xy: curveXY, color: "graphite", width: 2 }]}
+            marks={[
+              { x: gc.peak.f, y: gc.peak.g, label: "full Kelly", color: "teal" },
+              { x: gc.half.f, y: gc.half.g, label: "½", color: "amber" },
+              { x: gc.quarter.f, y: gc.quarter.g, label: "¼", color: "amber" },
+            ]}
+            xLabel="bet fraction f (leverage)"
+            yFmt={(v) => pc(v, 0)}
+          />
+        </Figure>
+        <P>
+          Because the curve is flat near its top, <Term>half-Kelly</Term> captures{" "}
+          {pc(d.histStats.half.gCaptured, 0)} of the growth rate for half the volatility — a trade
+          almost everyone takes. Here is what each sizing actually did, rebalanced daily through the
+          dot-com bust, the GFC and COVID:
         </P>
         <DataTable
-          head={["Sizing", "Growth captured", "Volatility of growth", "Typical max drawdown"]}
+          head={["Sizing", "f", "CAGR 2000–24", "Terminal wealth", "Max drawdown", "Growth captured"]}
           rows={[
-            ["Full Kelly", "100%", "1.00×", "Brutal (≈ 50%+)"],
-            ["Half Kelly", "≈ 75%", "0.50×", "Roughly halved"],
-            ["Quarter Kelly", "≈ 44%", "0.25×", "Mild"],
+            ["Full Kelly", `${d.histStats.full.f.toFixed(2)}×`, pc(d.histStats.full.cagr), `${d.histStats.full.terminal.toFixed(1)}×`, pc(d.histStats.full.maxDD), pc(d.histStats.full.gCaptured, 0)],
+            ["Half Kelly", `${d.histStats.half.f.toFixed(2)}×`, pc(d.histStats.half.cagr), `${d.histStats.half.terminal.toFixed(1)}×`, pc(d.histStats.half.maxDD), pc(d.histStats.half.gCaptured, 0)],
+            ["Quarter Kelly", `${d.histStats.quarter.f.toFixed(2)}×`, pc(d.histStats.quarter.cagr), `${d.histStats.quarter.terminal.toFixed(1)}×`, pc(d.histStats.quarter.maxDD), pc(d.histStats.quarter.gCaptured, 0)],
+            ["SPY unlevered", "1.00×", pc(d.histStats.unlevered.cagr), `${d.histStats.unlevered.terminal.toFixed(1)}×`, pc(d.histStats.unlevered.maxDD), pc(d.histStats.unlevered.gCaptured, 0)],
           ]}
         />
-        <Figure caption="Long-run growth rate as a function of bet fraction (illustrative)" legend={[{ label: "Kelly peak", tone: "aqua" }, { label: "Growth", tone: "muted" }]}>
-          <svg viewBox="0 0 600 220" className="w-full" role="img" aria-label="Growth rises to a peak at the Kelly fraction, then falls and turns negative as the bet fraction grows.">
-            <line x1="40" y1="170" x2="580" y2="170" stroke="#4a4a42" strokeOpacity="0.4" strokeWidth="1" />
-            <line x1="40" y1="20" x2="40" y2="180" stroke="#4a4a42" strokeOpacity="0.4" strokeWidth="1" />
-            {/* concave growth curve peaking ~ x=250 */}
-            <path d="M40,168 C120,70 200,40 250,40 C340,40 460,120 560,200" fill="none" stroke="#4a4a42" strokeWidth="2" />
-            {/* peak marker */}
-            <line x1="250" y1="40" x2="250" y2="170" stroke="#0a8a8a" strokeOpacity="0.5" strokeDasharray="4 4" strokeWidth="1.25" />
-            <circle cx="250" cy="40" r="4" fill="#0a8a8a" />
-            <text x="256" y="36" className="t-mono" fontSize="12" fill="#0a8a8a">full Kelly</text>
-            <text x="150" y="190" className="t-mono" fontSize="11" fill="#4a4a42">½ Kelly</text>
-            <text x="540" y="190" className="t-mono" fontSize="11" fill="#4a4a42">over-bet</text>
-          </svg>
+        <Figure
+          caption="Wealth at full / half / quarter Kelly, daily rebalanced, log scale — the drawdowns are the story"
+          legend={[
+            { label: "full", tone: "muted" },
+            { label: "half / quarter", tone: "aqua" },
+          ]}
+        >
+          <LineChart
+            ariaLabel="Three wealth curves over 25 years on a log scale: full Kelly is the most volatile, collapsing by over 90 percent in 2009 before recovering to the highest terminal value; half and quarter Kelly are progressively smoother."
+            series={[
+              { y: d.wealth.full as unknown as number[], color: "rust", width: 1.6 },
+              { y: d.wealth.half as unknown as number[], color: "teal", width: 1.8 },
+              { y: d.wealth.quarter as unknown as number[], color: "slate", width: 1.5 },
+            ]}
+            xLabels={d.wealthXLabels as unknown as [number, string][]}
+            yFmt={(v) => `${(10 ** v).toFixed(Math.abs(v) < 0.7 ? 1 : 0)}x`}
+          />
         </Figure>
+        <P>
+          Full Kelly went down {pc(d.histStats.full.maxDD)}{" "}peak-to-trough in the GFC — a hole most
+          humans (and all investors with redemptions) abandon at the bottom of. Half Kelly&rsquo;s worst
+          drawdown was {pc(d.histStats.half.maxDD)} for a terminal wealth still{" "}
+          {d.histStats.half.terminal.toFixed(1)}× the start. A seeded bootstrap of{" "}
+          {d.params.bootPaths.toLocaleString()} ten-year futures from the same return distribution
+          makes the trade-off explicit:
+        </P>
+        <DataTable
+          head={["Sizing", "Median 10y wealth", "5th pct wealth", "Median max DD", "Worst-5% max DD"]}
+          rows={[
+            ["Full Kelly", `${d.boot.full.medTerminal.toFixed(1)}×`, `${d.boot.full.p5Terminal.toFixed(2)}×`, pc(d.boot.full.medMaxDD), pc(d.boot.full.worstDD5)],
+            ["Half Kelly", `${d.boot.half.medTerminal.toFixed(1)}×`, `${d.boot.half.p5Terminal.toFixed(2)}×`, pc(d.boot.half.medMaxDD), pc(d.boot.half.worstDD5)],
+            ["Quarter Kelly", `${d.boot.quarter.medTerminal.toFixed(1)}×`, `${d.boot.quarter.p5Terminal.toFixed(2)}×`, pc(d.boot.quarter.medMaxDD), pc(d.boot.quarter.worstDD5)],
+          ]}
+        />
       </Section>
 
       <Section id="takeaways" n={6} title="Takeaways">
         <P>
           Kelly turns &ldquo;how much should I bet?&rdquo; from a feeling into a formula:{" "}
-          <InlineCode>edge / odds</InlineCode>, or <InlineCode>μ / σ²</InlineCode>. It is the size that
-          compounds capital fastest — and a hard ceiling above which more risk buys <em>less</em> growth.
-          In the real world, where parameters are estimated, treat full Kelly as the do-not-exceed line
-          and run a fraction of it.
+          <InlineCode>edge / odds</InlineCode>, or <InlineCode>μ / σ²</InlineCode>. On real SPY data the
+          formula says {d.params.fStar.toFixed(2)}× — and the same data shows what running it costs: a{" "}
+          {pc(d.histStats.full.maxDD)} drawdown on the way to the fastest compounding. It is the size
+          that grows capital fastest <em>and</em> a hard ceiling above which more risk buys{" "}
+          <em>less</em> growth. In the real world, where parameters are estimated, treat full Kelly as
+          the do-not-exceed line and run a fraction of it — half Kelly kept{" "}
+          {pc(d.histStats.half.gCaptured, 0)} of the growth rate for a drawdown{" "}
+          {pc(d.histStats.half.maxDD)} instead of {pc(d.histStats.full.maxDD)}.
         </P>
         <Callout kind="Before you size a position with Kelly">
           Are your edge and volatility estimates honest and out-of-sample? Have you capped leverage?
-          Are you running a fraction (½ or less) to survive estimation error? Numbers above are
-          illustrative; the notebook simulates full vs fractional Kelly wealth paths so you can see the
-          drawdown difference for yourself.
+          Are you running a fraction (½ or less) to survive estimation error? Every number above is
+          computed from real SPY data (seed {String(d.params.seed)} for the bootstrap); the companion
+          notebook reproduces the growth curve, the wealth paths and the drawdown table end to end.
         </Callout>
       </Section>
 

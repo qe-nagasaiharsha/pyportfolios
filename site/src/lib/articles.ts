@@ -14,11 +14,12 @@ export type CategorySlug =
   | "risk-management"
   | "algorithmic-trading";
 
-/** The four content formats (see /content): how each piece is written.
+/** The content formats (see /content): how each piece is written.
     Tutorial — teach one concept/method. Case Study — apply a model to a real
     event. Research Note — empirical read on live markets. Research Article —
-    a landmark result, replicated as runnable code. */
-export type ArticleFormat = "Tutorial" | "Case Study" | "Research Note" | "Research Article";
+    a landmark result, replicated as runnable code. Quant Insights — a model
+    face-off / deep quantitative comparison (topic-card taxonomy). */
+export type ArticleFormat = "Tutorial" | "Case Study" | "Research Note" | "Research Article" | "Quant Insights";
 
 export interface Category {
   slug: CategorySlug;

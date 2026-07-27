@@ -1,14 +1,13 @@
 """Gated content delivery.
 
-THIS IS THE GATING ENFORCEMENT POINT. Today the static site still ships
-notebooks publicly under site/public/notebooks/, so this route is belt-and-
-braces; once the front-end stops exporting notebooks into the static bundle
-and links to /api/content/notebooks/{slug} instead, this becomes the single
-place where paid access is enforced. Do not add other download paths.
+THIS IS THE GATING ENFORCEMENT POINT. The paid content now lives in the
+repo-level vault (vault/notebooks/*.ipynb, vault/bundles/*.zip) and is no
+longer shipped inside the static site — these routes are the ONLY way users
+obtain it. Do not add other download paths.
 
-Path-traversal guard: the slug must match ^[a-z0-9-]+$ (no dots, slashes,
-backslashes, or drive letters possible), and the resolved file path is
-additionally checked to remain inside the notebooks directory.
+Path-traversal guard (both routes): the slug must match ^[a-z0-9-]+$ (no
+dots, slashes, backslashes, or drive letters possible), and the resolved
+file path is additionally checked to remain inside the content directory.
 """
 
 import re
@@ -29,33 +28,75 @@ router = APIRouter(prefix="/api/content", tags=["content"])
 SLUG_RE = re.compile(r"^[a-z0-9-]+$")
 
 
+def _gated_file(
+    db: Session,
+    user: User,
+    slug: str,
+    *,
+    content_dir: str,
+    extension: str,
+    kind: str,
+) -> Path:
+    """Shared gate: slug shape, Pro/Lifetime entitlement, path containment."""
+    if not SLUG_RE.fullmatch(slug) or len(slug) > 128:
+        raise HTTPException(status_code=404, detail=f"{kind} not found")
+
+    if not services.has_active_pro(db, user.id):
+        raise HTTPException(
+            status_code=402,
+            detail="A Pro or Lifetime subscription is required to download this content",
+        )
+
+    base_dir = Path(content_dir).resolve()
+    file_path = (base_dir / f"{slug}{extension}").resolve()
+
+    # Defense in depth: the regex already prevents traversal, but verify the
+    # resolved path never escapes the content directory.
+    if base_dir not in file_path.parents:
+        raise HTTPException(status_code=404, detail=f"{kind} not found")
+    if not file_path.is_file():
+        raise HTTPException(status_code=404, detail=f"{kind} not found")
+    return file_path
+
+
 @router.get("/notebooks/{slug}")
 def download_notebook(
     slug: str,
     user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> FileResponse:
-    if not SLUG_RE.fullmatch(slug) or len(slug) > 128:
-        raise HTTPException(status_code=404, detail="Notebook not found")
-
-    if not services.has_active_pro(db, user.id):
-        raise HTTPException(
-            status_code=402,
-            detail="A Pro or Lifetime subscription is required to download notebooks",
-        )
-
-    notebooks_dir = Path(get_settings().notebooks_dir).resolve()
-    file_path = (notebooks_dir / f"{slug}.ipynb").resolve()
-
-    # Defense in depth: the regex already prevents traversal, but verify the
-    # resolved path never escapes the notebooks directory.
-    if notebooks_dir not in file_path.parents:
-        raise HTTPException(status_code=404, detail="Notebook not found")
-    if not file_path.is_file():
-        raise HTTPException(status_code=404, detail="Notebook not found")
-
+    file_path = _gated_file(
+        db,
+        user,
+        slug,
+        content_dir=get_settings().content_notebooks_dir,
+        extension=".ipynb",
+        kind="Notebook",
+    )
     return FileResponse(
         file_path,
         media_type="application/x-ipynb+json",
         filename=f"{slug}.ipynb",
+    )
+
+
+@router.get("/bundles/{slug}")
+def download_bundle(
+    slug: str,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> FileResponse:
+    file_path = _gated_file(
+        db,
+        user,
+        slug,
+        content_dir=get_settings().content_bundles_dir,
+        extension=".zip",
+        kind="Bundle",
+    )
+    return FileResponse(
+        file_path,
+        media_type="application/zip",
+        filename=f"{slug}.zip",
+        content_disposition_type="attachment",
     )

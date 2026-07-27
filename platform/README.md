@@ -16,16 +16,35 @@ platform/
     main.py            FastAPI app + CORS + lifespan (create tables, seed plans)
     config.py          pydantic-settings (.env)
     db.py              SQLAlchemy engine/session, naive-UTC datetimes
-    models.py          User, UserSession, Plan, Subscription, Payment, WebhookEvent
+    models.py          User, UserSession, PasswordResetToken, EarlyAccessSignup,
+                       Plan, Subscription, Payment, WebhookEvent
     services.py        activate_subscription / entitlements — shared by mock + webhooks
     auth.py            bcrypt, DB sessions, httpOnly cookie, naive rate limit
+    email.py           EmailBackend protocol; console (dev) + smtp backends
     payments/
       base.py          PaymentProvider protocol + NormalizedEvent
       mock.py          deterministic in-process provider (default)
       stripe_adapter.py  Stripe Checkout via httpx, inert without keys
-    routes/            auth, plans, checkout, subscription, webhooks, content, entitlements
-  tests/test_e2e.py    full-flow tests (TestClient + tmp SQLite, no network)
+    routes/            auth, plans, checkout, subscription, webhooks, content,
+                       entitlements, early_access
+  tests/               full-flow tests (TestClient + tmp SQLite, no network)
 ```
+
+## Gated content (the vault)
+
+The paid content lives OUTSIDE the static site, in the repo-level vault:
+
+```
+<repo>/vault/notebooks/*.ipynb   → GET /api/content/notebooks/{slug}
+<repo>/vault/bundles/*.zip       → GET /api/content/bundles/{slug}
+```
+
+The API is the only way users obtain these files — nothing under `vault/` is
+ever served by nginx directly. Both routes require an authenticated session
+(401 otherwise) AND an active Pro/Lifetime subscription (402 otherwise), and
+share the same slug regex + resolved-path containment guard. Directories are
+configurable via `CONTENT_NOTEBOOKS_DIR` / `CONTENT_BUNDLES_DIR` (defaults
+`../vault/notebooks` / `../vault/bundles`, relative to `platform/`).
 
 ## Run
 
@@ -52,13 +71,18 @@ python -m pytest platform/tests -q
 | POST | `/api/auth/login` | — | 429 after 5 failed attempts / 5 min |
 | POST | `/api/auth/logout` | — | deletes server session, clears cookie |
 | GET  | `/api/auth/me` | cookie | current user (never returns hashes) |
+| POST | `/api/auth/request-password-reset` | — | `{email}` → always `{ok:true}` (no enumeration); token sent via email backend |
+| POST | `/api/auth/reset-password` | — | `{token, new_password≥8}`; single-use, 1h expiry; revokes ALL sessions |
+| POST | `/api/auth/change-password` | cookie | `{current_password, new_password≥8}`; revokes all OTHER sessions |
 | GET  | `/api/plans` | — | 4 seeded plans |
 | POST | `/api/checkout` | cookie | `{plan_code}` → provider checkout |
 | POST | `/api/checkout/{id}/confirm` | cookie | mock only: `{card_number}` (4242… ok, 4000…0002 declines) |
 | GET  | `/api/subscription` | cookie | effective status, period end, cancel flag |
 | POST | `/api/subscription/cancel` | cookie | sets `cancel_at_period_end` |
 | POST | `/api/webhooks/{provider}` | signature | idempotent via `webhook_events` |
-| GET  | `/api/content/notebooks/{slug}` | cookie | 402 without active Pro/Lifetime |
+| GET  | `/api/content/notebooks/{slug}` | cookie | vault `.ipynb`; 402 without active Pro/Lifetime |
+| GET  | `/api/content/bundles/{slug}` | cookie | vault `.zip` attachment; gated identically (401/402) |
+| POST | `/api/early-access` | — | `{email, source?}`; duplicate → `{ok:true, duplicate:true}`; rate-limited |
 | GET  | `/api/entitlements` | cookie | `{tier, features}` for client-side gating |
 | GET  | `/api/health` | — | liveness |
 
@@ -111,6 +135,25 @@ python -m pytest platform/tests -q
    With `STRIPE_SECRET_KEY` empty the adapter raises `ConfigurationError`
    (surfaced as HTTP 503) — it can never make an unconfigured network call.
 
+## Email backend
+
+Selected via `EMAIL_BACKEND` (default `console`), mirroring the payments
+provider pattern (`app/email.py`):
+
+- `console` — **DEV ONLY.** Writes the full email (including the password
+  reset token) to the application log instead of sending it. Never enable in
+  production.
+- `smtp` — sends via STARTTLS using `SMTP_HOST` / `SMTP_PORT` /
+  `SMTP_USERNAME` / `SMTP_PASSWORD` / `SMTP_FROM`. Inert without config: it
+  raises `ConfigurationError` before any network I/O if `SMTP_HOST` is unset.
+
+Password-reset tokens are random 256-bit values; only their HMAC-SHA256
+(keyed with `SESSION_SECRET` — the same scheme as session tokens) is stored
+in `password_reset_tokens`. Tokens expire after 1 hour and are single-use;
+a successful reset revokes every session of the user. The request endpoint
+always answers `{ok:true}` so it cannot be used to enumerate accounts (an
+email-backend misconfiguration is logged, not surfaced, for the same reason).
+
 ## Security notes
 
 - Passwords: bcrypt via passlib (`bcrypt<4.1` pinned for passlib 1.7.4 compat).
@@ -118,9 +161,11 @@ python -m pytest platform/tests -q
   HTTPS is assumed to terminate at nginx.
 - Login rate limit: in-memory, per-process (5 failed / 5 min / email). It
   resets on restart and is not shared across workers — replace with Redis or
-  nginx `limit_req` before scaling beyond one process.
-- Login errors don't distinguish unknown email from wrong password.
-- Notebook route enforces slug regex `^[a-z0-9-]+$` plus a resolved-path
-  containment check; it is the gating enforcement point once the static site
-  stops shipping notebooks publicly.
+  nginx `limit_req` before scaling beyond one process. `/api/early-access`
+  uses the same naive pattern (10 / 5 min / client IP).
+- Login errors don't distinguish unknown email from wrong password, and
+  `request-password-reset` always returns `{ok:true}` (no user enumeration).
+- Content routes (notebooks + bundles) enforce slug regex `^[a-z0-9-]+$`
+  plus a resolved-path containment check; they are the single gating
+  enforcement point for the vault content.
 - `SESSION_SECRET` has a dev default — override it in production.

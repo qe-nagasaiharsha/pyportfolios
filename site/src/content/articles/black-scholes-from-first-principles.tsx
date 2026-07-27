@@ -1,4 +1,12 @@
 import { Section, Lead, P, InlineCode, Term, Callout, CodeBlock, DataTable, Figure, References } from "@/components/article/prose";
+import { LineChart } from "@/components/charts/DataCharts";
+import d from "./data/black-scholes-from-first-principles";
+
+/* Legacy upgrade — every figure below renders REAL computed results
+   (QQQ 2017–2024 + ^IRX, seeded mixture calibration) baked in by
+   quant/legacy/bs_first_principles.py. */
+
+const pc = (v: number, nd = 1) => `${(v * 100).toFixed(nd)}%`;
 
 export default function BlackScholesFromFirstPrinciples() {
   return (
@@ -6,7 +14,9 @@ export default function BlackScholesFromFirstPrinciples() {
       <Lead>
         Black–Scholes is usually handed down as a formula to memorise. It is more honest — and far
         more useful — as the answer to a single question: what must an option cost if you could
-        hedge it perfectly? Pin that down and the formula is forced on you.
+        hedge it perfectly? Pin that down and the formula is forced on you. We then feed it a real
+        contract — an at-the-money one-year call on QQQ, with every input observed rather than
+        invented — and finish by testing the assumption the market itself rejects.
       </Lead>
 
       <Section id="setup" n={1} title="The setup & assumptions">
@@ -22,6 +32,24 @@ export default function BlackScholesFromFirstPrinciples() {
           Notice what is <Term>not</Term> there: the drift <InlineCode>μ</InlineCode>. The
           replication argument is about to delete it, and that deletion is the whole magic trick.
         </P>
+        <P>
+          Before believing “constant σ”, ask the data. QQQ’s trailing one-year realised volatility
+          over {d.params.start} → {d.params.end} ranged from {pc(d.vol.min)} to {pc(d.vol.max)} —
+          the “constant” more than tripled inside one sample (the trailing one-<Term>month</Term>{" "}
+          vol peaked far higher still around {d.vol.max21Date}). Keep that crack in mind; the smile
+          in section 5 grows out of it.
+        </P>
+        <Figure
+          caption={`QQQ trailing 1y realised volatility, ${d.params.start} → ${d.params.end}`}
+          legend={[{ label: "realised σ (1y)", tone: "aqua" }]}
+        >
+          <LineChart
+            ariaLabel="Rolling one-year realised volatility of QQQ, ranging from about 10 percent to above 36 percent, spiking after the 2020 crash and in 2022."
+            series={[{ y: d.vol.roll252 as unknown as number[], area: true }]}
+            xLabels={d.vol.xLabels as unknown as [number, string][]}
+            yFmt={(v) => `${(v * 100).toFixed(0)}%`}
+          />
+        </Figure>
       </Section>
 
       <Section id="replication" n={2} title="The replication argument">
@@ -62,15 +90,39 @@ export default function BlackScholesFromFirstPrinciples() {
         <P>
           Read it as a probability-weighted payoff: <InlineCode>N(d₂)</InlineCode> is (roughly) the
           chance the option finishes in the money, and <InlineCode>S·N(d₁)</InlineCode> is the
-          expected stock you receive, both under the risk-neutral measure.
+          expected stock you receive, both under the risk-neutral measure. Plotted across spot for
+          our real contract (K = {d.params.K}, T = 1y, σ = {pc(d.params.sigma)},
+          r = {pc(d.params.r, 2)}), the formula smooths the hockey-stick payoff — the vertical gap
+          between the curves is time value, and the slope of the smooth one is delta:
         </P>
+        <Figure
+          caption={`1y call on QQQ, K = ${d.params.K} — model price vs intrinsic value`}
+          legend={[
+            { label: "BS call C(S)", tone: "aqua" },
+            { label: "intrinsic", tone: "muted" },
+          ]}
+        >
+          <LineChart
+            ariaLabel="Smooth Black-Scholes call price curve lying above the hockey-stick intrinsic payoff, converging to it deep in and out of the money."
+            series={[
+              { y: d.curve.call as unknown as number[], color: "teal", width: 2.2 },
+              { y: d.curve.intrinsic as unknown as number[], color: "graphite", width: 1.4, dash: "4 3" },
+            ]}
+            xLabels={[[0, "0.6·K"], [0.25, "0.8·K"], [0.5, "K"], [0.75, "1.2·K"], [1, "1.4·K"]]}
+            yFmt={(v) => `$${v.toFixed(0)}`}
+          />
+        </Figure>
       </Section>
 
       <Section id="greeks" n={4} title="Pricing & the Greeks in NumPy">
         <P>
-          The implementation is a direct transcription. The Greeks — the sensitivities that tell a
-          desk how its book moves — are just the analytic derivatives of <InlineCode>C</InlineCode>,
-          so they come almost for free.
+          The implementation is a direct transcription, and this time every input is observed: spot
+          is QQQ’s last close of <InlineCode>${d.params.s0}</InlineCode>, the strike is the nearest
+          listed <InlineCode>{d.params.K}</InlineCode>, σ is the trailing one-year realised vol
+          of {pc(d.params.sigma, 2)}, and r is the 13-week T-bill yield
+          of {pc(d.params.r, 2)} ({d.params.rDate}, ^IRX). The Greeks — the sensitivities that tell
+          a desk how its book moves — are just the analytic derivatives of{" "}
+          <InlineCode>C</InlineCode>, so they come almost for free.
         </P>
         <CodeBlock
           file="black_scholes.py"
@@ -99,21 +151,24 @@ def bs_greeks(S, K, T, r, sigma):
         "rho":   K * T * np.exp(-r * T) * norm.cdf(d2) / 100,
     }
 
-print(bs_price(100, 100, 1.0, 0.02, 0.20))   # 8.92`}
+S0, K, T = ${d.params.s0}, ${d.params.K}, 1.0     # QQQ close + nearest strike
+r, sigma = ${d.params.r}, ${d.params.sigma}       # ^IRX and 1y realised vol
+print(bs_price(S0, K, T, r, sigma))   # ${d.contract.call}`}
         />
         <P>
-          For an at-the-money one-year call (<InlineCode>S = K = 100</InlineCode>,
-          <InlineCode>r = 2%</InlineCode>, <InlineCode>σ = 20%</InlineCode>) the desk sees:
+          For this contract the desk sees (put–call parity holds to{" "}
+          <InlineCode>{"<"} 1e-8</InlineCode>, the free correctness check):
         </P>
         <DataTable
           head={["Greek", "Value", "Reads as"]}
           rows={[
-            ["Price", "8.92", "fair premium"],
-            ["Delta", "0.579", "shares to hold per option"],
-            ["Gamma", "0.0196", "how fast delta moves"],
-            ["Vega", "0.391", "P&L per +1% vol"],
-            ["Theta", "−0.0134", "P&L per day of decay"],
-            ["Rho", "0.490", "P&L per +1% rate"],
+            ["Call price", d.contract.call.toFixed(2), "fair premium"],
+            ["Put price", d.contract.put.toFixed(2), "via parity: C − P = S − K·e⁻ʳᵀ"],
+            ["Delta", d.contract.delta.toFixed(3), "shares to hold per option"],
+            ["Gamma", d.contract.gamma.toFixed(4), "how fast delta moves"],
+            ["Vega", d.contract.vega.toFixed(2), "P&L per +1% vol"],
+            ["Theta", d.contract.theta.toFixed(3), "P&L per day of decay"],
+            ["Rho", d.contract.rho.toFixed(2), "P&L per +1% rate"],
           ]}
         />
       </Section>
@@ -121,23 +176,36 @@ print(bs_price(100, 100, 1.0, 0.02, 0.20))   # 8.92`}
       <Section id="smile" n={5} title="Where the model breaks">
         <P>
           One assumption is a known fiction: constant volatility. If it were true, every strike on a
-          name would imply the same <InlineCode>σ</InlineCode>. Invert real option prices and you get
-          the opposite — a <Term>smile</Term> (or, in equities, a downward skew). Out-of-the-money
-          puts trade rich because crashes are fatter and faster than a lognormal allows.
+          name would imply the same <InlineCode>σ</InlineCode>. To see why it fails, look at the
+          returns themselves: QQQ’s daily log returns carry an excess kurtosis
+          of {d.reality.excessKurtosis} (a normal distribution has 0), and the worst day in the
+          sample — {pc(d.reality.worstDay)} on {d.reality.worstDate} — was
+          a {d.reality.worstSigmas}σ event under the model’s own calibration. A two-state Gaussian
+          mixture fits those returns far better than one lognormal: a calm regime
+          ({pc(d.smile.w[0], 0)} of days, σ ≈ {pc(d.smile.sigA[0])}) and a stress regime
+          ({pc(d.smile.w[1], 0)} of days, σ ≈ {pc(d.smile.sigA[1])}). Price options under that
+          mixture and invert each price back through Black–Scholes, and the implied σ is no longer
+          flat:
         </P>
         <Figure
-          caption="Implied volatility by strike — the smile BS cannot produce"
-          legend={[{ label: "Implied σ", tone: "aqua" }, { label: "BS (flat)", tone: "muted" }]}
+          caption="Implied volatility by strike — the smile a QQQ-calibrated mixture produces"
+          legend={[{ label: "mixture-implied σ", tone: "aqua" }, { label: "flat BS σ", tone: "muted" }]}
         >
-          <svg viewBox="0 0 600 220" className="w-full" role="img" aria-label="Implied volatility rises away from the money, against the flat Black-Scholes line.">
-            <line x1="0" y1="150" x2="600" y2="150" stroke="#4a4a42" strokeOpacity="0.5" strokeWidth="1.4" strokeDasharray="4 4" />
-            <path className="draw-on-view" d="M20,70 C120,140 240,176 300,178 C360,176 480,128 580,52" fill="none" stroke="#0a8a8a" strokeWidth="2.4" strokeLinecap="round" />
-            <circle cx="300" cy="178" r="3.5" fill="#0a8a8a" />
-            <text x="300" y="205" textAnchor="middle" className="t-mono" fontSize="13" fill="#4a4a42">at the money</text>
-            <text x="34" y="52" className="t-mono" fontSize="13" fill="#0a8a8a">OTM puts</text>
-            <text x="566" y="40" textAnchor="end" className="t-mono" fontSize="13" fill="#0a8a8a">OTM calls</text>
-          </svg>
+          <LineChart
+            ariaLabel={`Implied volatility curve rising away from the money in both directions, from about ${d.smile.iv100} percent at the money toward the wings, against a flat Black-Scholes line at ${d.smile.flatPct} percent.`}
+            series={[{ y: d.smile.ivPct as unknown as number[], color: "teal", width: 2.4 }]}
+            hLines={[{ v: d.smile.flatPct, color: "graphite", dash: "4 4", label: `flat σ ${d.smile.flatPct}%` }]}
+            xLabels={[[0, "0.70"], [0.25, "0.85"], [0.5, "ATM"], [0.75, "1.15"], [1, "1.30"]]}
+            yFmt={(v) => `${v.toFixed(0)}%`}
+          />
         </Figure>
+        <P>
+          The numbers off that curve: {d.smile.iv100}% at the money, {d.smile.iv85}% at 85%
+          moneyness, {d.smile.iv115}% at 115% — a genuine smile generated by nothing more exotic
+          than two volatility regimes. Real equity smiles are steeper still and asymmetric — OTM
+          puts trade extra rich because crashes are fatter and faster than any symmetric mixture
+          allows — but the mechanism is exactly this one: fat tails force the wings up.
+        </P>
         <P>
           So is the model useless? No — it is the <Term>language</Term>. Traders quote in implied
           vol rather than price precisely because Black–Scholes gives an invertible, one-number
@@ -152,6 +220,7 @@ print(bs_price(100, 100, 1.0, 0.02, 0.20))   # 8.92`}
           "Black, F. & Scholes, M. (1973). The Pricing of Options and Corporate Liabilities. Journal of Political Economy, 81(3).",
           "Merton, R. C. (1973). Theory of Rational Option Pricing. Bell Journal of Economics and Management Science, 4(1).",
           "Hull, J. C. Options, Futures, and Other Derivatives — chapters on the BS–Merton model and the Greeks.",
+          <span key="nb">Companion notebook: <InlineCode>black-scholes-from-first-principles.ipynb</InlineCode> — reproduces every figure from raw data (QQQ + ^IRX via yfinance, seed {String(d.params.seed)}).</span>,
         ]}
       />
     </>

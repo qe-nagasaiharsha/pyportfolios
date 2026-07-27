@@ -17,6 +17,7 @@ const FORMAT_TONE: Record<ArticleFormat, string> = {
   "Case Study": "border-amber-400/40 text-amber-300/90",
   "Research Note": "border-emerald-400/40 text-emerald-300/90",
   "Research Article": "border-violet-400/40 text-violet-300/90",
+  "Quant Insights": "border-violet-400/40 text-violet-300/90",
 };
 
 export default function TopicsPage() {

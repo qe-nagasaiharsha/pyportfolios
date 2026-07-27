@@ -119,6 +119,15 @@ npm ci          # clean, lockfile-exact install (recommended)
     so <code>site/out/</code> doesn't exist yet. Do both and it will render fully.
   </div>
 
+  <h2><span class="n">06</span>Repo additions — July 2026</h2>
+  <table>
+    <tr><th>Path</th><th>What it is</th></tr>
+    <tr><td>quant/</td><td>Data pipeline: <code>fetch_data.py</code>, <code>tutorials/</code>, <code>build_bundles.py</code>, <code>register_articles.py</code></td></tr>
+    <tr><td>vault/</td><td>Gated notebooks + ZIP bundles — served only via the platform API, never as static files</td></tr>
+    <tr><td>platform/</td><td>FastAPI sidecar: auth, subscriptions, mock payments + Stripe adapter. Run from <code>platform/</code>: <code>uvicorn app.main:app --port 8799</code></td></tr>
+    <tr><td>deploy/nginx-8080.conf</td><td>nginx config now also proxies <code>/api</code> to the platform sidecar</td></tr>
+  </table>
+
   <footer>
     Stack note: this project uses Next.js 16 (App Router) with <code>output: "export"</code> in
     <code>next.config.ts</code>. Fonts: Switzer (self-hosted woff2), Lora &amp; Courier Prime

@@ -47,6 +47,40 @@ class UserSession(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
 
 
+class PasswordResetToken(Base):
+    """One-shot password-reset tokens.
+
+    Same at-rest scheme as sessions: the emailed token is random 256-bit and
+    only its HMAC-SHA256 (keyed with SESSION_SECRET) is stored, so a DB leak
+    cannot be replayed as a reset link. Tokens expire after 1 hour and are
+    single-use (`used_at`).
+    """
+
+    __tablename__ = "password_reset_tokens"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True, nullable=False)
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
+    expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    used_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
+
+
+class EarlyAccessSignup(Base):
+    """Early-access interest list. No auth attached — email is the identity.
+
+    Duplicate submissions are idempotent at the API layer (200 with
+    duplicate=true), backed by the unique constraint here.
+    """
+
+    __tablename__ = "early_access_signups"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
+    source: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
+
+
 class Plan(Base):
     __tablename__ = "plans"
 

@@ -22,7 +22,9 @@ import pandas as pd
 REPO = Path(__file__).resolve().parent.parent
 DATA = REPO / "quant" / "data"
 TS_OUT = REPO / "site" / "src" / "content" / "articles" / "data"
-NB_OUT = REPO / "site" / "public" / "notebooks"
+# Notebooks are the paid product: they live in vault/ (served through the
+# gated platform API), NOT in site/public (which ships in the static export).
+NB_OUT = REPO / "vault" / "notebooks"
 
 
 def load(name: str) -> pd.DataFrame:

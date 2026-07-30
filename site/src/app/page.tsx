@@ -5,5 +5,5 @@ import StyleTile from "@/components/StyleTile";
 import { VARIANTS } from "@/lib/variants";
 
 export default function Home() {
-  return <StyleTile variant={VARIANTS.v0} />;
+  return <StyleTile variant={VARIANTS.v0} heroAlign="center" />;
 }

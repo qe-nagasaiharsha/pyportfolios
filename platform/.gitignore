@@ -1,0 +1,6 @@
+pyportfolios.db
+*.db
+.env
+__pycache__/
+*.pyc
+.pytest_cache/

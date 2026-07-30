@@ -1,0 +1,21 @@
+{
+  "slug": "black-litterman-equilibrium-views",
+  "category": "portfolio-optimization",
+  "format": "Tutorial",
+  "title": "Black–Litterman: equilibrium + views",
+  "dek": "Blending market-implied returns with your own views — stable weights without extreme bets.",
+  "date": "2026-07-22",
+  "readMinutes": 11,
+  "level": "Intermediate",
+  "notebook": "black-litterman-equilibrium-views.ipynb",
+  "excerpt": "Raw historical means turn mean-variance optimization into an error maximiser — a 1pp input tweak convulses every weight. We reverse-optimize equilibrium returns from market caps on five country ETFs, blend in two Idzorek-weighted views, and show the posterior tilting smoothly, only where the views say.",
+  "stack": ["PyPortfolioOpt", "NumPy"],
+  "sections": [
+    { "id": "data", "title": "Five countries, one decade" },
+    { "id": "instability", "title": "Act one: MVO on raw means" },
+    { "id": "equilibrium", "title": "Act two: reverse optimization" },
+    { "id": "views", "title": "Act three: two views, with confidence" },
+    { "id": "posterior", "title": "The posterior blend" },
+    { "id": "weights", "title": "From returns to weights" }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "slug": "var-three-ways",
+  "category": "risk-management",
+  "format": "Tutorial",
+  "title": "VaR three ways, on the DAX",
+  "dek": "Historical, parametric and Monte Carlo VaR computed on fifteen years of real DAX data, backtested with Kupiec — and recomputed in Polars and DuckDB.",
+  "date": "2026-07-23",
+  "readMinutes": 12,
+  "level": "Intermediate",
+  "notebook": "var-three-ways.ipynb",
+  "excerpt": "Daily loss limits and regulatory capital hang off one number, and it has three recipes that disagree. We compute 99% and 95% VaR and CVaR on the DAX 2010–2024 by historical simulation, a normal and a fitted Student-t (df 3.22), and 200k seeded Monte-Carlo draws — then let a rolling 250-day Kupiec backtest decide which to believe, and show the same historical quantile falling out of Polars expressions and DuckDB SQL to 1e-15 agreement.",
+  "stack": ["NumPy", "SciPy", "Pandas", "Polars", "DuckDB"],
+  "sections": [
+    { "id": "definitions", "title": "The number, and the data" },
+    { "id": "historical", "title": "Historical simulation" },
+    { "id": "parametric", "title": "Parametric: normal, then Student-t" },
+    { "id": "monte-carlo", "title": "Monte Carlo" },
+    { "id": "backtest", "title": "The backtest decides" },
+    { "id": "polars-duckdb", "title": "The same quantile in Polars and DuckDB" }
+  ]
+}

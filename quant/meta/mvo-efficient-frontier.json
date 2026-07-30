@@ -1,0 +1,21 @@
+{
+  "slug": "mvo-efficient-frontier",
+  "category": "portfolio-optimization",
+  "format": "Tutorial",
+  "title": "MVO & the efficient frontier",
+  "dek": "Tracing the risk–return frontier across six asset-class ETFs with PyPortfolioOpt — and meeting mean–variance's famous concentration problem.",
+  "date": "2026-07-22",
+  "readMinutes": 10,
+  "level": "Foundational",
+  "notebook": "mvo-efficient-frontier.ipynb",
+  "excerpt": "Markowitz's insight — score portfolios, not assets — still runs core asset allocation. We estimate μ and Σ from ten years of SPY, TLT, GLD, VNQ, VEA and VWO, trace the long-only efficient frontier, solve the max-Sharpe and min-vol portfolios, and show why the optimiser piles into two assets: estimation error in μ, the problem Black–Litterman exists to fix.",
+  "stack": ["PyPortfolioOpt", "Pandas", "matplotlib"],
+  "sections": [
+    { "id": "idea", "title": "The Markowitz insight" },
+    { "id": "inputs", "title": "Two inputs: μ and Σ" },
+    { "id": "frontier", "title": "Tracing the frontier" },
+    { "id": "portfolios", "title": "Max-Sharpe & min-vol, solved" },
+    { "id": "performance", "title": "Growth of $100 — with the fine print" },
+    { "id": "fragility", "title": "The concentration problem" }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "slug": "black-scholes-and-the-greeks",
+  "category": "finance-fundamentals",
+  "format": "Tutorial",
+  "title": "Black–Scholes & the Greeks",
+  "dek": "Implementing the options-pricing engine and all five Greeks in NumPy on real QQQ data — then inverting it, because implied vol is how the market actually quotes.",
+  "date": "2026-07-21",
+  "readMinutes": 10,
+  "level": "Foundational",
+  "notebook": "black-scholes-and-the-greeks.ipynb",
+  "excerpt": "Black–Scholes survives not as a model anyone believes but as the options market's pricing engine and quoting convention. We build the price and all five Greeks from scratch, calibrate σ to QQQ's trailing 1y realized vol across 2018–2024, and read the Greeks as the hedging dashboard a desk actually uses — closing with the implied-vol inversion that turns prices into the market's language.",
+  "stack": ["NumPy", "SciPy", "matplotlib"],
+  "sections": [
+    { "id": "engine", "title": "The formula, implemented" },
+    { "id": "vol", "title": "Sigma from the tape" },
+    { "id": "ladder", "title": "The strike ladder & put–call parity" },
+    { "id": "greeks", "title": "The Greeks as a hedging dashboard" },
+    { "id": "term", "title": "Vega & theta across maturities" },
+    { "id": "implied", "title": "Implied vol: the market's language" }
+  ]
+}

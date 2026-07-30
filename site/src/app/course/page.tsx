@@ -24,7 +24,7 @@ export default function CoursePage() {
           <div className="relative mx-auto max-w-6xl px-6 py-24 md:py-32 lg:px-8">
             <div className="flex items-center gap-4">
               <span className="h-px w-10 bg-pearl/25" aria-hidden="true" />
-              <p className="t-eyebrow text-mist">Course · Quant Finance Basics</p>
+              <p className="t-eyebrow text-pearl">Course · Quant Finance Basics</p>
             </div>
             <h1 className="t-display mt-8 max-w-3xl text-pearl">
               Quant finance, from the ground up<span className="text-aqua">.</span>
@@ -71,12 +71,23 @@ export default function CoursePage() {
                       <h2 className="t-h2 text-pearl">{m.title}</h2>
                       {m.free ? (
                         <span className="rounded-full border border-aqua/40 px-2.5 py-0.5 t-mono text-[0.56rem] uppercase tracking-[0.16em] text-aqua">Free</span>
-                      ) : null}
+                      ) : (
+                        <Link
+                          href="/checkout?plan=pro-monthly"
+                          className="inline-flex items-center gap-1 rounded-full border border-pearl/25 px-2.5 py-0.5 t-mono text-[0.56rem] uppercase tracking-[0.16em] text-steel transition-colors hover:border-aqua/50 hover:text-aqua"
+                        >
+                          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
+                            <rect x="4" y="11" width="16" height="10" rx="2" />
+                            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+                          </svg>
+                          Pro
+                        </Link>
+                      )}
                     </div>
                     <p className="mt-1.5 leading-relaxed text-mist">{m.blurb}</p>
                   </div>
                 </div>
-                <span className="shrink-0 t-mono text-xs uppercase tracking-[0.18em] text-steel">{m.lessons.length} lessons</span>
+                <span className="shrink-0 t-mono text-xs uppercase tracking-[0.12em] text-mist">{m.lessons.length} lessons</span>
               </div>
 
               <ol className="mt-2 divide-y divide-pearl/10">
@@ -86,7 +97,7 @@ export default function CoursePage() {
                     <div>
                       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                         <h3 className="font-serif text-lg text-pearl">{lesson.title}</h3>
-                        <span className="t-mono text-[0.66rem] uppercase tracking-[0.14em] text-steel">{lesson.minutes} min</span>
+                        <span className="t-mono text-xs uppercase tracking-[0.1em] text-mist">{lesson.minutes} min</span>
                       </div>
                       <p className="mt-1.5 leading-relaxed text-mist">{lesson.summary}</p>
                       {lesson.article ? (
@@ -111,11 +122,11 @@ export default function CoursePage() {
           <div className="mx-auto max-w-3xl px-6 py-20 text-center md:py-24">
             <h2 className="t-h1 text-pearl">Start with Module 1 — it&apos;s free.</h2>
             <p className="mx-auto mt-5 max-w-md text-lg leading-relaxed text-mist">
-              The full course unlocks with Pro. Join early access and you&apos;ll be first in when it goes live.
+              The full course — and every runnable notebook behind it — unlocks with Pro.
             </p>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-5">
-              <Link href="/#early-access" className="rounded-sm bg-pearl px-8 py-3.5 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua">
-                Get early access
+              <Link href="/checkout?plan=pro-monthly" className="rounded-sm bg-pearl px-8 py-3.5 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua">
+                Upgrade to Pro
               </Link>
               <Link href="/research" className="link-fine t-mono text-sm uppercase tracking-[0.16em] text-pearl/90 transition-colors duration-300 hover:text-pearl">
                 Browse the research →

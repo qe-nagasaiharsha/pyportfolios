@@ -1,0 +1,21 @@
+{
+  "slug": "risk-parity-from-scratch",
+  "category": "portfolio-optimization",
+  "format": "Tutorial",
+  "title": "Risk parity from scratch",
+  "dek": "Allocating by risk contribution instead of capital — building, validating, and backtesting the all-weather portfolio blueprint.",
+  "date": "2026-07-23",
+  "readMinutes": 11,
+  "level": "Intermediate",
+  "notebook": "risk-parity-from-scratch.ipynb",
+  "excerpt": "A 25%-each portfolio is only diversified in dollars — in risk terms, three of the four assets carry almost everything. We solve the equal-risk-contribution weights with SciPy, validate them against Riskfolio-Lib to 1e-6, and backtest risk parity against 60/40 and equal weight over 2010–2024 — ending at the leverage debate the results force.",
+  "stack": ["SciPy", "Riskfolio-Lib"],
+  "sections": [
+    { "id": "idea", "title": "Allocate risk, not dollars" },
+    { "id": "contributions", "title": "Risk contributions, defined" },
+    { "id": "solve", "title": "Solving for equal risk (SciPy)" },
+    { "id": "validate", "title": "Validation: Riskfolio-Lib agrees" },
+    { "id": "backtest", "title": "Fifteen years, three portfolios" },
+    { "id": "leverage", "title": "The leverage debate" }
+  ]
+}

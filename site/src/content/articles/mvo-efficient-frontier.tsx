@@ -1,211 +1,270 @@
-import { Section, SubSection, Lead, P, Bullets, CodeBlock, DataTable, Figure, Formula } from "@/components/article/prose";
-import { LOAD_CODE, CORR_CODE, CLOUD_CODE, OPT_CODE } from "./mvo-code";
+import { Section, Lead, P, InlineCode, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
+import { ScatterChart, BarChart, LineChart } from "@/components/charts/DataCharts";
+import d from "./data/mvo-efficient-frontier";
 
-/* eslint-disable @next/next/no-img-element */
+/* T05 / topic card 05-16 — all figures below render REAL computed results
+   (SPY·TLT·GLD·VNQ·VEA·VWO, Jan 2015 – Dec 2024, seeded random cloud)
+   baked in by quant/tutorials/t05_mvo.py. */
+
+const pc = (v: number, nd = 1) => `${(v * 100).toFixed(nd)}%`;
+
 export default function MvoEfficientFrontier() {
+  const f = d.frontier;
+  const assetMarks = f.assets.map((a) => ({
+    x: a.vol as number, y: a.ret as number, label: a.t, color: "graphite" as const,
+  }));
+
   return (
     <>
       <Lead>
-        Harry Markowitz&apos;s 1952 insight launched modern portfolio theory: don&apos;t pick assets
-        in isolation, pick the <em>combination</em> that gives the most return per unit of risk. We
-        build the <b>efficient frontier</b> from real data across six asset classes and find the two
-        portfolios everyone quotes — <b>minimum variance</b> and <b>maximum Sharpe</b>.
+        Every allocation decision is a trade between return you want and risk you can stomach.
+        Markowitz&rsquo;s 1952 answer — score portfolios, not assets, and keep only the ones no other
+        portfolio dominates — earned a Nobel and still runs the world&rsquo;s asset allocation. We
+        build it on six real ETFs with PyPortfolioOpt: trace the efficient frontier, solve the
+        max-Sharpe and minimum-volatility portfolios, and then look honestly at the optimiser&rsquo;s
+        oldest vice — it concentrates into whatever the sample flattered.
       </Lead>
 
-      <Section id="summary" n={1} title="Summary">
+      <Pipeline
+        steps={[
+          "Download 6 asset-class ETFs, 2015–2024 (yfinance)",
+          "Estimate μ (historical CAGR) and Σ (sample + Ledoit–Wolf)",
+          `Scatter ${d.params.nRandom.toLocaleString()} random long-only portfolios`,
+          "Trace the frontier: minimise vol for each target return",
+          "Solve max-Sharpe & min-vol; draw the capital market line",
+          "Diagnose the concentration problem — the road to T06",
+        ]}
+      />
+
+      <Section id="idea" n={1} title="The Markowitz insight">
         <P>
-          Mean-variance optimization treats a portfolio&apos;s expected return as the weighted
-          average of its assets, and its risk as the <em>portfolio</em> variance — which depends not
-          just on each asset&apos;s volatility but on how they <b>co-move</b>. Minimizing variance
-          for each level of target return traces out the <b>efficient frontier</b>: the set of
-          portfolios you can&apos;t beat. Two points on it get special names — the{" "}
-          <b>minimum-variance</b> portfolio (leftmost) and the <b>maximum-Sharpe</b> (tangency)
-          portfolio, where the risk-adjusted return peaks.
+          Before 1952, security analysis judged each asset on its own merits. Markowitz&rsquo;s move was
+          to make the <Term>portfolio</Term> the unit of analysis: an asset&rsquo;s worth is what it does
+          to portfolio expected return <InlineCode>w&apos;μ</InlineCode> and portfolio variance{" "}
+          <InlineCode>w&apos;Σw</InlineCode>. Because variance prices in <Term>covariance</Term>, an
+          asset with a mediocre return can still earn its place by zigging when the rest of the book
+          zags — diversification is the one free lunch the math actually delivers. A portfolio is{" "}
+          <Term>efficient</Term> if no other portfolio offers more return at the same risk; the set
+          of all such portfolios is the efficient frontier.
+        </P>
+        <Callout kind="Why practitioners care">
+          Mean–variance optimisation is the default engine of institutional asset allocation —
+          target-date glidepaths, robo-advisors, and policy-portfolio reviews all run some flavour
+          of it. Knowing what the optimiser does with noisy inputs (and why every serious shop
+          constrains, shrinks, or Bayesianises it) is the difference between using MVO and being
+          used by it.
+        </Callout>
+      </Section>
+
+      <Section id="inputs" n={2} title="Two inputs: μ and Σ">
+        <P>
+          The sample is {d.params.start} to {d.params.end} — {d.params.n_obs.toLocaleString()}{" "}
+          trading days across six asset-class ETFs: US equities (SPY), long Treasuries (TLT), gold
+          (GLD), REITs (VNQ), developed international (VEA), and emerging markets (VWO). From it we
+          estimate the two objects MVO consumes: an expected-return vector and a covariance matrix.
+        </P>
+        <CodeBlock
+          file="inputs.py"
+          code={`from pypfopt import expected_returns, risk_models
+from pypfopt.risk_models import CovarianceShrinkage
+
+mu = expected_returns.mean_historical_return(px)   # annualised CAGR
+S  = risk_models.sample_cov(px)                    # annualised covariance
+
+S_lw = CovarianceShrinkage(px).ledoit_wolf()       # shrunk Σ, for later`}
+        />
+        <P>
+          Historical means put SPY at <InlineCode>{pc(f.assets[0].ret)}</InlineCode> a year and TLT
+          at <InlineCode>{pc(f.assets[1].ret)}</InlineCode> — a decade of rising rates left long
+          Treasuries with a negative CAGR. Hold that thought: the optimiser will read these noisy
+          point estimates as truth. The Ledoit–Wolf shrinkage intensity comes out at just{" "}
+          <InlineCode>δ = {pc(d.weights.lwDelta)}</InlineCode> here — with ten years of daily data
+          on only six assets, Σ is already well estimated. The fragile input is μ.
         </P>
       </Section>
 
-      <Section id="intuition" n={2} title="Intuition">
-        <SubSection label="2.1" title="The only free lunch in finance">
-          <P>
-            Combine two assets that don&apos;t move in lockstep and the portfolio&apos;s risk is{" "}
-            <em>less</em> than the weighted average of their risks — because their wiggles partly
-            cancel. That cancellation is diversification, and it&apos;s why a stock-bond-gold mix can
-            have lower volatility than any single sleeve.
-          </P>
-        </SubSection>
-
-        <SubSection label="2.2" title="Correlation does the heavy lifting">
-          <P>
-            Volatility tells you how much one asset moves; <b>correlation</b> tells you whether they
-            move together. Two 15%-vol assets with −0.3 correlation build a far smoother portfolio
-            than two with +0.9. The whole power of MVO lives in the covariance matrix.
-          </P>
-        </SubSection>
-
-        <SubSection label="2.3" title="What the frontier shows">
-          <P>
-            Plot every possible portfolio in risk-return space and they fill a bullet-shaped cloud.
-            Only the <b>upper-left edge</b> matters — for any risk level, that&apos;s the highest
-            return available. Anything below it is a portfolio you&apos;d never rationally hold.
-          </P>
-        </SubSection>
-      </Section>
-
-      <Section id="mechanics" n={3} title="Theory & Mechanics">
+      <Section id="frontier" n={3} title="Tracing the frontier">
         <P>
-          With weights <Formula>{String.raw`w`}</Formula>, expected returns{" "}
-          <Formula>{String.raw`\mu`}</Formula> and covariance matrix{" "}
-          <Formula>{String.raw`\Sigma`}</Formula>:
+          First, the terrain: {d.params.nRandom.toLocaleString()} random long-only portfolios
+          (Dirichlet-distributed weights, seed {d.params.seed}) show everything attainable. The
+          frontier is that cloud&rsquo;s upper-left edge, traced by solving a convex program per target
+          return — minimise <InlineCode>w&apos;Σw</InlineCode> subject to{" "}
+          <InlineCode>w&apos;μ = target</InlineCode>, weights non-negative and summing to one. Add a
+          risk-free asset at {pc(d.params.rf, 0)} and the whole curve collapses to one straight
+          line — the <Term>capital market line</Term> — tangent at a single portfolio.
         </P>
-        <Formula block>{String.raw`\text{portfolio return} = w^\top \mu, \qquad \text{portfolio variance} = w^\top \Sigma\, w`}</Formula>
+        <CodeBlock
+          file="frontier.py"
+          code={`from pypfopt import EfficientFrontier
+
+targets = np.linspace(ret_minvol, mu.max() * 0.9999, 40)
+frontier = []
+for t in targets:
+    ef = EfficientFrontier(mu, S)          # fresh solver per target
+    ef.efficient_return(target_return=t)
+    ret, vol, _ = ef.portfolio_performance(risk_free_rate=0.03)
+    frontier.append((vol, ret))`}
+        />
+        <Figure
+          caption="Risk–return plane: 2,000 random portfolios, the efficient frontier, and the CML"
+          legend={[
+            { label: "frontier", tone: "aqua" },
+            { label: "CML", tone: "muted" },
+            { label: "random portfolios", tone: "muted" },
+          ]}
+        >
+          <ScatterChart
+            ariaLabel="Scatter plot of random portfolios with the efficient frontier along the upper-left edge, a straight capital market line tangent at the max-Sharpe portfolio, and the six individual ETFs marked below the frontier."
+            points={[{ xy: f.cloud as unknown as [number, number][], opacity: 0.3, r: 1.8 }]}
+            lines={[
+              { xy: f.line as unknown as [number, number][], color: "teal", width: 2.4 },
+              { xy: f.cml as unknown as [number, number][], color: "graphite", dash: "5 4", width: 1.4 },
+            ]}
+            marks={[
+              { x: f.maxSharpe.vol, y: f.maxSharpe.ret, label: "max Sharpe", color: "amber" },
+              { x: f.minVol.vol, y: f.minVol.ret, label: "min vol", color: "rust" },
+              ...assetMarks,
+            ]}
+            h={300}
+            xFmt={(v) => pc(v, 0)}
+            yFmt={(v) => pc(v, 0)}
+          />
+        </Figure>
         <P>
-          The efficient frontier solves, for each target return <Formula>{String.raw`\mu^*`}</Formula>:
+          Read the geometry: every single ETF plots <Term>below</Term> the frontier — even SPY, the
+          best performer of the decade, is dominated by mixtures. And the min-vol portfolio, at{" "}
+          <InlineCode>{pc(f.minVol.vol)}</InlineCode> volatility, is calmer than any individual
+          asset (the calmest, GLD, runs {pc(f.assets[2].vol)}). That gap is diversification doing
+          exactly what Markowitz promised.
         </P>
-        <Formula block>{String.raw`\min_w\; w^\top \Sigma\, w \quad\text{s.t.}\quad w^\top \mu = \mu^*,\;\; \sum_i w_i = 1`}</Formula>
+      </Section>
+
+      <Section id="portfolios" n={4} title="Max-Sharpe & min-vol, solved">
         <P>
-          <b>Maximum Sharpe</b> maximizes{" "}
-          <Formula>{String.raw`(w^\top\mu - r_f)/\sqrt{w^\top\Sigma w}`}</Formula>;{" "}
-          <b>minimum variance</b> just minimizes <Formula>{String.raw`w^\top\Sigma w`}</Formula>.
-          We&apos;ll build the frontier two ways — a transparent NumPy Monte-Carlo cloud, then the
-          exact optimum with <b>PyPortfolioOpt</b>.
+          Two portfolios on the frontier matter most in practice. The <Term>tangency</Term>{" "}
+          (max-Sharpe) portfolio maximises excess return per unit of risk — with a risk-free asset,
+          theory says it is the only risky portfolio anyone needs. The <Term>minimum-volatility</Term>{" "}
+          portfolio anchors the frontier&rsquo;s left end and needs no return forecast at all to locate.
+        </P>
+        <CodeBlock
+          file="optimal.py"
+          code={`ef = EfficientFrontier(mu, S)
+ef.max_sharpe(risk_free_rate=0.03)
+w_ms = ef.clean_weights()
+ef.portfolio_performance(risk_free_rate=0.03)
+# ret ${pc(f.maxSharpe.ret)} · vol ${pc(f.maxSharpe.vol)} · Sharpe ${f.maxSharpe.sharpe.toFixed(2)}
+
+ef = EfficientFrontier(mu, S)
+ef.min_volatility()
+w_mv = ef.clean_weights()
+# ret ${pc(f.minVol.ret)} · vol ${pc(f.minVol.vol)} · Sharpe ${f.minVol.sharpe.toFixed(2)}`}
+        />
+        <Figure
+          caption="Optimal weights — max-Sharpe (teal) vs min-vol (graphite)"
+          legend={[
+            { label: "max Sharpe", tone: "aqua" },
+            { label: "min vol", tone: "muted" },
+          ]}
+        >
+          <BarChart
+            ariaLabel="Grouped bar chart of portfolio weights: max-Sharpe holds only SPY at 58 percent and GLD at 42 percent, while min-vol spreads across SPY, TLT, GLD and VEA."
+            labels={d.weights.labels as unknown as string[]}
+            groups={[
+              { values: d.weights.maxSharpe as unknown as number[], color: "teal" },
+              { values: d.weights.minVol as unknown as number[], color: "graphite" },
+            ]}
+            yFmt={(v) => pc(v, 0)}
+          />
+        </Figure>
+        <DataTable
+          head={["Asset / portfolio", "Ann. return", "Ann. vol", "Sharpe (rf 3%)"]}
+          rows={[
+            ...d.assetsTable.map((a) => [a.t, pc(a.ret), pc(a.vol), a.sharpe.toFixed(2)]),
+            ["Max-Sharpe portfolio", pc(f.maxSharpe.ret), pc(f.maxSharpe.vol), f.maxSharpe.sharpe.toFixed(2)],
+            ["Min-vol portfolio", pc(f.minVol.ret), pc(f.minVol.vol), f.minVol.sharpe.toFixed(2)],
+          ]}
+        />
+        <P>
+          The Sharpe arithmetic works: {f.maxSharpe.sharpe.toFixed(2)} for the tangency portfolio
+          against {d.assetsTable[0].sharpe.toFixed(2)} for SPY alone. But look at <Term>how</Term> it
+          got there — the optimiser holds exactly {d.weights.nHeldMS} of the six assets
+          ({pc(d.weights.maxSharpe[0])} SPY, {pc(d.weights.maxSharpe[2])} GLD) and zeroes out
+          everything else. An effective position count of {d.weights.nEffMS} is not what most people
+          picture when they hear &ldquo;diversified optimal portfolio&rdquo;.
         </P>
       </Section>
 
-      <Section id="example" n={4} title="Applied Example — Six ETFs">
-        <SubSection label="4.1" title="A diversified multi-asset universe">
-          <P>
-            Six asset classes chosen to <em>not</em> move together — the raw material of a good
-            frontier:
-          </P>
-          <DataTable
-            variant="prose"
-            head={["Ticker", "Asset class"]}
-            rows={[
-              ["SPY", "US equities (S&P 500)"],
-              ["TLT", "Long US Treasuries"],
-              ["GLD", "Gold"],
-              ["VNQ", "US real estate (REITs)"],
-              ["VEA", "Developed ex-US equities"],
-              ["VWO", "Emerging-market equities"],
+      <Section id="performance" n={5} title="Growth of $100 — with the fine print">
+        <P>
+          Feeding the max-Sharpe weights back through the same decade produces the equity curve
+          below. Be clear about what this is: an <Term>in-sample</Term> exercise. The weights were
+          fitted on exactly this data, so the comparison flatters the optimiser by construction — a
+          proper evaluation would fit on one window and trade the next. We plot it because the
+          fine print is still instructive.
+        </P>
+        <Figure
+          caption="Growth of $100, 2015–2024 — max-Sharpe weights are fitted on this same sample"
+          legend={[
+            { label: "max Sharpe (in-sample)", tone: "aqua" },
+            { label: "SPY / equal weight", tone: "muted" },
+          ]}
+        >
+          <LineChart
+            ariaLabel="Line chart of cumulative growth: SPY finishes highest near 340, the in-sample max-Sharpe portfolio near 296 with visibly shallower drawdowns, equal weight lowest near 188."
+            series={[
+              { y: d.growth.spy as unknown as number[], color: "graphite", width: 1.4 },
+              { y: d.growth.equalWeight as unknown as number[], color: "amber", width: 1.4, dash: "4 3" },
+              { y: d.growth.maxSharpe as unknown as number[], color: "teal", width: 2.2 },
             ]}
+            xLabels={d.growth.xLabels as unknown as [number, string][]}
+            h={240}
           />
-          <CodeBlock code={LOAD_CODE} />
-          <P>
-            Ten years of daily data (2,515 trading days, 2015–2024). Note how different the
-            standalone Sharpe ratios are — and that TLT earned essentially <em>nothing</em> over the
-            decade:
-          </P>
-          <DataTable
-            head={["Ticker", "Ann. return", "Ann. vol", "Sharpe"]}
-            rows={[
-              ["SPY", "13.9%", "17.6%", "0.79"],
-              ["TLT", "−0.0%", "15.3%", "−0.00"],
-              ["GLD", "8.5%", "14.1%", "0.60"],
-              ["VNQ", "6.9%", "20.8%", "0.33"],
-              ["VEA", "6.9%", "17.3%", "0.40"],
-              ["VWO", "6.0%", "19.8%", "0.30"],
-            ]}
-          />
-        </SubSection>
-
-        <SubSection label="4.2" title="The correlation matrix — the source of the free lunch">
-          <P>
-            Note where correlations are <em>low</em>: Treasuries (TLT, −0.21 to SPY) and gold (GLD,
-            +0.05 to SPY) barely track equities, which is exactly why they smooth the portfolio.
-          </P>
-          <CodeBlock code={CORR_CODE} />
-          <Figure caption="Figure 4.2 · Correlation of daily returns, 2015–2024">
-            <img src="/figures/mvo-corr.png" alt="Six-by-six correlation matrix of daily ETF returns; the equity block (SPY, VNQ, VEA, VWO) is highly correlated at 0.55 to 0.86, while TLT is slightly negative against equities and GLD is near zero" className="w-full rounded-sm" />
-          </Figure>
-        </SubSection>
-
-        <SubSection label="4.3" title="The efficient frontier — Monte-Carlo cloud">
-          <P>
-            Generate 20,000 random portfolios to <em>see</em> the bullet, then the frontier as its
-            upper-left edge. Colour = Sharpe ratio.
-          </P>
-          <CodeBlock code={CLOUD_CODE} />
-        </SubSection>
-
-        <SubSection label="4.4" title="The exact optima with PyPortfolioOpt">
-          <P>
-            The cloud shows the shape; PyPortfolioOpt solves for the <em>exact</em> minimum-variance
-            and maximum-Sharpe portfolios and overlays the true frontier.
-          </P>
-          <CodeBlock code={OPT_CODE} />
-          <DataTable
-            head={["Ticker", "Max Sharpe", "Min Variance"]}
-            rows={[
-              ["SPY", "0.563", "0.268"],
-              ["TLT", "0.000", "0.371"],
-              ["GLD", "0.437", "0.280"],
-              ["VNQ", "0.000", "0.000"],
-              ["VEA", "0.000", "0.081"],
-              ["VWO", "0.000", "0.000"],
-            ]}
-          />
-          <P>
-            <b>Max Sharpe</b>: 10.8% return at 11.9% vol (Sharpe 0.73) — a two-asset SPY + GLD
-            barbell. <b>Min variance</b>: 5.7% return at 9.3% vol (Sharpe 0.40) — note it holds 37%
-            TLT <em>despite</em> TLT&apos;s zero return, purely for its negative correlation. That is
-            the free lunch in action: the optimizer pays for co-movement, not for standalone
-            performance.
-          </P>
-          <Figure caption="Figure 4.4 · 20,000 random portfolios, the exact frontier, and the two special portfolios">
-            <img src="/figures/mvo-frontier.png" alt="Scatter of 20,000 random portfolios forming a bullet shape in risk-return space, shaded by Sharpe ratio, with the exact efficient frontier drawn along the upper-left edge; a star marks the maximum-Sharpe portfolio and an open circle the minimum-variance portfolio, with the six individual ETFs plotted as diamonds well inside the cloud" className="w-full rounded-sm" />
-          </Figure>
-          <P>
-            Every single ETF plots <em>inside</em> the cloud, well below the frontier — even SPY, the
-            decade&apos;s best performer, sits under the line. No individual asset is efficient;
-            only combinations are.
-          </P>
-        </SubSection>
+        </Figure>
+        <P>
+          Even graded on its own homework, max-Sharpe (${d.growth.final.maxSharpe}) does not out-grow
+          SPY (${d.growth.final.spy}) — it wasn&rsquo;t asked to. It maximised <Term>risk-adjusted</Term>{" "}
+          return, riding a {pc(f.maxSharpe.vol)}-vol book against SPY&rsquo;s {pc(f.assets[0].vol)}, with
+          visibly shallower drawdowns in 2020 and 2022. Both beat equal weight
+          (${d.growth.final.equalWeight}), which spent the decade dragging TLT and VWO along.
+        </P>
       </Section>
 
-      <Section id="conclusion" n={5} title="Conclusion">
-        <SubSection label="5a" title="Strengths">
-          <Bullets
-            items={[
-              <><b>Quantifies diversification</b> — turns &ldquo;don&apos;t put all your eggs in one basket&rdquo; into an exact weight vector</>,
-              <><b>One framework, any universe</b> — stocks, bonds, gold, real estate all go in the same optimizer</>,
-              <><b>Closed-form and fast</b> — the frontier is a quadratic program that solves instantly</>,
-              <><b>The foundation</b> — every allocation method (risk parity, Black-Litterman, CVaR) is a response to MVO</>,
-            ]}
-          />
-        </SubSection>
-
-        <SubSection label="5b" title="Weaknesses & Limitations">
-          <Bullets
-            items={[
-              <><b>Garbage in, garbage out</b> — expected returns are notoriously hard to estimate, and MVO is hypersensitive to them</>,
-              <><b>Concentrated, unstable weights</b> — tiny input changes can swing allocations wildly (the &ldquo;error-maximization&rdquo; critique)</>,
-              <><b>Backward-looking</b> — historical covariance assumes the past regime persists</>,
-              <><b>Ignores tail risk</b> — variance treats upside and downside symmetrically; crashes aren&apos;t Gaussian</>,
-            ]}
-          />
-        </SubSection>
-
-        <SubSection label="5c" title="Applications in Practice">
-          <Bullets
-            items={[
-              "Strategic asset allocation for pension funds and endowments",
-              "Setting the neutral portfolio a discretionary manager tilts away from",
-              "The benchmark every alternative allocation method is measured against",
-            ]}
-          />
-        </SubSection>
-
-        <SubSection label="5d" title="Alternatives & Extensions">
-          <Bullets
-            items={[
-              <><b>Black-Litterman</b> — fixes the input-sensitivity problem by blending market equilibrium with views (the <a href="/research/black-litterman">next tutorial</a>)</>,
-              <><b>Risk parity</b> — sidesteps return estimation entirely by allocating on risk contribution (our <a href="/research/risk-parity-futures">futures-based piece</a>)</>,
-              <><b>Hierarchical Risk Parity</b> — uses <a href="/research/hierarchical-risk-parity">clustering instead of matrix inversion</a> for stabler weights</>,
-              <><b>CVaR optimization</b> — replaces variance with a genuine tail-risk measure</>,
-            ]}
-          />
-        </SubSection>
+      <Section id="fragility" n={6} title="The concentration problem">
+        <P>
+          Why did the optimiser collapse six assets into two? Because it treats μ̂ as exact.
+          Expected-return estimates carry standard errors of several percent a year — often wider
+          than the spread between the assets being ranked — and mean–variance responds to any edge,
+          real or noise, by leveraging into it. Michaud&rsquo;s name for this stuck:{" "}
+          <Term>error maximisation</Term>. The portfolios that look best in-sample are precisely the
+          ones that loaded hardest on estimation error.
+        </P>
+        <CodeBlock
+          file="fragility.py"
+          code={`# swap the sample covariance for Ledoit-Wolf: weights barely move
+ef = EfficientFrontier(mu, S_lw)
+ef.max_sharpe(risk_free_rate=0.03)
+# SPY ${pc(d.weights.maxSharpeLW[0])} · GLD ${pc(d.weights.maxSharpeLW[2])}  (was ${pc(d.weights.maxSharpe[0])} / ${pc(d.weights.maxSharpe[2])})
+# -> the concentration is coming from mu, not Sigma`}
+        />
+        <Callout kind="Practitioner take">
+          Diagnose before you medicate. Swapping in the Ledoit–Wolf covariance moved the max-Sharpe
+          weights by a fraction of a percent — with this much daily data on six assets, Σ was never
+          the problem. The instability lives in μ, which is why nobody runs unconstrained MVO on raw
+          historical means: desks bound weights, shrink or resample inputs, or drop μ entirely
+          (min-vol and risk-parity books). The canonical repair is Black–Litterman — start from
+          equilibrium returns, then blend in views with explicit uncertainty — which is exactly
+          where the next tutorial (T06) picks up.
+        </Callout>
       </Section>
+
+      <References
+        items={[
+          "Markowitz, H. (1952). Portfolio Selection. The Journal of Finance, 7(1), 77–91.",
+          "Merton, R. C. (1972). An Analytic Derivation of the Efficient Portfolio Frontier. Journal of Financial and Quantitative Analysis, 7(4), 1851–1872.",
+          "Martin, R. A. (2021). PyPortfolioOpt: portfolio optimization in Python. Journal of Open Source Software, 6(61), 3066 — docs at pyportfolioopt.readthedocs.io.",
+          <span key="nb">Companion notebook: <InlineCode>mvo-efficient-frontier.ipynb</InlineCode> — reproduces every figure from raw data (seed {String(d.params.seed)}).</span>,
+        ]}
+      />
     </>
   );
 }

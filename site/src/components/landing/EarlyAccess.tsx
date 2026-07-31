@@ -8,7 +8,9 @@
 import { useState, type FormEvent } from "react";
 import { PhotoBackdrop } from "@/components/brand/PhotoBackdrop";
 
-const ENDPOINT = ""; // ← set to a form endpoint to start collecting for real
+/* Platform API (nginx proxies /api → FastAPI sidecar). Stores signups in the
+   customer DB — idempotent on duplicate emails. */
+const ENDPOINT = "/api/early-access";
 
 type State = "idle" | "loading" | "done" | "error";
 

@@ -1,0 +1,21 @@
+{
+  "slug": "copulas-tail-dependence",
+  "category": "risk-management",
+  "format": "Tutorial",
+  "title": "Copulas & tail dependence",
+  "dek": "Separating marginals from dependence for the S&P 500, FTSE 100 and Nikkei 225 — and measuring why the Gaussian copula misses joint crashes.",
+  "date": "2026-07-24",
+  "readMinutes": 12,
+  "level": "Advanced",
+  "notebook": "copulas-tail-dependence.ipynb",
+  "excerpt": "Correlation is one number; dependence is a whole function. On 25 years of weekly S&P 500, FTSE 100 and Nikkei 225 returns we rank-transform to pseudo-observations, fit Gaussian and Student-t copulas by MLE, and show that empirical tail dependence rises exactly where the Gaussian copula sends it to zero — modelling the joint crashes that multi-asset stress scenarios exist for.",
+  "stack": ["SciPy", "statsmodels", "seaborn"],
+  "sections": [
+    { "id": "dependence", "title": "Dependence is not correlation" },
+    { "id": "sklar", "title": "Sklar's theorem & pseudo-observations" },
+    { "id": "gaussian", "title": "The Gaussian copula — elegant, and wrong in the corner" },
+    { "id": "t-copula", "title": "The t copula & tail dependence" },
+    { "id": "crashes", "title": "Conditional crash probabilities" },
+    { "id": "practitioner", "title": "The practitioner take" }
+  ]
+}

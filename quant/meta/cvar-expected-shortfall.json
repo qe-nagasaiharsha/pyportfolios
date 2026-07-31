@@ -1,0 +1,21 @@
+{
+  "slug": "cvar-expected-shortfall",
+  "category": "risk-management",
+  "format": "Tutorial",
+  "title": "CVaR / expected shortfall",
+  "dek": "Two books with identical 99% VaR can differ threefold in the tail. Estimating expected shortfall on HYG and VWO — historical and Student-t — and sizing positions with the measure Basel actually chose.",
+  "date": "2026-07-24",
+  "readMinutes": 12,
+  "level": "Intermediate",
+  "notebook": "cvar-expected-shortfall.ipynb",
+  "excerpt": "VaR marks where the tail begins; CVaR averages what lives inside it. We estimate both at 97.5% and 99% for HYG, VWO and a 50/50 mix across 2007-2024, show VaR breaking subadditivity in crisis-year samples while CVaR never does, count the GFC blowing through HYG's VaR line at 16x its expected frequency, and spend the same 4% tail budget through rm=\"MV\" vs rm=\"CVaR\" in Riskfolio-Lib - with radically different books as the result.",
+  "stack": ["SciPy", "Riskfolio-Lib"],
+  "sections": [
+    { "id": "blind", "title": "What VaR cannot see" },
+    { "id": "data", "title": "Two fat-tailed assets" },
+    { "id": "estimate", "title": "Historical and Student-t estimates" },
+    { "id": "coherence", "title": "Subadditivity — the coherence test" },
+    { "id": "gfc", "title": "The GFC, seen from the tail" },
+    { "id": "optimize", "title": "Spending a tail budget: CVaR vs MV" }
+  ]
+}

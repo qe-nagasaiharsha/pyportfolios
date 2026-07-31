@@ -1,0 +1,21 @@
+{
+  "slug": "bond-pricing-duration-convexity",
+  "category": "finance-fundamentals",
+  "format": "Tutorial",
+  "title": "Bond pricing, duration & convexity",
+  "dek": "A bond pricer from scratch, the risk measures in every fixed-income report, and the 2022 tape that proved duration is THE risk factor.",
+  "date": "2026-07-21",
+  "readMinutes": 11,
+  "level": "Foundational",
+  "notebook": "bond-pricing-duration-convexity.ipynb",
+  "excerpt": "We build a semi-annual bond pricer in ~10 lines, derive duration and convexity analytically and by finite difference, run the ±100bp/±200bp stress table three ways, then replay 2022: the curve shifted ~230–420bp and SHY, IEF, and TLT lost almost exactly duration × shift — about 4% at the short end, 31% at the long end.",
+  "stack": ["NumPy", "Pandas", "yfinance", "matplotlib"],
+  "sections": [
+    { "id": "pricer", "title": "A bond pricer from scratch" },
+    { "id": "duration", "title": "Duration & convexity, two ways" },
+    { "id": "curve", "title": "The price/yield curve is not a line" },
+    { "id": "stress", "title": "The ±100bp stress table, three ways" },
+    { "id": "rates-2022", "title": "2022 — the year the tangent moved" },
+    { "id": "empirical", "title": "Empirical duration, read off the tape" }
+  ]
+}

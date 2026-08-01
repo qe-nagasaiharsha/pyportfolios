@@ -44,7 +44,7 @@ export function ArticleLayout({ article, children }: { article: Article; childre
             {/* soft dark halo behind hero text — keeps it legible over bright areas (e.g. snow) without darkening the photo */}
             <div className="py-14 md:py-20" style={{ textShadow: "0 1px 3px rgba(0,0,0,0.6), 0 2px 16px rgba(0,0,0,0.5)" }}>
               <TransitionLink
-                href={`/research#${category.slug}`}
+                href={`/research/${category.slug}`}
                 className="t-mono text-xs uppercase tracking-[0.2em] text-aqua transition-colors hover:text-pearl"
               >
                 {category.numeral} · {category.name}
@@ -94,7 +94,7 @@ export function ArticleLayout({ article, children }: { article: Article; childre
               <header className="border-b border-pearl/10 pb-9">
                 <div className="flex items-center gap-3">
                   <TransitionLink
-                    href={`/research#${category.slug}`}
+                    href={`/research/${category.slug}`}
                     className="t-mono text-xs uppercase tracking-[0.2em] text-aqua transition-colors hover:text-pearl"
                   >
                     {category.numeral} · {category.name}

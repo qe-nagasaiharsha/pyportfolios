@@ -7,10 +7,10 @@ import { MobileNav } from "@/components/MobileNav";
 import { articlesByCategory, CATEGORIES, type CategorySlug } from "@/lib/articles";
 
 const NAV = [
-  { label: "Quant Finance Foundations", href: "/research#quant-finance-foundations" },
-  { label: "Portfolio Optimization", href: "/research#portfolio-optimization" },
-  { label: "Risk Management", href: "/research#risk-management" },
-  { label: "Algorithmic Trading", href: "/research#algorithmic-trading" },
+  { label: "Quant Finance Foundations", href: "/research/quant-finance-foundations" },
+  { label: "Portfolio Optimization", href: "/research/portfolio-optimization" },
+  { label: "Risk Management", href: "/research/risk-management" },
+  { label: "Algorithmic Trading", href: "/research/algorithmic-trading" },
 ] as const;
 
 const EXTRA = [
@@ -29,7 +29,9 @@ export function ArticleNav() {
         </Link>
         <ul className="hidden flex-1 items-center justify-between gap-4 lg:flex">
           {NAV.map((item) => {
-            const slug = item.href.split("#")[1] as CategorySlug;
+            /* each nav item now points at its own category page
+               (/research/<category>), not an anchor on /research */
+            const slug = item.href.split("/").pop() as CategorySlug;
             const posts = articlesByCategory(slug);
             return (
               <li key={item.label} className="group relative">

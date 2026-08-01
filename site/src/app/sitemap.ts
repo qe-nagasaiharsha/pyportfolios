@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { ARTICLES } from "@/lib/articles";
+import { ARTICLES, CATEGORY_ORDER } from "@/lib/articles";
 
 /* Static-export sitemap — generated at build time into out/sitemap.xml. */
 
@@ -17,11 +17,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/content`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE}/requirements`, changeFrequency: "monthly", priority: 0.4 },
   ];
+  const categories: MetadataRoute.Sitemap = CATEGORY_ORDER.map((c) => ({
+    url: `${BASE}/research/${c}`,
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
   const articles: MetadataRoute.Sitemap = ARTICLES.map((a) => ({
     url: `${BASE}/research/${a.slug}`,
     lastModified: a.date,
     changeFrequency: "monthly",
     priority: 0.8,
   }));
-  return [...staticRoutes, ...articles];
+  return [...staticRoutes, ...categories, ...articles];
 }

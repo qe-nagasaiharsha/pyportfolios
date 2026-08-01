@@ -44,10 +44,10 @@ import { ScrollReveal } from "@/components/motion/ScrollReveal";
 import { CapabilityCards } from "@/components/brand/CapabilityCards";
 
 const NAV = [
-  { label: "Quant Finance Foundations", href: "/research#quant-finance-foundations" },
-  { label: "Portfolio Optimization", href: "/research#portfolio-optimization" },
-  { label: "Risk Management", href: "/research#risk-management" },
-  { label: "Algorithmic Trading", href: "/research#algorithmic-trading" },
+  { label: "Quant Finance Foundations", href: "/research/quant-finance-foundations" },
+  { label: "Portfolio Optimization", href: "/research/portfolio-optimization" },
+  { label: "Risk Management", href: "/research/risk-management" },
+  { label: "Algorithmic Trading", href: "/research/algorithmic-trading" },
 ] as const;
 
 const PILLARS = [
@@ -132,7 +132,7 @@ export default function StyleTile({
             </a>
             <ul className="hidden flex-1 items-center justify-between gap-4 lg:flex">
               {NAV.map((item) => {
-                const slug = item.href.split("#")[1] as CategorySlug;
+                const slug = item.href.split("/").pop() as CategorySlug;
                 const posts = articlesByCategory(slug);
                 return (
                   <li key={item.label} className="group relative">

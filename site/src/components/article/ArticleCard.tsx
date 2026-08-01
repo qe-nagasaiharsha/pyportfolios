@@ -6,9 +6,11 @@ import { TransitionLink } from "@/components/motion/TransitionLink";
 import { Tilt } from "@/components/motion/Tilt";
 
 export function ArticleCard({ article }: { article: Article }) {
-  /* Foundations tiles carry a photo thumbnail (Kyma-style); articles without a
-     hero keep a blank coal plate so the grid stays uniform. */
-  const showThumb = article.category === "quant-finance-foundations";
+  /* Every article with a banner photo carries a thumbnail (Kyma-style); the
+     rare one without keeps a blank coal plate so the grid stays uniform.
+     Previously this was hardcoded to the Foundations category, which left the
+     other three sections with no thumbnails at all once they filled up. */
+  const showThumb = Boolean(article.hero);
   return (
     <Tilt className="h-full">
     <TransitionLink

@@ -39,7 +39,7 @@ export const TOPIC_CARDS: TopicCard[] = [
     assets: "SPY (S&P 500 ETF, State Street)",
     timeframe: "Jan 2018 â€“ Dec 2024",
     use: "Scenario cones for wealth projections; the engine inside Monte-Carlo pricing & risk systems.",
-    article: "gbm-simulating-price-paths",
+    article: "brownian-motion",
     lane: "quant",
   },
   {
@@ -51,7 +51,7 @@ export const TOPIC_CARDS: TopicCard[] = [
     assets: "QQQ options (Nasdaq 100 ETF, Invesco)",
     timeframe: "Jan 2018 â€“ Dec 2024 (trailing 1y vol)",
     use: "Pricing & hedging options; implied vol is how the entire options market quotes prices.",
-    article: "black-scholes-and-the-greeks",
+    article: "black-scholes-greeks",
     lane: "quant",
   },
   {
@@ -63,7 +63,7 @@ export const TOPIC_CARDS: TopicCard[] = [
     assets: "US Treasuries (2yâ€“30y) + SHY / IEF / TLT (iShares)",
     timeframe: "Static pricing + calendar year 2022",
     use: "Measuring rate risk; duration targeting and the Â±100bp stress tests in every risk report.",
-    article: "bond-pricing-duration-convexity",
+    article: "bond-duration-convexity",
     lane: "quant",
   },
   {
@@ -101,7 +101,7 @@ export const TOPIC_CARDS: TopicCard[] = [
     assets: "EWJ Â· EWG Â· EWU Â· EWA Â· EWC (iShares country ETFs)",
     timeframe: "Jan 2015 â€“ Dec 2024",
     use: "Blending market-implied returns with your own views â€” stable weights without extreme bets.",
-    article: "black-litterman-equilibrium-views",
+    article: "black-litterman",
     lane: "quant",
   },
   {
@@ -113,7 +113,7 @@ export const TOPIC_CARDS: TopicCard[] = [
     assets: "SPY Â· TLT Â· GLD Â· DBC",
     timeframe: "Jan 2010 â€“ Dec 2024",
     use: "Allocating by risk contribution instead of capital â€” the all-weather portfolio blueprint.",
-    article: "risk-parity-from-scratch",
+    article: "risk-parity-futures",
     lane: "quant",
   },
   {

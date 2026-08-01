@@ -13,10 +13,12 @@ import { TransitionLink } from "@/components/motion/TransitionLink";
 import { CountUp } from "@/components/motion/CountUp";
 import { EquityCurve } from "@/components/charts/EquityCurve";
 
-const ARTICLES = [
-  { slug: "ledoit-wolf-shrinkage", cat: "Portfolio Optimization", title: "Ledoit-Wolf shrinkage, from scratch", blurb: "Why the sample covariance matrix fails out-of-sample — and how shrinkage repairs it.", meta: ["12 min", "Python", "Notebook ↗"] },
-  { slug: "evt-t-copula-var", cat: "Risk Management", title: "Market risk via EVT + t-copula", blurb: "A faithful Python port of the classic tail-risk pipeline, end to end.", meta: ["14 min", "Python", "Notebook ↗"] },
-] as const;
+/* Both featured cards pointed at articles deleted in the roadmap reconciliation
+   (ledoit-wolf-shrinkage, evt-t-copula-var). Left empty and explicitly typed:
+   pick replacements here if /parked is ever revived. */
+const ARTICLES: ReadonlyArray<{
+  slug: string; cat: string; title: string; blurb: string; meta: readonly string[];
+}> = [];
 
 /* Previous FAQ — replaced on the landing by the client's new copy, kept here. */
 const OLD_FAQS = [

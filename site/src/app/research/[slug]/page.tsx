@@ -6,17 +6,10 @@ import { ArticleLayout } from "@/components/article/ArticleLayout";
 
 import BrownianMotion from "@/content/articles/brownian-motion";
 import BlackScholesGreeks from "@/content/articles/black-scholes-greeks";
-import TimeValueOfMoney from "@/content/articles/time-value-of-money";
 import BondDurationConvexity from "@/content/articles/bond-duration-convexity";
 import MvoEfficientFrontier from "@/content/articles/mvo-efficient-frontier";
 import BlackLitterman from "@/content/articles/black-litterman";
 import RiskParityFutures from "@/content/articles/risk-parity-futures";
-import LedoitWolf from "@/content/articles/ledoit-wolf-shrinkage";
-import HierarchicalRiskParity from "@/content/articles/hierarchical-risk-parity";
-import EvtTCopulaVar from "@/content/articles/evt-t-copula-var";
-import VarCvarThreeWays from "@/content/articles/var-cvar-three-ways";
-import CrossSectionalMomentum from "@/content/articles/cross-sectional-momentum";
-import PairsTrading from "@/content/articles/pairs-trading-cointegration";
 import BlackScholes from "@/content/articles/black-scholes-from-first-principles";
 import VarThreeWays from "@/content/articles/var-three-ways";
 import CvarExpectedShortfall from "@/content/articles/cvar-expected-shortfall";
@@ -33,17 +26,10 @@ import GoldWarAndInflation from "@/content/articles/gold-war-and-inflation";
 const BODIES: Record<string, () => ReactElement> = {
   "brownian-motion": BrownianMotion,
   "black-scholes-greeks": BlackScholesGreeks,
-  "time-value-of-money": TimeValueOfMoney,
   "bond-duration-convexity": BondDurationConvexity,
   "mvo-efficient-frontier": MvoEfficientFrontier,
   "black-litterman": BlackLitterman,
   "risk-parity-futures": RiskParityFutures,
-  "ledoit-wolf-shrinkage": LedoitWolf,
-  "hierarchical-risk-parity": HierarchicalRiskParity,
-  "evt-t-copula-var": EvtTCopulaVar,
-  "var-cvar-three-ways": VarCvarThreeWays,
-  "cross-sectional-momentum": CrossSectionalMomentum,
-  "pairs-trading-cointegration": PairsTrading,
   "black-scholes-from-first-principles": BlackScholes,
   "var-three-ways": VarThreeWays,
   "cvar-expected-shortfall": CvarExpectedShortfall,

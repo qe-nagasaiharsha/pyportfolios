@@ -124,6 +124,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "black-scholes-from-first-principles",
+    hero: "hero/dolomites-krivec.jpg",
     category: "quant-finance-foundations",
     format: "Tutorial",
     title: "Black–Scholes from first principles",
@@ -145,6 +146,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "time-value-of-money",
+    hero: "hero/matterhorn-calame.jpg",
     category: "quant-finance-foundations",
     format: "Tutorial",
     title: "The time value of money, in code",
@@ -168,6 +170,7 @@ export const ARTICLES: Article[] = [
   /* --------------------------------------------- Portfolio Optimization -- */
   {
     slug: "ledoit-wolf-shrinkage",
+    hero: "hero/mountain-marc-thunis.jpg",
     category: "portfolio-optimization",
     format: "Research Article",
     title: "Ledoit–Wolf shrinkage, from scratch",
@@ -191,6 +194,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "hierarchical-risk-parity",
+    hero: "hero/mountain-nathan-anderson.jpg",
     category: "portfolio-optimization",
     format: "Research Article",
     title: "Hierarchical Risk Parity, end to end",
@@ -215,6 +219,7 @@ export const ARTICLES: Article[] = [
   /* ----------------------------------------------------- Risk Management -- */
   {
     slug: "evt-t-copula-var",
+    hero: "hero/mountain-neil-rosenstech.jpg",
     category: "risk-management",
     format: "Case Study",
     title: "Market risk via EVT + t-copula",
@@ -239,6 +244,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "var-cvar-three-ways",
+    hero: "hero/mountain-sam-ferrara.jpg",
     category: "risk-management",
     format: "Tutorial",
     title: "VaR & CVaR, three ways",
@@ -263,6 +269,7 @@ export const ARTICLES: Article[] = [
   /* --------------------------------------------------- Algorithmic Trading -- */
   {
     slug: "cross-sectional-momentum",
+    hero: "hero/dolomites-krivec.jpg",
     category: "algorithmic-trading",
     format: "Research Article",
     title: "Momentum, honestly backtested",
@@ -285,6 +292,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "pairs-trading-cointegration",
+    hero: "hero/matterhorn-calame.jpg",
     category: "algorithmic-trading",
     format: "Research Article",
     title: "Pairs trading & cointegration",
@@ -309,6 +317,7 @@ export const ARTICLES: Article[] = [
   /* ===================== exemplar content — one per format (from the brief) === */
   {
     slug: "kelly-criterion-position-sizing",
+    hero: "hero/mountain-marc-thunis.jpg",
     category: "portfolio-optimization",
     format: "Tutorial",
     title: "The Kelly criterion for position sizing",
@@ -331,6 +340,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "gamestop-short-squeeze",
+    hero: "hero/mountain-nathan-anderson.jpg",
     category: "algorithmic-trading",
     format: "Case Study",
     title: "Anatomy of a short squeeze: GameStop, 2021",
@@ -353,6 +363,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "gold-war-and-inflation",
+    hero: "hero/mountain-neil-rosenstech.jpg",
     category: "quant-finance-foundations",
     format: "Research Note",
     title: "Gold through war and inflation",
@@ -490,6 +501,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "var-three-ways",
+    hero: "hero/mountain-sam-ferrara.jpg",
     category: "risk-management",
     format: "Tutorial",
     title: "VaR three ways, on the DAX",
@@ -512,6 +524,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "cvar-expected-shortfall",
+    hero: "hero/dolomites-krivec.jpg",
     category: "risk-management",
     format: "Tutorial",
     title: "CVaR / expected shortfall",
@@ -534,6 +547,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "copulas-tail-dependence",
+    hero: "hero/matterhorn-calame.jpg",
     category: "risk-management",
     format: "Tutorial",
     title: "Copulas & tail dependence",
@@ -557,6 +571,7 @@ export const ARTICLES: Article[] = [
   /* ------------------------- Batch 1 topic-card tutorials (quant) -- */
   {
     slug: "kalman-filter-hedge-ratios",
+    hero: "hero/mountain-marc-thunis.jpg",
     category: "algorithmic-trading",
     format: "Tutorial",
     title: "Kalman filters: dynamic hedge ratios",
@@ -580,6 +595,7 @@ export const ARTICLES: Article[] = [
   /* ------------------------- Batch 1 topic-card tutorials (quant) -- */
   {
     slug: "sma-crossover-backtest",
+    hero: "hero/mountain-nathan-anderson.jpg",
     category: "algorithmic-trading",
     format: "Tutorial",
     title: "SMA crossover, honestly backtested",

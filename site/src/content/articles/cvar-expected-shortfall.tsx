@@ -75,8 +75,12 @@ export default function CvarExpectedShortfall() {
           smile-now-cry-later asset — a {pc1(H.annVol)} annualised vol that looks safer than
           VWO's {pc1(V.annVol)}, wrapped around a worst day of {pc(H.worstDay)}. The aligned
           sample runs {d.params.start} (HYG's listing) to {d.params.end}. A Student-t fitted to
-          HYG's daily returns lands at ν ≈ {H.nu} degrees of freedom — tails so heavy the
-          distribution barely has a variance.
+          HYG's daily returns lands at ν ≈ {H.nu} degrees of freedom — below 2, which means the
+          fitted distribution does not possess a finite variance at all. Read that as a
+          diagnostic as much as an estimate: an unconditional iid fit has nowhere to put 2008's
+          volatility clustering except the tail parameter, so it buys realism at the extremes by
+          overstating how wild a <Term>typical</Term> day is. (Condition on a GARCH filter and
+          the residual df comes out higher; the unconditional fit is the honest worst case.)
         </P>
         <Figure
           caption={`HYG daily returns 2007 → 2024 with fitted Student-t (ν = ${H.nu}) — VaR marks the door, CVaR the room behind it`}
@@ -139,7 +143,13 @@ def cvar_t(params, a):                    # Acerbi & Tasche closed form
           Note the FRTB calibration at work: HYG's 97.5% CVaR ({pc(H.cvar975)}) sits close to its
           99% VaR ({pc(H.var99)}) — similar magnitude, but the CVaR number keeps growing when the
           tail does. The t-parametric CVaR ({pc(H.cvar99t)}) exceeds the historical one because
-          with ν ≈ {H.nu} the fitted tail expects days worse than any yet observed.
+          with ν ≈ {H.nu} the fitted tail expects days worse than any yet observed. One caveat
+          belongs next to every number in this table: at 99% the historical CVaR is the mean of
+          just {Math.round(d.params.nObs * 0.01)} observations. The estimator with the best
+          theoretical properties is also the one standing on the fewest data points — which is
+          the practical argument for fitting a parametric tail and letting it extrapolate, rather
+          than trusting {Math.round(d.params.nObs * 0.01)} draws to have already shown you the
+          worst.
         </P>
         <Figure
           caption="99% VaR vs 99% CVaR, historical — per asset and for the daily-rebalanced 50/50"
@@ -281,7 +291,12 @@ w_cv = p_cv.optimization(model="Classic", rm="CVaR", obj="MaxRet", hist=True)`}
           Practically: quote 97.5% ES next to any 99% VaR (FRTB's own calibration), fit a
           Student-t rather than trusting the empirical tail alone when ν comes out below ~4, and
           put the CVaR constraint <Term>inside</Term> the optimiser — Rockafellar–Uryasev makes
-          it a linear program, so there is no computational excuse.
+          it a linear program, so there is no computational excuse. The one honest cost of the
+          switch: ES is harder to <Term>backtest</Term> than VaR. A quantile is directly
+          falsifiable by counting breaches; an expected shortfall is not elicitable on its own,
+          only jointly with its VaR — which is why desk validation (Acerbi–Székely) and FRTB's
+          own backtesting still run on VaR exceptions at two confidence levels, even though the
+          capital number is ES.
         </Callout>
       </Section>
 
@@ -290,6 +305,7 @@ w_cv = p_cv.optimization(model="Classic", rm="CVaR", obj="MaxRet", hist=True)`}
           "Artzner, P., Delbaen, F., Eber, J.-M. & Heath, D. (1999). Coherent Measures of Risk. Mathematical Finance 9(3), 203–228.",
           "Acerbi, C. & Tasche, D. (2002). On the coherence of expected shortfall. Journal of Banking & Finance 26(7), 1487–1503.",
           "Rockafellar, R.T. & Uryasev, S. (2000). Optimization of Conditional Value-at-Risk. Journal of Risk 2(3), 21–41.",
+          "Acerbi, C. & Székely, B. (2014). Back-testing Expected Shortfall. Risk Magazine, December 2014.",
           "Basel Committee on Banking Supervision (2019). Minimum capital requirements for market risk (FRTB). Bank for International Settlements.",
           <span key="nb">Companion notebook: <InlineCode>cvar-expected-shortfall.ipynb</InlineCode> — reproduces every figure from raw data (fully deterministic; no simulation).</span>,
         ]}

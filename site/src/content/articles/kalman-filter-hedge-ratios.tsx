@@ -43,7 +43,8 @@ export default function KalmanFilterHedgeRatios() {
           sample and you get one hedge ratio for fifteen years:{" "}
           <InlineCode>β = {d.params.betaStatic.toFixed(2)}</InlineCode>, with an ADF p-value of{" "}
           <InlineCode>{d.params.adfP.toFixed(3)}</InlineCode> on the residual spread — cointegrated,
-          by the book (the pairs-trading tutorial covers that machinery). The problem is the word{" "}
+          by the book (Engle–Granger: regress one price on the other, then unit-root-test the
+          residual). The problem is the word{" "}
           <Term>one</Term>. A hedge ratio is an estimate of an economic relationship — commodity
           mix, currency betas, index composition — and every one of those drifted between 2010 and
           2024. A rolling window is the standard fix, and it limps: every observation inside the
@@ -283,13 +284,18 @@ elif p == -1 and z[t] <= 0: p = 0              # short leg reverted`}
           the filtered spread, do the arithmetic this table forces: expected edge per trade must
           clear cost per trade — adaptivity raises the trade count, so it raises the bar. δ and R
           were fixed at textbook values here; tuning them to fix the net line is how
-          backtest-overfitting starts.
+          backtest-overfitting starts. One refinement is legitimate, though: the filter already
+          computes the spread&apos;s fair value <Term>and its own uncertainty</Term> — Chan&apos;s
+          variant trades the innovation e<sub>t</sub> against its predicted standard deviation
+          √S<sub>t</sub> instead of a rolling z-score, letting the model set the entry band and
+          retiring the arbitrary {d.params.zWin}-day window.
         </Callout>
       </Section>
 
       <References
         items={[
           "Kalman, R. E. (1960). A New Approach to Linear Filtering and Prediction Problems. Journal of Basic Engineering, 82(1).",
+          "Engle, R. F. & Granger, C. W. J. (1987). Co-integration and Error Correction: Representation, Estimation, and Testing. Econometrica, 55(2), 251–276.",
           "Chan, E. (2013). Algorithmic Trading: Winning Strategies and Their Rationale. Wiley — ch. 3, the EWA/EWC Kalman example and the δ/(1−δ) parameterization.",
           "Harvey, A. C. (1989). Forecasting, Structural Time Series Models and the Kalman Filter. Cambridge University Press.",
           <span key="nb">Companion notebook: <InlineCode>kalman-filter-hedge-ratios.ipynb</InlineCode> — reproduces every figure from raw data; fully deterministic, no RNG.</span>,

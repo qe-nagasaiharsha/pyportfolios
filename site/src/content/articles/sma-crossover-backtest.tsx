@@ -168,7 +168,12 @@ export default function SmaCrossoverBacktest() {
           {pc(1 - b.stats.strategy.timeInMkt, 0)} of all days and trimming the max drawdown from{" "}
           {pc(b.stats.buyhold.maxDD)} to {pc(b.stats.strategy.maxDD)}. Neither run is a money
           machine. Both are drawdown insurance — and the whole 10-year QQQ position changed hands
-          just {q.stats.strategy.trades} times.
+          just {q.stats.strategy.trades} times. Two conservatisms are baked into every number
+          above and worth naming: flat days are credited <Term>nothing</Term> (the QQQ variant
+          sits in cash {pc(1 - q.stats.strategy.timeInMkt, 0)} of the time — park that at the
+          T-bill rate and the strategy line improves while buy-and-hold&apos;s cannot), and
+          Sharpe is quoted on raw rather than excess returns. Both choices shade against the
+          strategy, which is the right direction to be wrong in.
         </P>
       </Section>
 
@@ -250,9 +255,10 @@ export default function SmaCrossoverBacktest() {
           no out-of-sample holdout, and no multiple-testing haircut for the {q.gridCells} variants
           we just eyeballed per asset. 2015–2024 handed both assets two of the strongest trend
           decades they have ever printed — a regime gift the next decade owes nobody. Before
-          promoting any cell of that grid, run the honesty checklist from our cross-sectional
-          momentum article: point-in-time data, walk-forward splits, pessimistic costs, and a
-          deflated Sharpe on whatever looked best.
+          promoting any cell of that grid, run the standard honesty checklist: point-in-time
+          data, walk-forward splits, pessimistic costs, and a <Term>deflated Sharpe</Term> —
+          Bailey &amp; López de Prado&apos;s correction for exactly the selection bias a{" "}
+          {q.gridCells}-cell grid search manufactures — on whatever looked best.
         </P>
         <Callout kind="Practitioner take">
           Trend filters are <Term>regime insurance, not alpha machines</Term>. Priced honestly, the
@@ -268,6 +274,7 @@ export default function SmaCrossoverBacktest() {
         items={[
           "Brock, W., Lakonishok, J. & LeBaron, B. (1992). Simple Technical Trading Rules and the Stochastic Properties of Stock Returns. Journal of Finance 47(5).",
           "Moskowitz, T., Ooi, Y.H. & Pedersen, L.H. (2012). Time Series Momentum. Journal of Financial Economics 104(2).",
+          "Bailey, D.H. & López de Prado, M. (2014). The Deflated Sharpe Ratio: Correcting for Selection Bias, Backtest Overfitting and Non-Normality. Journal of Portfolio Management 40(5).",
           <span key="vbt">vectorbt documentation — <InlineCode>Portfolio.from_signals</InlineCode>, the signal-based backtesting API used as the fill cross-check.</span>,
           <span key="nb">Companion notebook: <InlineCode>sma-crossover-backtest.ipynb</InlineCode> — reproduces every figure from raw data (deterministic, no simulation).</span>,
         ]}

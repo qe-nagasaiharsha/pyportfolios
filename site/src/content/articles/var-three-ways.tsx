@@ -18,11 +18,10 @@ export default function VarThreeWays() {
     <>
       <Lead>
         Value-at-Risk is the number desks set daily loss limits with and regulators size capital
-        against — and it has three standard recipes that disagree exactly when it matters. This is
-        the hands-on companion to our conceptual VaR piece: we compute all three on fifteen years
-        of real DAX data, backtest every one of them out of sample, and then recompute the
-        historical quantile with Polars and DuckDB to show what the modern data stack changes
-        (answer: the speed, never the number).
+        against — and it has three standard recipes that disagree exactly when it matters. We
+        compute all three on fifteen years of real DAX data, backtest every one of them out of
+        sample, and then recompute the historical quantile with Polars and DuckDB to show what
+        the modern data stack changes (answer: the scaling, never the number).
       </Lead>
 
       <Pipeline
@@ -86,7 +85,10 @@ hist_var_cvar(ret.values)               # (${v99.histVar.toFixed(6)}, ${v99.hist
           empirical quantile. Refit the same idea with a Student-t and MLE hands you
           df = <InlineCode>{d.params.tDf}</InlineCode>: violently non-Gaussian tails. The t's 99%
           VaR of <InlineCode>{pc(v99.tVar)}</InlineCode> lands almost exactly on the historical
-          number, and its CVaR ({pc(v99.tCvar)}) is fatter still.
+          number, and its CVaR ({pc(v99.tCvar)}) is fatter still. (One desk convention worth
+          knowing: at the one-day horizon many shops zero out μ entirely — at{" "}
+          {pc(d.params.muDaily, 3)} a day it is noise against σ, and estimating it adds error
+          without information. We keep it for completeness.)
         </P>
         <CodeBlock
           file="parametric.py"
@@ -209,10 +211,15 @@ cvar_mc = -draws[draws <= np.quantile(draws, 0.01)].mean()   # ${pc(v99.mcCvar)}
           Read it honestly: <Term>every</Term> unconditional method breaches too often —{" "}
           {bt.normal.breaches} times for the normal against {bt.expected} expected, and even the
           t-based models manage {bt.t.breaches}. The t roughly halves the normal's excess, but
-          Kupiec rejects all four at the 1% level because breaches arrive in volatility clusters
-          that a rolling unconditional window is structurally late to. That is not a reason to
-          despair; it is the empirical case for conditional risk models — GARCH-filtered VaR gets
-          its own tutorial.
+          Kupiec rejects all four at the 1% level. And Kupiec is the lenient examiner: the POF
+          statistic only counts breaches — it is blind to their <Term>timing</Term>. One look at
+          the chart shows them arriving in volatility clusters, which is exactly the pattern
+          Christoffersen's (1998) independence test is built to punish and the pattern behind
+          Basel's traffic-light backtest zones. The diagnosis is structural: a rolling
+          unconditional window is late to every regime change by construction. That is not a
+          reason to despair; it is the empirical case for conditional risk models — a GARCH
+          filter rescales the tail to <Term>today's</Term> volatility, and filtered historical
+          simulation is the desk standard for precisely this failure mode.
         </P>
       </Section>
 
@@ -269,6 +276,7 @@ FROM read_csv('dax_returns.csv');                -- ${d.engines.duckdb.toFixed(1
         items={[
           "Jorion, P. Value at Risk: The New Benchmark for Managing Financial Risk. McGraw-Hill.",
           "Kupiec, P. (1995). Techniques for Verifying the Accuracy of Risk Measurement Models. Journal of Derivatives, 3(2).",
+          "Christoffersen, P. (1998). Evaluating Interval Forecasts. International Economic Review, 39(4), 841–862.",
           "McNeil, A., Frey, R. & Embrechts, P. Quantitative Risk Management: Concepts, Techniques and Tools. Princeton University Press.",
           <span key="nb">Companion notebook: <InlineCode>var-three-ways.ipynb</InlineCode> — reproduces every number from raw data (seed {String(d.params.seed)}), including the Polars and DuckDB cells.</span>,
         ]}

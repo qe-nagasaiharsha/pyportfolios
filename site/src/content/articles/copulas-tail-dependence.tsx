@@ -39,8 +39,8 @@ export default function CopulasTailDependence() {
           bust, 2008, the euro crisis, COVID and the 2022 rates shock all included. Two
           alignment problems come free with global indices. Each exchange keeps its own holiday
           calendar, so returns are computed jointly and rows with a missing market dropped. And
-          the markets do not even trade at the same time: Tokyo closes roughly seven hours
-          before London and fourteen-and-a-half before New York, so a same-calendar-day Nikkei
+          the markets do not even trade at the same time: Tokyo's 15:00 JST close lands roughly
+          ten hours before London's and some fifteen before New York's, so a same-calendar-day Nikkei
           close <Term>leads</Term> the US close and daily cross-market correlations are
           structurally understated. Resampling to weekly (Friday-to-Friday) returns absorbs
           most of that offset — the SPX–Nikkei Pearson correlation jumps from{" "}
@@ -240,7 +240,12 @@ lam = 2 * stats.t.cdf(-np.sqrt((df_hat+1)*(1-rho)/(1+rho)), df=df_hat+1)`}
           trusting it, and when in doubt between Gaussian and t, the t copula&rsquo;s extra
           parameter is the cheapest tail insurance in the toolbox: here it turned
           &ldquo;joint crashes become impossible&rdquo; into λ ≈ {pc(d.pairs[0].lambdaT, 0)} for
-          the closest pair.
+          the closest pair. And know where this road ends: the t copula is elliptical, so it
+          buys its lower-tail dependence bundled with an identical upper tail — it must price
+          joint booms as generously as joint crashes. When the residual crash/boom asymmetry in
+          the data matters, the next tools up are the asymmetric Archimedean families (Clayton
+          glues lower tails only) and vine constructions, which assemble a high-dimensional
+          copula from freely chosen pairs.
         </P>
         <Callout kind="Practitioner take">
           Correlation tells you how markets dance; the copula tells you how they die. Simulate
@@ -256,6 +261,7 @@ lam = 2 * stats.t.cdf(-np.sqrt((df_hat+1)*(1-rho)/(1+rho)), df=df_hat+1)`}
           "Sklar, A. (1959). Fonctions de répartition à n dimensions et leurs marges. Publications de l'Institut de Statistique de l'Université de Paris, 8, 229–231.",
           "Embrechts, P., McNeil, A. & Straumann, D. (2002). Correlation and dependence in risk management: properties and pitfalls. In Risk Management: Value at Risk and Beyond, Cambridge University Press.",
           "Demarta, S. & McNeil, A. J. (2005). The t copula and related copulas. International Statistical Review, 73(1), 111–129.",
+          "Aas, K., Czado, C., Frigessi, A. & Bakken, H. (2009). Pair-copula constructions of multiple dependence. Insurance: Mathematics and Economics, 44(2), 182–198.",
           "Li, D. X. (2000). On default correlation: a copula function approach. Journal of Fixed Income, 9(4), 43–54.",
           <span key="nb">Companion notebook: <InlineCode>copulas-tail-dependence.ipynb</InlineCode> — reproduces every figure from raw data (seed {String(d.params.seed)}).</span>,
         ]}

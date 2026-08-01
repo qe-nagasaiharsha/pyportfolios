@@ -207,8 +207,21 @@ export function Term({ children }: { children: ReactNode }) {
    Proper typeset mathematics, rendered to static HTML at build time (the "web
    formula editor"). Write LaTeX; get real fractions, radicals and sub/scripts.
    <Math>x^2</Math> inline · <Math block>...</Math> as a centred display block. */
-export function Formula({ children, block = false }: { children: string; block?: boolean }) {
-  const html = katex.renderToString(children, {
+export function Formula({
+  children,
+  block = false,
+  bold = true,
+}: {
+  children: string;
+  block?: boolean;
+  bold?: boolean;
+}) {
+  /* Bold is applied in LaTeX, not CSS. KaTeX pins its glyph spans to weight 400
+     and computes spacing from normal-weight metrics at build time, so a CSS
+     override both fails and drifts the layout; \boldsymbol makes KaTeX lay the
+     formula out in bold from the start — letters bold-italic, operators and
+     digits bold upright. */
+  const html = katex.renderToString(bold ? `\\boldsymbol{${children}}` : children, {
     displayMode: block,
     throwOnError: false,
     output: "html",

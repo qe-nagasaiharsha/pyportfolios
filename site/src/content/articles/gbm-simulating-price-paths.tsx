@@ -1,4 +1,4 @@
-import { Section, Lead, P, InlineCode, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
+import { Section, Lead, P, InlineCode, Formula, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
 import { LineChart, Histogram } from "@/components/charts/DataCharts";
 import d from "./data/gbm-simulating-price-paths";
 
@@ -6,6 +6,8 @@ import d from "./data/gbm-simulating-price-paths";
    (SPY Jan 2018 – Dec 2024, seeded simulation) baked in by quant/tutorials/t01_gbm.py. */
 
 const pc = (v: number) => `${(v * 100).toFixed(1)}%`;
+/* same number, LaTeX-safe: a bare % opens a comment and swallows the rest */
+const pcTex = (v: number) => `${(v * 100).toFixed(1)}\\%`;
 
 export default function GbmSimulatingPricePaths() {
   const cone = d.cone;
@@ -40,9 +42,9 @@ export default function GbmSimulatingPricePaths() {
 
       <Section id="model" n={1} title="The model, in one equation">
         <P>
-          GBM says the instantaneous return of a price <InlineCode>S</InlineCode> is a constant
+          GBM says the instantaneous return of a price <Formula>S</Formula> is a constant
           drift plus Brownian noise scaled by a constant volatility:
-          {" "}<InlineCode>dS = μS dt + σS dW</InlineCode>. Its defining convenience is that
+          {" "}<Formula>{String.raw`dS = \mu S\,dt + \sigma S\,dW`}</Formula>. Its defining convenience is that
           {" "}<Term>log returns are i.i.d. normal</Term> — which hands us both the estimator
           (sample mean and standard deviation of log returns) and an exact simulation scheme with
           zero discretisation error, no matter how large the step.
@@ -83,8 +85,8 @@ mu    = logret.mean() * 252            # ${pc(d.params.muAnnual)} / year
 sigma = logret.std(ddof=1) * np.sqrt(252)   # ${pc(d.params.sigmaAnnual)} / year`}
         />
         <P>
-          Two numbers fully specify the model: drift <InlineCode>μ = {pc(d.params.muAnnual)}</InlineCode>{" "}
-          and volatility <InlineCode>σ = {pc(d.params.sigmaAnnual)}</InlineCode> per year, from the
+          Two numbers fully specify the model: drift <Formula>{`\\mu = ${pcTex(d.params.muAnnual)}`}</Formula>{" "}
+          and volatility <Formula>{`\\sigma = ${pcTex(d.params.sigmaAnnual)}`}</Formula> per year, from the
           last close of <InlineCode>${d.params.s0}</InlineCode>.
         </P>
       </Section>
@@ -104,7 +106,7 @@ inc = (mu - 0.5 * sigma**2) * dt + sigma * np.sqrt(dt) * z
 paths = s0 * np.exp(np.cumsum(inc, axis=1))     # (5000, 252)`}
         />
         <P>
-          The <InlineCode>−σ²/2</InlineCode> correction is the single most-forgotten term in
+          The <Formula>{String.raw`-\sigma^2/2`}</Formula> correction is the single most-forgotten term in
           quantitative finance: it is the gap between the average of log returns and the log of
           average returns. Drop it and every simulated path drifts systematically high.
         </P>

@@ -3,7 +3,6 @@
 
 import { type Article, CATEGORIES, formatDate } from "@/lib/articles";
 import { TransitionLink } from "@/components/motion/TransitionLink";
-import { Tilt } from "@/components/motion/Tilt";
 
 export function ArticleCard({ article }: { article: Article }) {
   /* Every article with a banner photo carries a thumbnail (Kyma-style); the
@@ -12,7 +11,6 @@ export function ArticleCard({ article }: { article: Article }) {
      other three sections with no thumbnails at all once they filled up. */
   const showThumb = Boolean(article.hero);
   return (
-    <Tilt className="h-full">
     <TransitionLink
       href={`/research/${article.slug}`}
       className="glow-card group flex h-full flex-col overflow-hidden rounded-2xl border border-pearl/10 bg-navy-elevated/50 hover:border-aqua/40"
@@ -47,6 +45,5 @@ export function ArticleCard({ article }: { article: Article }) {
       </div>
       </div>
     </TransitionLink>
-    </Tilt>
   );
 }

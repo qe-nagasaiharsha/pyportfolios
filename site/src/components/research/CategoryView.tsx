@@ -12,12 +12,11 @@ import { ArticleNav } from "@/components/article/ArticleNav";
 import { ArticleCard } from "@/components/article/ArticleCard";
 import { TransitionLink } from "@/components/motion/TransitionLink";
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
-import { CATEGORIES, CATEGORY_ORDER, articlesByCategory, type CategorySlug } from "@/lib/articles";
+import { CATEGORIES, articlesByCategory, type CategorySlug } from "@/lib/articles";
 
 export function CategoryView({ category }: { category: CategorySlug }) {
   const cat = CATEGORIES[category];
   const articles = articlesByCategory(category);
-  const others = CATEGORY_ORDER.filter((c) => c !== category);
 
   return (
     <div className="min-h-screen bg-navy text-pearl">
@@ -61,31 +60,6 @@ export function CategoryView({ category }: { category: CategorySlug }) {
           </div>
         </section>
 
-        {/* the other three categories */}
-        <section className="border-t border-pearl/10">
-          <div className="mx-auto max-w-6xl px-6 py-14 lg:px-8">
-            <p className="t-mono text-[0.66rem] uppercase tracking-[0.2em] text-steel">Continue in</p>
-            <div className="mt-5 grid gap-4 sm:grid-cols-3">
-              {others.map((c) => (
-                <TransitionLink
-                  key={c}
-                  href={`/research/${c}`}
-                  className="group rounded-lg border border-pearl/10 bg-navy-elevated/50 px-5 py-4 transition-colors hover:border-aqua/40"
-                >
-                  <span className="t-mono text-[0.6rem] uppercase tracking-[0.16em] text-aqua/80">
-                    {CATEGORIES[c].numeral}
-                  </span>
-                  <p className="mt-1.5 font-serif text-lg leading-snug text-pearl group-hover:text-aqua">
-                    {CATEGORIES[c].name}
-                  </p>
-                  <p className="mt-1 t-mono text-[0.62rem] text-steel">
-                    {articlesByCategory(c).length} articles
-                  </p>
-                </TransitionLink>
-              ))}
-            </div>
-          </div>
-        </section>
       </main>
 
       <footer className="bg-navy-sunken">

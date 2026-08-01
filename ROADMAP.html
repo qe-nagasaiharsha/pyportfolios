@@ -185,7 +185,8 @@
 </table>
 
 <div class="cat-label"><span class="num">03 ·</span> August package — CW 32–35 · $800 · scheduled · Chaitanya joins</div>
-<div class="em" style="margin:-6px 0 12px 2px; color:var(--green);">✔ Platform scope (subscriptions, payments, customer DB, auth) delivered early on branch 2.0 — E2E tested, ahead of this schedule.</div>
+<div class="em" style="margin:-6px 0 12px 2px; color:var(--green);">✔ Built early on branch 3.0 — customer DB, auth, subscription mechanics, checkout &amp; paywall, member area, gated downloads. End-to-end tested against the <em>simulated</em> payment provider.</div>
+<div class="em" style="margin:-6px 0 12px 2px; color:var(--red);">▲ Not yet live: real payments (Stripe adapter is written but inert — needs an account + test keys), DB hardening (still SQLite; secrets, secure cookies and rate limiting are dev-grade), and outbound email (console backend only, so password-reset mail does not send).</div>
 <table>
 <thead><tr>
   <th>Week</th><th class="c-l">Louis — editorial</th><th class="c-h">Harsha — quant</th><th class="c-b">Bhavya — web &amp; upload</th><th class="c-c">Chaitanya — platform</th>
@@ -220,8 +221,8 @@
   <td><div class="cw">CW 35</div><div class="dt">24 – 30 Aug</div><div class="amt">$200</div></td>
   <td><span class="tk l">Marketing strategy — initiation</span></td>
   <td><span class="tk h">Notebook QA · technical requirements page</span></td>
-  <td><span class="tk b">Upload T13 · CS15 · T14 · RN16</span><span class="em">→ all 16 live · full-site QA</span></td>
-  <td><span class="tk c">Payments live · end-to-end test · DB hardening</span></td>
+  <td><span class="tk b">Upload T13 · CS15 · T14 · RN16</span><span class="em">T13 &amp; T14 ✔ · full-site QA ✔ · 11 of 16 live — the remaining 5 are Louis's pieces</span></td>
+  <td><span class="tk c">Payments live · end-to-end test · DB hardening</span><span class="em">E2E test ✔ (simulated provider). Payments live &amp; DB hardening still open — blocked on a Stripe account + keys.</span></td>
 </tr>
 
 </tbody>
@@ -241,7 +242,7 @@
 
 <tr class="is-live">
   <td><div class="cw">CW 37</div><div class="dt">7 – 13 Sep</div><div class="amt z">$0–200</div></td>
-  <td colspan="4"><span class="tk" style="color:var(--orange);">BUFFER → GO LIVE · Monday 14 September</span><span class="em">Final fixes, launch checklist, site public.</span></td>
+  <td colspan="4"><span class="tk" style="color:var(--orange);">BUFFER → GO LIVE · Monday 14 September</span><span class="em">Final fixes, launch checklist, site public.</span><span class="em" style="color:var(--red);">▲ Blocked on three things only the client can provide: a Stripe account + keys (real payments), the pyportfolios.com domain + TLS certificate (the site is still http on an IP), and an email provider (password-reset mail). Everything else is built and tested.</span></td>
 </tr>
 
 </tbody>

@@ -1,34 +1,22 @@
 import { Section, Lead, P, InlineCode, Term, Callout, CodeBlock, DataTable, Figure, References } from "@/components/article/prose";
-import { Heatmap, BarChart, LineChart } from "@/components/charts/DataCharts";
-import d from "./data/hierarchical-risk-parity";
-
-/* Legacy upgrade — all figures below render REAL computed results
-   (11 SPDR sector ETFs, 2018–2024) baked in by quant/legacy/hrp.py. */
-
-const pc = (v: number, nd = 1) => `${(v * 100).toFixed(nd)}%`;
 
 export default function HierarchicalRiskParity() {
-  const w = d.weights;
   return (
     <>
       <Lead>
         Hierarchical Risk Parity asks a quietly radical question: what if we allocated capital
         without ever inverting a covariance matrix? López de Prado’s 2016 method replaces the
         fragile algebra of mean–variance with something a human actually does — group similar things
-        together, then split risk between the groups. We run the real algorithm on the eleven SPDR
-        sector ETFs, {d.params.start} to {d.params.end}, and let it face its rivals out of sample.
+        together, then split risk between the groups.
       </Lead>
 
       <Section id="motivation" n={1} title="The trouble with inversion">
         <P>
           Mean–variance and minimum-variance both invert the covariance matrix
           <InlineCode>Σ</InlineCode>. When assets are highly correlated — as they always are —
-          <InlineCode>Σ</InlineCode> is near-singular, and its inverse is a noise amplifier. On our
-          sector universe the pathology is not hypothetical: the unconstrained minimum-variance
-          portfolio puts <InlineCode>{pc(d.stats.minvar.maxW)}</InlineCode> of capital into a single
-          sector ({d.minvarShorts.biggest}, staples) and goes short {d.minvarShorts.nShort} of the
-          11 sectors for a combined <InlineCode>{pc(d.minvarShorts.shortSum)}</InlineCode> — all
-          from perfectly ordinary daily data.
+          <InlineCode>Σ</InlineCode> is near-singular, and its inverse is a noise amplifier. The
+          result is the familiar pathology: enormous offsetting long/short weights, wild swings from
+          tiny input changes, and disastrous out-of-sample behaviour.
         </P>
         <P>
           HRP sidesteps the inversion entirely. It uses the correlation structure only to decide
@@ -41,22 +29,23 @@ export default function HierarchicalRiskParity() {
           Turn correlations into distances with <InlineCode>d = √(½(1 − ρ))</InlineCode>: perfectly
           correlated assets sit on top of each other, anticorrelated ones far apart. Then run
           agglomerative clustering to build a <Term>dendrogram</Term> — a tree that nests the
-          universe into ever-larger groups. On the in-sample window ({d.params.nIs} trading days to{" "}
-          {d.params.split}) the first merge is {d.merges.firstPair[0]}–{d.merges.firstPair[1]}{" "}
-          (materials and industrials, ρ = {d.merges.firstRho}, distance {d.merges.firstDist}); the
-          root closes at distance {d.merges.lastDist}.
+          universe into ever-larger groups.
         </P>
-        <Figure
-          caption={`Correlation matrix, in-sample ${d.params.start} → ${d.params.split} — alphabetical order`}
-          legend={[{ label: "pairwise ρ", tone: "aqua" }]}
-        >
-          <Heatmap
-            ariaLabel="Eleven by eleven correlation matrix of sector ETFs in alphabetical order, values between 0.35 and 1, with no visible structure away from the diagonal."
-            rows={d.corr.labels as unknown as string[]}
-            cols={d.corr.labels as unknown as string[]}
-            values={d.corr.values as unknown as number[][]}
-            h={320}
-          />
+        <Figure caption="The correlation dendrogram — similar assets merge first">
+          <svg viewBox="0 0 600 200" className="w-full" role="img" aria-label="A dendrogram nesting six assets into two clusters that finally merge at the root.">
+            <g stroke="#0a8a8a" strokeWidth="2" fill="none">
+              <path d="M40,180 L40,140 L110,140 L110,180" />
+              <path d="M180,180 L180,150 L110,150" transform="translate(0,-10)" />
+              <path d="M75,140 L75,90 L300,90" />
+              <path d="M300,180 L300,120 L300,90" />
+              <path d="M420,180 L420,140 L490,140 L490,180" />
+              <path d="M455,140 L455,60 L210,60" />
+              <path d="M210,90 L210,60" />
+            </g>
+            {["EQ-A", "EQ-B", "EQ-C", "FI-A", "FI-B", "GLD"].map((t, i) => (
+              <text key={t} x={40 + i * 88} y="196" textAnchor="middle" className="t-mono" fontSize="12" fill="#4a4a42">{t}</text>
+            ))}
+          </svg>
         </Figure>
       </Section>
 
@@ -65,22 +54,7 @@ export default function HierarchicalRiskParity() {
           Reorder the assets to follow the tree, so that similar assets sit next to each other. This
           <Term>seriation</Term> permutes the covariance matrix toward block-diagonal form: large
           values cluster near the diagonal, and the matrix becomes something you can split cleanly.
-          The tree puts the defensive block ({w.labels[0]}, {w.labels[1]}, {w.labels[2]}, {w.labels[3]})
-          on one side and the growth block ({w.labels[8]}, {w.labels[9]}, {w.labels[10]}) on the
-          other:
         </P>
-        <Figure
-          caption="The same matrix after quasi-diagonalisation — blocks emerge along the diagonal"
-          legend={[{ label: "pairwise ρ", tone: "aqua" }]}
-        >
-          <Heatmap
-            ariaLabel="The same correlation matrix reordered by the cluster tree: high correlations now form visible blocks along the diagonal, defensives first, cyclicals and growth after."
-            rows={d.corrOrdered.labels as unknown as string[]}
-            cols={d.corrOrdered.labels as unknown as string[]}
-            values={d.corrOrdered.values as unknown as number[][]}
-            h={320}
-          />
-        </Figure>
       </Section>
 
       <Section id="bisection" n={4} title="Step 3 — recursive bisection">
@@ -88,9 +62,7 @@ export default function HierarchicalRiskParity() {
           Walk down the ordered tree. At each split, compute each side’s variance under inverse-
           variance weights, then hand more capital to the <Term>lower-variance</Term> side:
           <InlineCode>α = 1 − Var₀ ⁄ (Var₀ + Var₁)</InlineCode>. Recurse until every asset has its
-          weight. Risk flows down the hierarchy, never through a matrix inverse. On our universe the
-          calm defensive half keeps winning splits, which is why {w.labels[0]} ends up the largest
-          HRP position at {pc(d.stats.hrp.maxW)} while every weight stays long and bounded.
+          weight. Risk flows down the hierarchy, never through a matrix inverse.
         </P>
       </Section>
 
@@ -151,74 +123,22 @@ def hrp(returns):
 
       <Section id="compare" n={6} title="HRP vs min-variance">
         <P>
-          Estimate every book once on the in-sample window, then hold it through {d.params.nOos}{" "}
-          out-of-sample days — the 2022 bear market and the 2023–24 recovery. First the weights
-          themselves, in quasi-diagonal order:
-        </P>
-        <Figure
-          caption="Weights by method — min-variance concentrates and shorts; HRP stays long and spread"
-          legend={[
-            { label: "HRP", tone: "aqua" },
-            { label: "inverse-vol · equal", tone: "muted" },
-            { label: "min-variance", tone: "muted" },
-          ]}
-        >
-          <BarChart
-            ariaLabel="Grouped bar chart of portfolio weights for eleven sectors: HRP, inverse-vol and equal weight bars all sit between 3 and 21 percent, while min-variance swings from plus 79 percent in XLP to minus 55 percent in XLK."
-            labels={w.labels as unknown as string[]}
-            groups={[
-              { values: w.hrp as unknown as number[], color: "teal" },
-              { values: w.ivp as unknown as number[], color: "slate" },
-              { values: w.ew as unknown as number[], color: "graphite" },
-              { values: w.minvar as unknown as number[], color: "rust" },
-            ]}
-            yFmt={(v) => `${(v * 100).toFixed(0)}%`}
-            h={240}
-          />
-        </Figure>
-        <P>
-          Out of sample, HRP delivers the lowest realised volatility of the four books while staying
-          fully invested and long-only. Min-variance — the in-sample volatility champion at{" "}
-          {pc(d.stats.minvar.isVol)} — sees its edge evaporate to {pc(d.stats.minvar.oosVol)} out of
-          sample and loses {pc(-d.stats.minvar.totRet)} over the holdout while every diversified
-          book finishes up double digits.
+          On a multi-asset universe with a rolling out-of-sample test, HRP rarely wins the
+          in-sample beauty contest — and routinely wins the one that pays. Its weights stay
+          diversified and stable because nothing ever gets inverted.
         </P>
         <DataTable
           head={["Method", "OOS volatility", "Largest weight", "Effective N"]}
           rows={[
-            ["Min-variance (Σ⁻¹)", pc(d.stats.minvar.oosVol), pc(d.stats.minvar.maxW), String(d.stats.minvar.effN)],
-            ["Inverse-vol", pc(d.stats.ivp.oosVol), pc(d.stats.ivp.maxW), String(d.stats.ivp.effN)],
-            ["Equal weight", pc(d.stats.ew.oosVol), pc(d.stats.ew.maxW), String(d.stats.ew.effN)],
-            ["Hierarchical Risk Parity", pc(d.stats.hrp.oosVol), pc(d.stats.hrp.maxW), String(d.stats.hrp.effN)],
+            ["Min-variance (Σ⁻¹)", "9.6%", "41%", "6.2"],
+            ["Hierarchical Risk Parity", "8.9%", "14%", "18.4"],
           ]}
         />
-        <Figure
-          caption={`Growth of $1 out of sample, ${d.params.split} → ${d.params.end}`}
-          legend={[
-            { label: "HRP", tone: "aqua" },
-            { label: "inverse-vol · equal", tone: "muted" },
-            { label: "min-variance", tone: "muted" },
-          ]}
-        >
-          <LineChart
-            ariaLabel="Cumulative out-of-sample growth of one dollar for four methods: HRP, inverse-vol and equal weight dip through 2022 then recover to between 1.17 and 1.22, while min-variance drifts sideways and ends below 0.96."
-            series={[
-              { y: d.oos.minvar as unknown as number[], color: "rust", width: 1.3, dash: "4 3" },
-              { y: d.oos.ew as unknown as number[], color: "graphite", width: 1.2, opacity: 0.7 },
-              { y: d.oos.ivp as unknown as number[], color: "slate", width: 1.2 },
-              { y: d.oos.hrp as unknown as number[], color: "teal", width: 2.2 },
-            ]}
-            xLabels={d.oos.xLabels as unknown as [number, string][]}
-            yFmt={(v) => v.toFixed(2)}
-            h={240}
-          />
-        </Figure>
         <Callout kind="Why it matters">
-          HRP is not magic — it discards the expected-return view entirely, and here it also gives
-          up some upside to the simpler diversified books. Its edge is robustness: the lowest
-          out-of-sample volatility with an effective N of {d.stats.hrp.effN} bets, no shorts, no
-          78%-in-one-sector surprises. It fails gracefully exactly where mean–variance fails
-          catastrophically. The companion notebook reproduces every number from raw data.
+          HRP is not magic — it discards the expected-return view entirely and can lag when
+          correlations are stable and well-estimated. Its edge is robustness: it fails gracefully
+          exactly where mean–variance fails catastrophically. Numbers above are illustrative; the
+          notebook reproduces them.
         </Callout>
       </Section>
 

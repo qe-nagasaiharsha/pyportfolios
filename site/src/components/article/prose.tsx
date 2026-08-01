@@ -342,7 +342,7 @@ export function References({ items }: { items: ReactNode[] }) {
       <ol className="mt-5 space-y-3 text-[0.9rem] leading-relaxed text-pearl/75">
         {items.map((it, i) => (
           <li key={i} className="flex gap-3">
-            <span className="t-mono text-xs text-aqua">[{i + 1}]</span>
+            <span>{i + 1}.</span>
             <span>{it}</span>
           </li>
         ))}

@@ -22,7 +22,8 @@ const btn =
 const PLAN_BLURB: Record<string, string> = {
   "pro-monthly": "Full curriculum, unlimited notebooks, cancel any time.",
   "pro-annual": "Everything in Pro, two months free.",
-  lifetime: "One payment. Every module, every future update.",
+  "premium-monthly": "Everything in Pro, plus datasets, deep-dive reports and priority access.",
+  "premium-annual": "Everything in Premium, two months free.",
 };
 
 function money(cents: number): string {

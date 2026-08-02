@@ -35,7 +35,8 @@ class Settings(BaseSettings):
     stripe_webhook_secret: str = ""
     stripe_price_pro_monthly: str = ""
     stripe_price_pro_annual: str = ""
-    stripe_price_lifetime: str = ""
+    stripe_price_premium_monthly: str = ""
+    stripe_price_premium_annual: str = ""
 
     # Gated content directories. The paid content moved out of the static
     # site into the vault — the API is the only way users obtain these files.

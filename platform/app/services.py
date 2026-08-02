@@ -11,7 +11,8 @@ from sqlalchemy.orm import Session
 from .db import utcnow
 from .models import Payment, Plan, Subscription, User
 
-PRO_PLAN_CODES = {"pro-monthly", "pro-annual", "lifetime"}
+PAID_PLAN_CODES = {"pro-monthly", "pro-annual", "premium-monthly", "premium-annual"}
+PREMIUM_PLAN_CODES = {"premium-monthly", "premium-annual"}
 
 PERIOD_BY_INTERVAL = {"month": timedelta(days=30), "year": timedelta(days=365)}
 
@@ -37,7 +38,7 @@ def has_active_pro(db: Session, user_id: int) -> bool:
     sub = get_subscription(db, user_id)
     return (
         sub is not None
-        and sub.plan_code in PRO_PLAN_CODES
+        and sub.plan_code in PAID_PLAN_CODES
         and effective_status(sub) == "active"
     )
 
@@ -54,7 +55,8 @@ def activate_subscription(
 ) -> Subscription:
     """Record a successful payment and activate/renew the user's subscription.
 
-    period_end: now+30d (monthly), now+365d (annual), None (lifetime).
+    period_end: now+30d (monthly), now+365d (annual), None if the plan has no
+    interval (only the free Basic tier, since Lifetime was retired).
     Re-activation of an existing subscription updates it in place (renewal or
     plan change) and clears any pending cancellation.
     """
@@ -113,11 +115,11 @@ def entitlements_for(db: Session, user_id: int) -> dict:
     enforce independently — see routes/content.py)."""
     sub = get_subscription(db, user_id)
     tier = "starter"
-    if sub is not None and effective_status(sub) == "active" and sub.plan_code in PRO_PLAN_CODES:
-        tier = "lifetime" if sub.plan_code == "lifetime" else "pro"
+    if sub is not None and effective_status(sub) == "active" and sub.plan_code in PAID_PLAN_CODES:
+        tier = "premium" if sub.plan_code in PREMIUM_PLAN_CODES else "pro"
 
     features = ["foundations-module", "backtests-5-per-month", "community-forum"]
-    if tier in ("pro", "lifetime"):
+    if tier in ("pro", "premium"):
         features = [
             "all-modules",
             "unlimited-backtests",
@@ -125,6 +127,8 @@ def entitlements_for(db: Session, user_id: int) -> dict:
             "priority-support",
             "notebooks",
         ]
-    if tier == "lifetime":
-        features += ["mentorship", "private-community", "certificate", "lifetime-updates"]
+    if tier == "premium":
+        # Carried over from the retired Lifetime plan, minus "lifetime-updates",
+        # which no longer means anything on a renewing subscription.
+        features += ["mentorship", "private-community", "certificate"]
     return {"tier": tier, "features": features}

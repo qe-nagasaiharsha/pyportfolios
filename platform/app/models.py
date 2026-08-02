@@ -141,16 +141,46 @@ class WebhookEvent(Base):
 
 
 # Seed data — prices mirror site/src/components/landing/Pricing.tsx.
+# The one-time "lifetime" plan was retired in favour of Premium, a recurring
+# subscription; nothing had been sold on it. Premium carries what Lifetime used
+# to (mentorship, private community, certificate) but renews like Pro.
 PLAN_SEED = [
-    {"code": "starter", "name": "Starter", "amount_cents": 0, "interval": None},
-    {"code": "pro-monthly", "name": "Pro (Monthly)", "amount_cents": 2000, "interval": "month"},
-    {"code": "pro-annual", "name": "Pro (Annual)", "amount_cents": 19900, "interval": "year"},
-    {"code": "lifetime", "name": "Lifetime", "amount_cents": 95000, "interval": None},
+    {"code": "starter", "name": "Basic", "amount_cents": 0, "interval": None},
+    {"code": "pro-monthly", "name": "Pro (Monthly)", "amount_cents": 2900, "interval": "month"},
+    {"code": "pro-annual", "name": "Pro (Annual)", "amount_cents": 29000, "interval": "year"},
+    {"code": "premium-monthly", "name": "Premium (Monthly)", "amount_cents": 7900, "interval": "month"},
+    {"code": "premium-annual", "name": "Premium (Annual)", "amount_cents": 79000, "interval": "year"},
 ]
 
 
 def seed_plans(session: OrmSession) -> None:
-    existing = set(session.execute(select(Plan.code)).scalars())
+    """Reconcile the plans table with PLAN_SEED.
+
+    This used to insert missing codes only, which meant a repricing never
+    reached an already-seeded database: the catalogue kept serving the old
+    amounts while the landing page showed the new ones. It now also updates
+    name/amount/interval in place, and drops retired codes that nothing has
+    been sold on. plans.code is a foreign key from subscriptions, so a code
+    with any subscription against it is kept rather than deleted (payments
+    reach a plan through their subscription, so that one check covers both).
+    """
+    by_code = {p.code: p for p in session.execute(select(Plan)).scalars()}
+
     for row in PLAN_SEED:
-        if row["code"] not in existing:
+        plan = by_code.get(row["code"])
+        if plan is None:
             session.add(Plan(**row))
+            continue
+        plan.name = row["name"]
+        plan.amount_cents = row["amount_cents"]
+        plan.interval = row["interval"]
+
+    seeded = {row["code"] for row in PLAN_SEED}
+    for code, plan in by_code.items():
+        if code in seeded:
+            continue
+        in_use = session.execute(
+            select(Subscription.id).where(Subscription.plan_code == code).limit(1)
+        ).first()
+        if not in_use:
+            session.delete(plan)

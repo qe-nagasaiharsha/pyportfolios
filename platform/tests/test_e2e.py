@@ -90,15 +90,22 @@ def test_full_pro_monthly_flow(client):
     assert "HttpOnly" in cookie_header
     assert "samesite=lax" in cookie_header.lower()
 
-    # Plans: the 4 seeded tiers with landing-page prices
+    # Plans: the 5 seeded tiers with landing-page prices
     r = client.get("/api/plans")
     assert r.status_code == 200
     plans = {p["code"]: p for p in r.json()}
-    assert set(plans) == {"starter", "pro-monthly", "pro-annual", "lifetime"}
+    assert set(plans) == {
+        "starter",
+        "pro-monthly",
+        "pro-annual",
+        "premium-monthly",
+        "premium-annual",
+    }
     assert plans["starter"]["amount_cents"] == 0
-    assert plans["pro-monthly"]["amount_cents"] == 2000
-    assert plans["pro-annual"]["amount_cents"] == 19900
-    assert plans["lifetime"]["amount_cents"] == 95000
+    assert plans["pro-monthly"]["amount_cents"] == 2900
+    assert plans["pro-annual"]["amount_cents"] == 29000
+    assert plans["premium-monthly"]["amount_cents"] == 7900
+    assert plans["premium-annual"]["amount_cents"] == 79000
 
     # Before purchase: starter entitlements, notebook payment-required
     r = client.get("/api/entitlements")
@@ -236,14 +243,24 @@ def test_checkout_rejects_free_and_unknown_plans(client):
     assert r.status_code == 404
 
 
-def test_lifetime_has_no_period_end(client):
+def test_premium_is_a_renewing_subscription(client):
+    """Premium replaced the one-time Lifetime plan, so unlike Lifetime it has a
+    period end and its extra entitlements ride on top of the Pro feature set."""
     register(client, "frank@example.com")
-    status, body = buy(client, "lifetime", CARD_SUCCESS)
+    status, body = buy(client, "premium-monthly", CARD_SUCCESS)
     assert status == 200
-    assert body["subscription"]["current_period_end"] is None
+    assert body["subscription"]["current_period_end"] is not None
+
     r = client.get("/api/entitlements")
-    assert r.json()["tier"] == "lifetime"
-    # Cancel is recorded but lifetime access persists (no period end)
+    ent = r.json()
+    assert ent["tier"] == "premium"
+    assert "notebooks" in ent["features"]              # inherits the Pro set
+    assert "mentorship" in ent["features"]             # carried over from Lifetime
+    assert "private-community" in ent["features"]
+    assert "certificate" in ent["features"]
+    assert "lifetime-updates" not in ent["features"]   # meaningless once it renews
+
+    # Cancelling schedules the end of the period; access lasts until then.
     r = client.post("/api/subscription/cancel")
     assert r.status_code == 200
     assert client.get(f"/api/content/notebooks/{NOTEBOOK_SLUG}").status_code == 200
@@ -277,7 +294,7 @@ def test_webhook_activates_and_is_idempotent(client):
         "data": {
             "user_id": user["id"],
             "plan_code": "pro-annual",
-            "amount_cents": 19900,
+            "amount_cents": 29000,
             "provider_ref": "mock_co_webhook",
         },
     }

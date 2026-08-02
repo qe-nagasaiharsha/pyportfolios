@@ -10,7 +10,7 @@ from ..models import Plan
 router = APIRouter(prefix="/api", tags=["plans"])
 
 # Stable display order (matches the pricing section on the landing page).
-_ORDER = {"starter": 0, "pro-monthly": 1, "pro-annual": 2, "lifetime": 3}
+_ORDER = {"starter": 0, "pro-monthly": 1, "pro-annual": 2, "premium-monthly": 3, "premium-annual": 4}
 
 
 @router.get("/plans")

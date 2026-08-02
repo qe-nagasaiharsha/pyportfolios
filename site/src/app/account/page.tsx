@@ -200,7 +200,7 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
 
   useEffect(() => { void refresh(); }, [refresh]);
 
-  const isPro = ent?.tier === "pro" || ent?.tier === "lifetime";
+  const isPro = ent?.tier === "pro" || ent?.tier === "premium";
 
   const cancel = async () => {
     setBusy(true);
@@ -259,7 +259,7 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
                     ? `Cancels at period end — access until ${fmtDate(sub.current_period_end)}`
                     : sub.current_period_end
                       ? `Renews ${fmtDate(sub.current_period_end)}`
-                      : "Lifetime access — nothing renews, nothing expires"}
+                      : "Active — no renewal date on record"}
                 </p>
               </div>
               {sub.status === "active" && !sub.cancel_at_period_end && sub.current_period_end ? (
@@ -281,7 +281,7 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
         <div className="flex items-baseline justify-between gap-4">
           <h2 className="font-serif text-xl text-pearl md:text-2xl">Notebook library</h2>
           <span className="t-mono text-[0.64rem] uppercase tracking-[0.14em] text-steel">
-            {isPro ? `${ARTICLES.length} notebooks · full access` : "Pro & Lifetime"}
+            {isPro ? `${ARTICLES.length} notebooks · full access` : "Pro & Premium"}
           </span>
         </div>
         <p className="mt-2 text-sm leading-relaxed text-mist">

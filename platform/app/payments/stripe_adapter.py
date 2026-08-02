@@ -108,7 +108,8 @@ class StripeProvider:
         price_id = {
             "pro-monthly": settings.stripe_price_pro_monthly,
             "pro-annual": settings.stripe_price_pro_annual,
-            "lifetime": settings.stripe_price_lifetime,
+            "premium-monthly": settings.stripe_price_premium_monthly,
+            "premium-annual": settings.stripe_price_premium_annual,
         }.get(plan.code, "")
         if not price_id:
             raise ConfigurationError(

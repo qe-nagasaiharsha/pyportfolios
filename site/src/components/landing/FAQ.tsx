@@ -26,7 +26,7 @@ const FAQS = [
   },
   {
     q: "How can I get support if I have issues?",
-    a: "You will have access to community help on the free plan, and Pro/Lifetime users receive priority or dedicated support.",
+    a: "You will have access to community help on the free plan, and Pro/Premium users receive priority or dedicated support.",
   },
 ];
 

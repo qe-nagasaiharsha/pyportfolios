@@ -4,7 +4,7 @@
    Notebooks and bundles no longer ship in the static export (they live in
    vault/, served by the platform API). Resolution happens at CLICK time, not
    mount, so article pages stay static-fast with zero API chatter:
-     click → entitlements?  pro/lifetime → blob download via /api
+     click → entitlements?  pro/premium → blob download via /api
                             signed-out   → /account
                             free tier    → /checkout (Pro)  */
 
@@ -86,7 +86,7 @@ export function GatedCta({ slug }: { slug: string }) {
         {busy === "notebook" ? "…" : "or just the .ipynb ↓"}
       </button>
       <p className="t-mono text-[0.62rem] uppercase tracking-[0.1em] text-steel/70">
-        Members · Pro &amp; Lifetime
+        Members · Pro &amp; Premium
       </p>
       {err ? <p className="text-xs text-red-400">{err}</p> : null}
     </div>

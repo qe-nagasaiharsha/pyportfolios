@@ -58,7 +58,8 @@ export interface SubscriptionInfo {
 }
 
 export interface Entitlements {
-  tier: "free" | "pro" | "lifetime";
+  /** matches services.entitlements_for: "starter" | "pro" | "premium". */
+  tier: "starter" | "pro" | "premium";
   features: string[];
 }
 

@@ -1,43 +1,38 @@
 "use client";
 
 /* Early-access capture — collect intent now, before subscriptions exist (a later
-   milestone). Static-site friendly: set ENDPOINT to a form service (Formspree /
-   Buttondown) or the platform API and it POSTs; until then it confirms
-   optimistically so the UX is complete and demoable. */
+   milestone). Posts through the shared platform API client (lib/api), which
+   resolves the base URL from NEXT_PUBLIC_API_BASE in dev and the nginx-proxied
+   /api in production. Signups land in the customer DB, idempotent on duplicate
+   emails. */
 
 import { useState, type FormEvent } from "react";
 import { PhotoBackdrop } from "@/components/brand/PhotoBackdrop";
-
-/* Platform API (nginx proxies /api → FastAPI sidecar). Stores signups in the
-   customer DB — idempotent on duplicate emails. */
-const ENDPOINT = "/api/early-access";
+import { api } from "@/lib/api";
 
 type State = "idle" | "loading" | "done" | "error";
+
+const INVALID_EMAIL = "Please enter a valid email address.";
+const REQUEST_FAILED = "Something went wrong — please try again.";
 
 export function EarlyAccess() {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<State>("idle");
+  const [errMsg, setErrMsg] = useState("");
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      setErrMsg(INVALID_EMAIL);
       setState("error");
       return;
     }
     setState("loading");
     try {
-      if (ENDPOINT) {
-        const res = await fetch(ENDPOINT, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        });
-        if (!res.ok) throw new Error("bad response");
-      } else {
-        await new Promise((r) => setTimeout(r, 450)); // no endpoint wired yet
-      }
+      await api.earlyAccess(email);
       setState("done");
     } catch {
+      setErrMsg(REQUEST_FAILED);
       setState("error");
     }
   }
@@ -71,7 +66,7 @@ export function EarlyAccess() {
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  if (state === "error") setState("idle");
+                  if (state === "error") { setState("idle"); setErrMsg(""); }
                 }}
                 aria-invalid={state === "error"}
                 className="min-w-0 flex-1 rounded-sm border border-pearl/15 bg-navy/70 backdrop-blur-sm px-4 py-3 text-pearl placeholder:text-steel focus:border-aqua focus:outline-none"
@@ -87,7 +82,7 @@ export function EarlyAccess() {
           )}
 
           <p aria-live="polite" className="mt-3 h-4 t-mono text-xs text-mist">
-            {state === "error" ? "Please enter a valid email address." : ""}
+            {state === "error" ? errMsg : ""}
           </p>
       </div>
     </section>

@@ -4,6 +4,7 @@
 
 import Link from "next/link";
 import { MobileNav } from "@/components/MobileNav";
+import { AuthNavButton } from "@/components/AuthNavButton";
 import { articlesByCategory, CATEGORIES, type CategorySlug } from "@/lib/articles";
 
 const NAV = [
@@ -92,13 +93,8 @@ export function ArticleNav() {
           ))}
         </ul>
         <div className="ml-auto flex shrink-0 items-center gap-2">
-          <Link
-            href="/account"
-            className="hidden w-[183px] items-center justify-center rounded-sm border border-pearl/30 py-2 t-mono text-xs font-semibold text-pearl transition-colors duration-300 hover:border-aqua hover:text-aqua lg:inline-flex"
-          >
-            Sign in
-          </Link>
-          <MobileNav items={[...NAV, ...EXTRA]} signInHref="/account" />
+          <AuthNavButton />
+          <MobileNav items={[...NAV, ...EXTRA]} />
         </div>
       </nav>
     </header>

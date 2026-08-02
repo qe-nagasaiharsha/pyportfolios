@@ -249,6 +249,35 @@ def test_lifetime_has_no_period_end(client):
     assert client.get(f"/api/content/notebooks/{NOTEBOOK_SLUG}").status_code == 200
 
 
+def test_checkout_blocks_downgrade_and_duplicate(client):
+    """A Lifetime member cannot re-checkout into a lesser (or equal) plan —
+    that would overwrite better access in place and take a second payment."""
+    register(client, "grace@example.com")
+    status, _ = buy(client, "lifetime", CARD_SUCCESS)
+    assert status == 200
+
+    # Downgrade to Pro is refused before any checkout/payment is created.
+    r = client.post("/api/checkout", json={"plan_code": "pro-monthly"})
+    assert r.status_code == 409
+    # Buying Lifetime again (equal rank) is refused too.
+    assert client.post("/api/checkout", json={"plan_code": "lifetime"}).status_code == 409
+
+    # The original Lifetime subscription is untouched.
+    sub = client.get("/api/subscription").json()
+    assert sub["plan_code"] == "lifetime"
+    assert sub["status"] == "active"
+
+
+def test_checkout_allows_upgrade_pro_to_lifetime(client):
+    """A strict upgrade (Pro → Lifetime) is still permitted."""
+    register(client, "heidi@example.com")
+    assert buy(client, "pro-monthly", CARD_SUCCESS)[0] == 200
+    status, body = buy(client, "lifetime", CARD_SUCCESS)
+    assert status == 200
+    assert body["subscription"]["plan_code"] == "lifetime"
+    assert body["subscription"]["current_period_end"] is None
+
+
 # ---------------------------------------------------------------------------
 # Content gating: path traversal
 # ---------------------------------------------------------------------------

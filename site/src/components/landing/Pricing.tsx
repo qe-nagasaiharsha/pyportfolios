@@ -6,9 +6,12 @@
 
 import { useState } from "react";
 import type { CSSProperties } from "react";
+import { ownedRank, useSession } from "@/lib/session";
 
 interface Tier {
   name: string;
+  /** access rank — mirrors the API PLAN_RANK: Starter 0, Pro 1, Lifetime 2. */
+  rank: number;
   monthly: { price: string; cadence: string };
   yearly: { price: string; cadence: string };
   blurb: string;
@@ -23,6 +26,7 @@ interface Tier {
 const TIERS: Tier[] = [
   {
     name: "Starter",
+    rank: 0,
     monthly: { price: "$0", cadence: "/ month" },
     yearly: { price: "$0", cadence: "/ year" },
     blurb: "Read everything, free — all 22 research articles with live computed charts.",
@@ -32,6 +36,7 @@ const TIERS: Tier[] = [
   },
   {
     name: "Pro",
+    rank: 1,
     monthly: { price: "$20", cadence: "/ month" },
     yearly: { price: "$199", cadence: "/ year" },
     blurb: "Every runnable notebook and one-click bundle, for every article — today's 22 and all future releases.",
@@ -48,6 +53,7 @@ const TIERS: Tier[] = [
   },
   {
     name: "Lifetime",
+    rank: 2,
     monthly: { price: "$950", cadence: "one-time" },
     yearly: { price: "$950", cadence: "one-time" },
     blurb: "A single payment for everything in Pro, forever — every current and future release.",
@@ -64,7 +70,9 @@ const TIERS: Tier[] = [
 
 export function Pricing() {
   const [yearly, setYearly] = useState(false);
-  const [selected, setSelected] = useState<string | null>(null);
+  const session = useSession();
+  const owned = ownedRank(session);
+  const showOwnership = session.status === "ready" && !!session.me;
 
   return (
     <section id="pricing" className="relative scroll-mt-20 overflow-hidden border-b border-pearl/10">
@@ -118,6 +126,20 @@ export function Pricing() {
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {TIERS.map((t, i) => {
             const p = yearly ? t.yearly : t.monthly;
+            const href = yearly ? t.href.yearly : t.href.monthly;
+
+            // Plan-awareness: once we know the signed-in user's tier, a plan
+            // they already have (or that a higher plan includes) is shown as
+            // owned instead of a buy button — no downgrades, no duplicate buys.
+            const ctaState: "action" | "current" | "included" =
+              showOwnership && t.rank < owned ? "included"
+              : showOwnership && t.rank === owned ? "current"
+              : "action";
+            const ctaLabel =
+              ctaState === "current" ? "Current plan"
+              : ctaState === "included" ? "Included in your plan"
+              : t.cta;
+
             return (
               <div
                 key={t.name}
@@ -126,26 +148,22 @@ export function Pricing() {
                 className="flex"
               >
               <div
-                role="button"
-                tabIndex={0}
-                aria-pressed={selected === t.name}
-                onClick={() => setSelected(t.name)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setSelected(t.name);
-                  }
-                }}
-                className={`relative flex flex-1 cursor-pointer flex-col rounded-lg border bg-navy-elevated/50 p-7 outline-none transition-all duration-300 hover:-translate-y-0.5 focus-visible:border-aqua/40 ${
-                  selected === t.name
-                    ? "border-aqua/60 shadow-[0_0_44px_-20px_rgba(43,212,196,0.6)]"
-                    : "border-pearl/10 hover:border-pearl/25"
+                className={`relative flex flex-1 flex-col rounded-lg border bg-navy-elevated/50 p-7 transition-all duration-300 hover:-translate-y-0.5 ${
+                  ctaState === "current"
+                    ? "border-aqua/50"
+                    : t.featured
+                      ? "border-aqua/25 hover:border-aqua/40"
+                      : "border-pearl/10 hover:border-pearl/25"
                 }`}
               >
                 {/* name + badge */}
                 <div className="flex items-center justify-between gap-3">
                   <h4 className="text-2xl text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>{t.name}</h4>
-                  {t.badge ? (
+                  {ctaState === "current" ? (
+                    <span className="inline-flex items-center rounded-full border border-aqua/50 px-2.5 py-1 t-mono text-[0.55rem] uppercase tracking-[0.16em] text-aqua">
+                      Your plan
+                    </span>
+                  ) : t.badge ? (
                     <span className="inline-flex items-center rounded-full border border-pearl/40 px-2.5 py-1 t-mono text-[0.55rem] uppercase tracking-[0.16em] text-pearl">
                       {t.badge}
                     </span>
@@ -161,19 +179,33 @@ export function Pricing() {
                 {/* blurb */}
                 <p className="mt-4 min-h-[4.5rem] leading-relaxed text-mist">{t.blurb}</p>
 
-                {/* cta */}
+                {/* cta — every tier gets a real button; featured is solid,
+                    the rest outlined, owned tiers are a muted non-link. */}
                 <div className="mt-1 flex h-12 items-center">
-                  <a
-                    href={yearly ? t.href.yearly : t.href.monthly}
-                    onClick={() => setSelected(t.name)}
-                    className={`transition-colors duration-300 ${
-                      t.featured
-                        ? "inline-flex items-center justify-center rounded-full bg-pearl px-7 py-3 text-sm font-semibold text-navy hover:bg-aqua"
-                        : "text-sm font-semibold text-pearl hover:text-aqua"
-                    }`}
-                  >
-                    {t.cta}
-                  </a>
+                  {ctaState === "action" ? (
+                    <a
+                      href={href}
+                      className={
+                        t.featured
+                          ? "inline-flex w-full items-center justify-center rounded-full bg-pearl px-7 py-3 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua"
+                          : "inline-flex w-full items-center justify-center rounded-full border border-pearl/30 px-7 py-3 text-sm font-semibold text-pearl transition-colors duration-300 hover:border-aqua hover:text-aqua"
+                      }
+                    >
+                      {ctaLabel}
+                    </a>
+                  ) : (
+                    <span
+                      aria-disabled="true"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-pearl/15 px-7 py-3 text-sm font-semibold text-steel"
+                    >
+                      {ctaState === "current" ? (
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-aqua" aria-hidden="true">
+                          <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      ) : null}
+                      {ctaLabel}
+                    </span>
+                  )}
                 </div>
 
                 {/* features */}

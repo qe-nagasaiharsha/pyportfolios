@@ -7,11 +7,12 @@
    flow for Stripe Checkout with no changes here beyond following the
    client_action returned by /api/checkout. */
 
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ArticleNav } from "@/components/article/ArticleNav";
-import { api, ApiError, type Me, type Plan } from "@/lib/api";
+import { api, ApiError, type Entitlements, type Me, type Plan } from "@/lib/api";
+import { planRank, refreshSession } from "@/lib/session";
 
 const input =
   "w-full rounded-md border border-pearl/15 bg-navy-sunken/60 px-4 py-3 t-mono text-[0.9rem] text-pearl placeholder:text-steel/50 outline-none transition-colors focus:border-aqua/50";
@@ -30,15 +31,26 @@ function money(cents: number): string {
 }
 
 function CheckoutInner() {
-  const params = useSearchParams();
   const router = useRouter();
-  const planCode = params.get("plan") ?? "pro-monthly";
 
+  // The plan is read from the URL in a client-only effect rather than with
+  // useSearchParams(): in output:export, useSearchParams forces a CSR bailout
+  // whose Suspense fallback never resolves in this dev setup, leaving checkout
+  // stuck on "Loading…". Reading window.location in an effect keeps the SSR and
+  // first client render identical (both show the loading state), so hydration
+  // is clean. null = not read yet.
+  const [planCode, setPlanCode] = useState<string | null>(null);
+
+  // Identity + entitlements are fetched locally here (not via the shared
+  // useSession store); we still call refreshSession() after auth/pay so the nav
+  // (which does use the store) updates in lockstep.
   const [me, setMe] = useState<Me | null>(null);
+  const [ent, setEnt] = useState<Entitlements | null>(null);
   const [plans, setPlans] = useState<Plan[]>([]);
-  const [phase, setPhase] = useState<"loading" | "auth" | "pay" | "done">("loading");
+  const [loaded, setLoaded] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
 
   /* auth inline */
   const [email, setEmail] = useState("");
@@ -52,13 +64,40 @@ function CheckoutInner() {
 
   const plan = useMemo(() => plans.find((p) => p.code === planCode), [plans, planCode]);
 
+  const ownedTier: "none" | "pro" | "lifetime" =
+    !me ? "none" : ent?.tier === "lifetime" ? "lifetime" : ent?.tier === "pro" ? "pro" : "none";
+  const owned = ownedTier === "lifetime" ? 2 : ownedTier === "pro" ? 1 : 0;
+  const targetRank = planRank(planCode ?? "");
+
+  // #9 — never silently default to a plan. No plan → send to pricing; the free
+  // Starter plan isn't a checkout at all → send to the account page.
   useEffect(() => {
-    Promise.all([api.me().catch(() => null), api.plans().catch(() => [] as Plan[])]).then(([m, ps]) => {
-      setMe(m);
+    const p = new URLSearchParams(window.location.search).get("plan");
+    if (p === null) { router.replace("/#pricing"); return; }
+    if (p === "starter") { router.replace("/account"); return; }
+    setPlanCode(p);
+  }, [router]);
+
+  useEffect(() => {
+    (async () => {
+      const [ps, m] = await Promise.all([
+        api.plans().catch(() => [] as Plan[]),
+        api.me().catch(() => null),
+      ]);
       setPlans(ps);
-      setPhase(m ? "pay" : "auth");
-    });
+      setMe(m);
+      if (m) setEnt(await api.entitlements().catch(() => null));
+      setLoaded(true);
+    })();
   }, []);
+
+  const phase: "loading" | "unknown" | "auth" | "owned" | "pay" | "done" =
+    done ? "done"
+    : !loaded || planCode === null ? "loading"
+    : !plan ? "unknown"
+    : !me ? "auth"
+    : targetRank > 0 && owned >= targetRank ? "owned"
+    : "pay";
 
   const doAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,7 +106,8 @@ function CheckoutInner() {
     try {
       const m = isNew ? await api.register(email, password) : await api.login(email, password);
       setMe(m);
-      setPhase("pay");
+      setEnt(await api.entitlements().catch(() => null));
+      void refreshSession(); // keep the nav in sync
     } catch (ex) {
       setErr(ex instanceof ApiError ? ex.message : "The platform API is unreachable — is the sidecar running?");
     } finally {
@@ -80,13 +120,14 @@ function CheckoutInner() {
     setErr(null);
     setBusy(true);
     try {
-      const session = await api.createCheckout(planCode);
-      await api.confirmCheckout(session.checkout_id, {
+      const checkout = await api.createCheckout(planCode ?? "");
+      await api.confirmCheckout(checkout.checkout_id, {
         number: card.replace(/\s+/g, ""),
         exp,
         cvc,
       });
-      setPhase("done");
+      void refreshSession(); // nav + account reflect the new subscription
+      setDone(true);
       setTimeout(() => router.push("/account"), 1600);
     } catch (ex) {
       setErr(ex instanceof ApiError ? ex.message : "Payment failed — try again.");
@@ -112,7 +153,7 @@ function CheckoutInner() {
               {plan?.interval ? `/ ${plan.interval}` : "one-time"}
             </span>
           </div>
-          <p className="mt-4 text-sm leading-relaxed text-mist">{PLAN_BLURB[planCode] ?? ""}</p>
+          <p className="mt-4 text-sm leading-relaxed text-mist">{PLAN_BLURB[planCode ?? ""] ?? ""}</p>
           <div className="mt-6 border-t border-pearl/10 pt-4">
             <p className="t-mono text-[0.62rem] uppercase tracking-[0.14em] leading-relaxed text-steel">
               Pre-launch test mode — the built-in payment simulator is active and no real card is
@@ -125,6 +166,28 @@ function CheckoutInner() {
         <div>
           {phase === "loading" ? (
             <p className="t-mono text-xs uppercase tracking-[0.2em] text-steel">Loading…</p>
+          ) : null}
+
+          {phase === "unknown" ? (
+            <div className="rounded-lg border border-pearl/10 bg-navy-elevated/50 p-7">
+              <h3 className="font-serif text-xl text-pearl">That plan doesn&apos;t exist</h3>
+              <p className="mt-2 text-sm text-mist">Pick one of the current plans to continue.</p>
+              <Link href="/#pricing" className={`${btn} mt-6`}>See plans</Link>
+            </div>
+          ) : null}
+
+          {phase === "owned" ? (
+            <div className="rounded-lg border border-aqua/30 bg-aqua/5 p-7">
+              <h3 className="font-serif text-xl text-pearl">
+                You&apos;re already on {ownedTier === "lifetime" ? "Lifetime" : "Pro"}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-mist">
+                {ownedTier === "lifetime"
+                  ? "Everything's unlocked, forever — there's nothing to buy here."
+                  : "Your Pro plan already covers this. Manage it or download notebooks from your account."}
+              </p>
+              <Link href="/account" className={`${btn} mt-6`}>Go to your account</Link>
+            </div>
           ) : null}
 
           {phase === "auth" ? (
@@ -208,9 +271,7 @@ export default function CheckoutPage() {
             </h1>
           </div>
         </section>
-        <Suspense fallback={<p className="px-6 py-16 text-center t-mono text-xs uppercase tracking-[0.2em] text-steel">Loading…</p>}>
-          <CheckoutInner />
-        </Suspense>
+        <CheckoutInner />
       </main>
       <footer className="bg-navy-sunken">
         <div className="mx-auto flex max-w-4xl flex-col justify-between gap-3 px-6 py-12 t-mono text-[0.66rem] uppercase tracking-[0.16em] text-steel sm:flex-row lg:px-8">

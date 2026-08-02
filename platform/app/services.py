@@ -15,6 +15,17 @@ PRO_PLAN_CODES = {"pro-monthly", "pro-annual", "lifetime"}
 
 PERIOD_BY_INTERVAL = {"month": timedelta(days=30), "year": timedelta(days=365)}
 
+# Ordered access tiers, used to reject downgrades / duplicate purchases at
+# checkout: buying a plan whose rank is <= the active plan's rank would only
+# overwrite the existing (equal-or-better) subscription in place — see
+# activate_subscription — so it is blocked. pro-monthly and pro-annual share a
+# rank: they are the same tier billed differently.
+PLAN_RANK = {"starter": 0, "pro-monthly": 1, "pro-annual": 1, "lifetime": 2}
+
+
+def plan_rank(plan_code: str) -> int:
+    return PLAN_RANK.get(plan_code, 0)
+
 
 def effective_status(sub: Subscription) -> str:
     """Compute the status as of now (no background expiry job runs)."""

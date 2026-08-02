@@ -9,6 +9,7 @@ import Link from "next/link";
 import { ArticleNav } from "@/components/article/ArticleNav";
 import { ARTICLES } from "@/lib/articles";
 import { api, ApiError, saveBlob, type Entitlements, type Me, type SubscriptionInfo } from "@/lib/api";
+import { refreshSession, signOutSession } from "@/lib/session";
 
 const input =
   "w-full rounded-md border border-pearl/15 bg-navy-sunken/60 px-4 py-3 text-pearl placeholder:text-steel/60 outline-none transition-colors focus:border-aqua/50";
@@ -118,6 +119,9 @@ function ForgotPassword() {
     <p className="mt-5 rounded-md border border-aqua/30 bg-aqua/5 px-4 py-3 text-sm text-mist">
       If that address has an account, a reset link is on its way. Open it, then set your new
       password at <span className="t-mono text-aqua">/account/reset</span>.
+      <span className="mt-2 block text-[0.8rem] text-steel">
+        Pre-launch test mode — email delivery is limited; if it doesn&apos;t arrive, contact support.
+      </span>
     </p>
   ) : (
     <form
@@ -237,7 +241,7 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
         </div>
         <button
           className={btnGhost}
-          onClick={async () => { await api.logout().catch(() => null); onSignedOut(); }}
+          onClick={async () => { await signOutSession(); onSignedOut(); }}
         >
           Sign out
         </button>
@@ -247,7 +251,7 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
       <div className="mt-10">
         <h2 className="font-serif text-xl text-pearl md:text-2xl">Subscription</h2>
         <div className="mt-4 rounded-lg border border-pearl/10 bg-navy-elevated/50 p-6">
-          {sub ? (
+          {sub && sub.status === "active" ? (
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="space-y-1.5">
                 <p className="text-pearl">
@@ -262,13 +266,24 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
                       : "Lifetime access — nothing renews, nothing expires"}
                 </p>
               </div>
-              {sub.status === "active" && !sub.cancel_at_period_end && sub.current_period_end ? (
-                <button className={btnGhost} onClick={cancel} disabled={busy}>Cancel renewal</button>
-              ) : null}
+              <span className="flex items-center gap-4">
+                {sub.plan_code !== "lifetime" ? (
+                  <Link href="/checkout?plan=lifetime" className="t-mono text-[0.66rem] uppercase tracking-[0.14em] text-aqua hover:underline">
+                    Upgrade to Lifetime
+                  </Link>
+                ) : null}
+                {!sub.cancel_at_period_end && sub.current_period_end ? (
+                  <button className={btnGhost} onClick={cancel} disabled={busy}>Cancel renewal</button>
+                ) : null}
+              </span>
             </div>
           ) : (
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <p className="text-mist">Free tier — the Starter plan. Upgrade for the full library and notebook downloads.</p>
+              <p className="text-mist">
+                {sub && sub.status === "expired"
+                  ? "Your subscription has expired. Renew for the full library and notebook downloads."
+                  : "Free tier — the Starter plan. Upgrade for the full library and notebook downloads."}
+              </p>
               <Link href="/checkout?plan=pro-monthly" className={btn}>Upgrade to Pro</Link>
             </div>
           )}
@@ -354,7 +369,7 @@ export default function AccountPage() {
             ) : me ? (
               <MemberArea me={me} onSignedOut={() => setMe(null)} />
             ) : (
-              <AuthForms onAuthed={setMe} />
+              <AuthForms onAuthed={(m) => { setMe(m); void refreshSession(); }} />
             )}
           </div>
         </section>

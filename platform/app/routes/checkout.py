@@ -39,6 +39,22 @@ def create_checkout(
     if plan.amount_cents == 0:
         raise HTTPException(status_code=400, detail="The Starter plan is free — nothing to buy")
 
+    # Reject downgrades and duplicate purchases. Because activate_subscription
+    # overwrites the single subscription row in place, buying a plan of equal or
+    # lower rank than the active one would silently replace better access (e.g.
+    # Lifetime → a 30-day Pro) and take a second payment. Only strict upgrades
+    # are allowed here; managing an existing plan happens on the account page.
+    current = services.get_subscription(db, user.id)
+    if (
+        current is not None
+        and services.effective_status(current) == "active"
+        and services.plan_rank(plan.code) <= services.plan_rank(current.plan_code)
+    ):
+        raise HTTPException(
+            status_code=409,
+            detail=f"You already have an active {current.plan_code} plan — nothing to buy here.",
+        )
+
     provider = get_provider()
     try:
         result = provider.create_checkout(user, plan)

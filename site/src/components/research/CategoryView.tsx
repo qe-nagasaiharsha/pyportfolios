@@ -40,7 +40,7 @@ export function CategoryView({ category }: { category: CategorySlug }) {
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-mist">{cat.blurb}</p>
             <p className="mt-8 t-mono text-xs uppercase tracking-[0.18em] text-steel">
-              {articles.length} article{articles.length === 1 ? "" : "s"} · every one with a runnable notebook
+              {articles.length} article{articles.length === 1 ? "" : "s"} · each one with a runnable notebook
             </p>
           </div>
         </section>

@@ -37,12 +37,15 @@ export function ArticleLayout({ article, children }: { article: Article; childre
           <img src={`/${article.hero}`} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover object-center brightness-[1.06]" />
           {/* the photo's own dark foreground merges into the page with a light assist */}
           <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(to_top,#151515_0%,rgba(21,21,21,0.55)_8%,transparent_20%)]" />
-          {/* top scrim — keeps the white title legible over bright skies; fades out before the mountains */}
-          <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(21,21,21,0.62)_0%,rgba(21,21,21,0.28)_28%,transparent_55%)]" />
+          {/* Top scrim — keeps the white title and dek legible over bright skies.
+              It used to fade out by 55%, which was fine for the dark mountain
+              photos but left the dek at ~1.7:1 contrast over a pale blue sky.
+              It now holds through the text block and clears by 78%, before the
+              mountains. */}
+          <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(21,21,21,0.66)_0%,rgba(21,21,21,0.52)_30%,rgba(21,21,21,0.34)_52%,transparent_78%)]" />
           <div className="absolute inset-x-0 top-0 mx-auto max-w-7xl px-6 lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-14">
             <div className="hidden lg:block" aria-hidden="true" />
-            {/* soft dark halo behind hero text — keeps it legible over bright areas (e.g. snow) without darkening the photo */}
-            <div className="py-14 md:py-20" style={{ textShadow: "0 1px 3px rgba(0,0,0,0.6), 0 2px 16px rgba(0,0,0,0.5)" }}>
+            <div className="py-14 md:py-20">
               <TransitionLink
                 href={`/research/${category.slug}`}
                 className="t-mono text-xs uppercase tracking-[0.2em] text-aqua transition-colors hover:text-pearl"
@@ -52,7 +55,7 @@ export function ArticleLayout({ article, children }: { article: Article; childre
               <h1 className="mt-5 font-sans text-[2.6rem] capitalize leading-[1.02] tracking-tight text-pearl md:text-[3.7rem]" style={{ fontWeight: 900 }}>
                 {article.title}
               </h1>
-              <p className="mt-6 max-w-2xl t-mono text-[0.95rem] italic leading-relaxed text-pearl">
+              <p className="mt-6 max-w-2xl t-mono text-[0.95rem] font-bold italic leading-relaxed text-pearl">
                 {article.dek}
               </p>
               <p className="mt-6 t-mono text-[0.72rem] text-pearl/70">
@@ -104,7 +107,7 @@ export function ArticleLayout({ article, children }: { article: Article; childre
                 <h1 className="mt-5 font-sans text-[2.5rem] capitalize leading-[1.02] tracking-tight text-pearl md:text-[3.5rem]" style={{ fontWeight: 900 }}>
                   {article.title}
                 </h1>
-                <p className="mt-6 max-w-2xl t-mono text-[0.95rem] italic leading-relaxed text-pearl">
+                <p className="mt-6 max-w-2xl t-mono text-[0.95rem] font-bold italic leading-relaxed text-pearl">
                   {article.dek}
                 </p>
 

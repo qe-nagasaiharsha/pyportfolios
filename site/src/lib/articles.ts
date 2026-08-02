@@ -196,7 +196,7 @@ export const ARTICLES: Article[] = [
     level: "Intermediate",
     notebook: "black-litterman.ipynb",
     project: "black-litterman.zip",
-    hero: "hero/mountain-neil-rosenstech.jpg",
+    hero: "hero/hills-sunset-blue.jpg",
     excerpt:
       "Reverse-optimize the market's implied returns, state one view — Germany at 10%, half confidence — and watch the Bayesian blend tilt the whole book sensibly while naive MVO lurches 75% into one country. Includes the no-views-equals-market sanity check.",
     stack: ["NumPy", "pandas", "PyPortfolioOpt"],
@@ -218,7 +218,7 @@ export const ARTICLES: Article[] = [
     level: "Intermediate",
     notebook: "risk-parity-futures.ipynb",
     project: "risk-parity-futures.zip",
-    hero: "hero/mountain-nathan-anderson.jpg",
+    hero: "hero/golden-grasses-mountains.jpg",
     excerpt:
       "The 60/40 secret: capital weight ≠ risk weight. We compute marginal risk contributions across five futures, solve the risk-parity weights from scratch, match Riskfolio-lib to 1e-6, and scale the book to a 10% vol target with 1.45x leverage — the All-Weather mechanism in miniature.",
     stack: ["NumPy", "SciPy", "Riskfolio-Lib"],
@@ -232,7 +232,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "black-scholes-from-first-principles",
-    hero: "hero/dolomites-krivec.jpg",
+    hero: "hero/mountains-africa.jpg",
     category: "quant-finance-foundations",
     format: "Tutorial",
     title: "Black–Scholes from First Principles: Deriving the Formula by Replication",
@@ -254,7 +254,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "var-three-ways",
-    hero: "hero/mountain-sam-ferrara.jpg",
+    hero: "hero/iceland-hill.jpg",
     category: "risk-management",
     format: "Tutorial",
     title: "Value at Risk Three Ways: Historical, Parametric and Monte Carlo on the DAX",
@@ -277,7 +277,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "cvar-expected-shortfall",
-    hero: "hero/dolomites-krivec.jpg",
+    hero: "hero/sea-cliff.jpg",
     category: "risk-management",
     format: "Tutorial",
     title: "CVaR / Expected Shortfall: Sizing the Losses That Live Beyond VaR",
@@ -369,7 +369,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "kelly-criterion-position-sizing",
-    hero: "hero/mountain-marc-thunis.jpg",
+    hero: "hero/sunlit-peaks.jpg",
     category: "portfolio-optimization",
     format: "Tutorial",
     title: "The Kelly Criterion for Position Sizing: Optimal Growth, and Why Half Is Safer",
@@ -415,7 +415,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "gold-war-and-inflation",
-    hero: "hero/mountain-neil-rosenstech.jpg",
+    hero: "hero/blue-ridges.jpg",
     category: "quant-finance-foundations",
     format: "Research Note",
     title: "Gold Through War and Inflation: Twenty Years of GLD Against Real Yields",

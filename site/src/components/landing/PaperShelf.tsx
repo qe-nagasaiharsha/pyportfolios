@@ -43,15 +43,18 @@ function PaperBar({ paper }: { paper: Paper }) {
       <div className="tnum t-mono text-sm text-aqua/80">{paper.year}</div>
       <div>
         <div className="flex items-start gap-4">
-          {/* logo slot — shows the real logo when supplied, else a placeholder
-              box so the planned position is visible */}
+          {/* Logo slot — landscape, because real journal marks are mostly wide
+              wordmarks ("ELSEVIER", "Oxford Academic") that read as nothing in
+              a 48px square. Height is fixed so every row lines up; the image is
+              capped on both axes and centred, so a square mark and a 4:1
+              wordmark both sit correctly without cropping. */}
           {paper.logo ? (
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-sm border border-pearl/10 bg-white">
+            <div className="flex h-12 w-20 shrink-0 items-center justify-center overflow-hidden rounded-sm border border-pearl/10 bg-white px-1.5 md:w-32">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`/logos/papers/${paper.logo}`} alt={`${paper.journal} logo`} className="max-h-9 max-w-[86%] object-contain" loading="lazy" />
+              <img src={`/logos/papers/${paper.logo}`} alt={`${paper.journal} logo`} className="max-h-9 max-w-full object-contain" loading="lazy" />
             </div>
           ) : (
-            <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center gap-0.5 rounded-sm border border-dashed border-aqua/40 bg-navy-sunken/30 text-aqua/60" aria-hidden="true">
+            <div className="flex h-12 w-20 shrink-0 flex-col items-center justify-center gap-0.5 rounded-sm border border-dashed border-aqua/40 bg-navy-sunken/30 text-aqua/60 md:w-32" aria-hidden="true">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="3" width="18" height="18" rx="2" />
                 <circle cx="8.5" cy="8.5" r="1.5" />

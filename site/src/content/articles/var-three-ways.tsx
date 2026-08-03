@@ -1,4 +1,4 @@
-import { Section, Lead, P, InlineCode, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
+import { Section, Lead, P, InlineCode, Formula, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
 import { LineChart, Histogram } from "@/components/charts/DataCharts";
 import d from "./data/var-three-ways";
 
@@ -7,6 +7,8 @@ import d from "./data/var-three-ways";
    Includes the roadmap add-on: the same historical VaR via Polars and DuckDB. */
 
 const pc = (v: number, nd = 2) => `${(v * 100).toFixed(nd)}%`;
+/* same number, LaTeX-safe: a bare % opens a comment and swallows the rest */
+const pcTex = (v: number, dp = 1) => `${(v * 100).toFixed(dp)}\\%`;
 const pfmt = (p: number) => (p < 1e-4 ? p.toExponential(1) : p.toFixed(4));
 
 export default function VarThreeWays() {
@@ -79,8 +81,8 @@ hist_var_cvar(ret.values)               # (${v99.histVar.toFixed(6)}, ${v99.hist
       <Section id="parametric" n={3} title="Parametric: normal, then Student-t">
         <P>
           The variance–covariance shortcut assumes a distribution and reads VaR off its formula.
-          With a normal (<InlineCode>μ = {pc(d.params.muDaily, 3)}</InlineCode>,{" "}
-          <InlineCode>σ = {pc(d.params.sigmaDaily, 3)}</InlineCode> daily) the 99% VaR
+          With a normal (<Formula>{`\\mu = ${pcTex(d.params.muDaily, 3)}`}</Formula>,{" "}
+          <Formula>{`\\sigma = ${pcTex(d.params.sigmaDaily, 3)}`}</Formula> daily) the 99% VaR
           is <InlineCode>{pc(v99.normalVar)}</InlineCode> — roughly 60bp <Term>below</Term> the
           empirical quantile. Refit the same idea with a Student-t and MLE hands you
           df = <InlineCode>{d.params.tDf}</InlineCode>: violently non-Gaussian tails. The t's 99%

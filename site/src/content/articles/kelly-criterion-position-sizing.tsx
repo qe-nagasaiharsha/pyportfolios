@@ -1,4 +1,4 @@
-import { Section, Lead, P, InlineCode, Term, Callout, PullQuote, CodeBlock, DataTable, Figure, References } from "@/components/article/prose";
+import { Section, Lead, P, InlineCode, Formula, Term, Callout, PullQuote, CodeBlock, DataTable, Figure, References } from "@/components/article/prose";
 import { LineChart, ScatterChart } from "@/components/charts/DataCharts";
 import d from "./data/kelly-criterion-position-sizing";
 
@@ -6,6 +6,8 @@ import d from "./data/kelly-criterion-position-sizing";
    (SPY 2000–2024, seeded bootstrap) baked in by quant/legacy/kelly.py. */
 
 const pc = (v: number, dp = 1) => `${(v * 100).toFixed(dp)}%`;
+/* same number, LaTeX-safe: a bare % opens a comment and swallows the rest */
+const pcTex = (v: number, dp = 1) => `${(v * 100).toFixed(dp)}\\%`;
 const gc = d.growthCurve;
 const curveXY = gc.f.map((f, i) => [f, gc.g[i]] as [number, number]);
 
@@ -31,18 +33,18 @@ export default function KellyCriterionPositionSizing() {
         <P>
           The key reframing, due to Kelly (1956), is to stop maximising expected <Term>wealth</Term> and
           start maximising expected <Term>log-wealth</Term>. Wealth compounds multiplicatively, so the
-          quantity that actually accumulates over many bets is the average <em>growth rate</em> — the
+          quantity that actually accumulates over many bets is the average <strong className="font-bold text-pearl">growth rate</strong> — the
           mean of the log returns, not the mean of the returns.
         </P>
       </Section>
 
       <Section id="derivation" n={2} title="Maximising log-growth">
         <P>
-          Take the simplest case: a bet that wins with probability <InlineCode>p</InlineCode>, paying{" "}
-          <InlineCode>b</InlineCode> to 1, and loses your stake with probability{" "}
-          <InlineCode>q = 1 − p</InlineCode>. Bet a fraction <InlineCode>f</InlineCode> of wealth. After
-          one round your wealth multiplies by <InlineCode>(1 + b·f)</InlineCode> on a win or{" "}
-          <InlineCode>(1 − f)</InlineCode> on a loss. The expected log-growth per bet is
+          Take the simplest case: a bet that wins with probability <Formula>p</Formula>, paying{" "}
+          <Formula>b</Formula> to 1, and loses your stake with probability{" "}
+          <Formula>{String.raw`q = 1 - p`}</Formula>. Bet a fraction <Formula>f</Formula> of wealth. After
+          one round your wealth multiplies by <Formula>{String.raw`(1 + bf)`}</Formula> on a win or{" "}
+          <Formula>{String.raw`(1 - f)`}</Formula> on a loss. The expected log-growth per bet is
         </P>
         <CodeBlock
           file="growth.py"
@@ -52,9 +54,9 @@ export default function KellyCriterionPositionSizing() {
 # Solve for f  ->  f* = (p*b - q) / b  =  (p*(b+1) - 1) / b`}
         />
         <P>
-          The function <InlineCode>g(f)</InlineCode> is concave — it rises to a single peak and then
-          falls. That peak is the Kelly fraction. Crucially, <InlineCode>g(f)</InlineCode> goes{" "}
-          <em>negative</em> well before <InlineCode>f = 1</InlineCode>: bet your whole stack and a single
+          The function <Formula>{String.raw`g(f)`}</Formula> is concave — it rises to a single peak and then
+          falls. That peak is the Kelly fraction. Crucially, <Formula>{String.raw`g(f)`}</Formula> goes{" "}
+          <strong className="font-bold text-pearl">negative</strong> well before <Formula>{String.raw`f = 1`}</Formula>: bet your whole stack and a single
           loss is fatal, so the long-run growth rate of full-bet gambling is minus infinity.
         </P>
         <PullQuote>
@@ -65,15 +67,15 @@ export default function KellyCriterionPositionSizing() {
 
       <Section id="formula" n={3} title="The Kelly fraction">
         <P>
-          For the discrete bet, the optimum is <Term>f* = (p·b − q) / b</Term>: your edge divided by the
-          odds. For continuous returns — a strategy with mean excess return <InlineCode>μ</InlineCode> and
-          variance <InlineCode>σ²</InlineCode> — the same maximisation gives the elegant{" "}
-          <Term>f* = μ / σ²</Term>. Both say the same thing: size up with edge, size down with risk, and
+          For the discrete bet, the optimum is <Formula>{String.raw`f^* = \frac{pb - q}{b}`}</Formula>: your edge divided by the
+          odds. For continuous returns — a strategy with mean excess return <Formula>{String.raw`\mu`}</Formula> and
+          variance <Formula>{String.raw`\sigma^2`}</Formula> — the same maximisation gives the elegant{" "}
+          <Formula>{String.raw`f^* = \frac{\mu}{\sigma^2}`}</Formula>. Both say the same thing: size up with edge, size down with risk, and
           punish variance quadratically.
         </P>
         <Callout kind="The two forms you will actually use">
-          Discrete odds: <InlineCode>f* = (p·b − q) / b</InlineCode>. Continuous returns:{" "}
-          <InlineCode>f* = μ / σ²</InlineCode> (with leverage capped at sensible bounds). Both collapse to
+          Discrete odds: <Formula>{String.raw`f^* = \frac{pb - q}{b}`}</Formula>. Continuous returns:{" "}
+          <Formula>{String.raw`f^* = \frac{\mu}{\sigma^2}`}</Formula> (with leverage capped at sensible bounds). Both collapse to
           the same idea — bet proportional to edge, inversely to variance.
         </Callout>
       </Section>
@@ -83,8 +85,8 @@ export default function KellyCriterionPositionSizing() {
           Both forms are a couple of lines. The continuous version is what a systematic book uses: feed it
           the strategy&rsquo;s estimated mean and volatility and it returns the growth-optimal leverage. On
           real SPY data, {d.params.start} to {d.params.end} ({d.params.nObs.toLocaleString()} trading
-          days), the estimates are <InlineCode>μ = {pc(d.params.muAnnual)}</InlineCode> and{" "}
-          <InlineCode>σ = {pc(d.params.sigmaAnnual)}</InlineCode> a year:
+          days), the estimates are <Formula>{`\\mu = ${pcTex(d.params.muAnnual)}`}</Formula> and{" "}
+          <Formula>{`\\sigma = ${pcTex(d.params.sigmaAnnual)}`}</Formula> a year:
         </P>
         <CodeBlock
           file="kelly.py"
@@ -110,17 +112,17 @@ print(kelly_continuous(${d.params.muAnnual.toFixed(4)}, ${d.params.sigmaAnnual.t
           That <InlineCode>{d.params.fStar.toFixed(2)}x</InlineCode>{" "}is the warning the formula always
           gives in practice: full Kelly on estimated parameters says to run the S&amp;P 500 at two and a
           half times leverage — through 2008. It is wildly aggressive, because{" "}
-          <InlineCode>μ</InlineCode> is never known as precisely as the maths assumes.
+          <Formula>{String.raw`\mu`}</Formula> is never known as precisely as the maths assumes.
         </P>
       </Section>
 
       <Section id="fractional" n={5} title="Why bet fractional Kelly">
         <P>
-          Full Kelly is optimal only if you know <InlineCode>p</InlineCode>, <InlineCode>b</InlineCode>,{" "}
-          <InlineCode>μ</InlineCode> and <InlineCode>σ</InlineCode>{" "}exactly. You don&rsquo;t — you estimate
+          Full Kelly is optimal only if you know <Formula>p</Formula>, <Formula>b</Formula>,{" "}
+          <Formula>{String.raw`\mu`}</Formula> and <Formula>{String.raw`\sigma`}</Formula>{" "}exactly. You don&rsquo;t — you estimate
           them, with error. Overestimate the edge and you sail past the peak of the growth curve into the
-          region where growth <em>falls</em> and drawdowns explode. The curve below is not a sketch: it is
-          the realised growth rate <InlineCode>g(f) = 252·E[ln(1 + f·r)]</InlineCode> on the actual{" "}
+          region where growth <strong className="font-bold text-pearl">falls</strong> and drawdowns explode. The curve below is not a sketch: it is
+          the realised growth rate <Formula>{String.raw`g(f) = 252\,\mathbb{E}\!\left[\ln(1 + f r)\right]`}</Formula> on the actual{" "}
           {d.params.years.toFixed(0)} years of SPY daily returns, fat tails included.
         </P>
         <Figure
@@ -194,11 +196,11 @@ print(kelly_continuous(${d.params.muAnnual.toFixed(4)}, ${d.params.sigmaAnnual.t
       <Section id="takeaways" n={6} title="Takeaways">
         <P>
           Kelly turns &ldquo;how much should I bet?&rdquo; from a feeling into a formula:{" "}
-          <InlineCode>edge / odds</InlineCode>, or <InlineCode>μ / σ²</InlineCode>. On real SPY data the
+          <Formula>{String.raw`\frac{\text{edge}}{\text{odds}}`}</Formula>, or <Formula>{String.raw`\frac{\mu}{\sigma^2}`}</Formula>. On real SPY data the
           formula says {d.params.fStar.toFixed(2)}× — and the same data shows what running it costs: a{" "}
           {pc(d.histStats.full.maxDD)} drawdown on the way to the fastest compounding. It is the size
-          that grows capital fastest <em>and</em> a hard ceiling above which more risk buys{" "}
-          <em>less</em> growth. In the real world, where parameters are estimated, treat full Kelly as
+          that grows capital fastest <strong className="font-bold text-pearl">and</strong> a hard ceiling above which more risk buys{" "}
+          <strong className="font-bold text-pearl">less</strong> growth. In the real world, where parameters are estimated, treat full Kelly as
           the do-not-exceed line and run a fraction of it — half Kelly kept{" "}
           {pc(d.histStats.half.gCaptured, 0)} of the growth rate for a drawdown{" "}
           {pc(d.histStats.half.maxDD)} instead of {pc(d.histStats.full.maxDD)}.

@@ -1,4 +1,4 @@
-import { Section, Lead, P, InlineCode, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
+import { Section, Lead, P, InlineCode, Formula, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
 import { LineChart } from "@/components/charts/DataCharts";
 import d from "./data/kalman-filter-hedge-ratios";
 
@@ -41,7 +41,7 @@ export default function KalmanFilterHedgeRatios() {
           commodity-heavy developed markets whose daily returns correlate at{" "}
           <InlineCode>{d.params.retCorr.toFixed(2)}</InlineCode>. Regress EWC on EWA over the full
           sample and you get one hedge ratio for fifteen years:{" "}
-          <InlineCode>β = {d.params.betaStatic.toFixed(2)}</InlineCode>, with an ADF p-value of{" "}
+          <Formula>{`\\beta = ${d.params.betaStatic.toFixed(2)}`}</Formula>, with an ADF p-value of{" "}
           <InlineCode>{d.params.adfP.toFixed(3)}</InlineCode> on the residual spread — cointegrated,
           by the book (Engle–Granger: regress one price on the other, then unit-root-test the
           residual). The problem is the word{" "}
@@ -82,12 +82,12 @@ export default function KalmanFilterHedgeRatios() {
           <Term>unobserved states</Term> that evolve through time, and each day&apos;s prices are a
           noisy measurement of them. Two equations define the model. The <Term>state equation</Term>{" "}
           says the hedge ratio and intercept follow a random walk —{" "}
-          <InlineCode>[β_t, α_t] = [β_t−1, α_t−1] + ω_t</InlineCode> — tomorrow&apos;s relationship
+          <Formula>{String.raw`[\beta_t, \alpha_t] = [\beta_{t-1}, \alpha_{t-1}] + \omega_t`}</Formula> — tomorrow&apos;s relationship
           is today&apos;s, plus noise. The <Term>observation equation</Term> says{" "}
-          <InlineCode>EWC_t = β_t·EWA_t + α_t + ε_t</InlineCode>. Two variances close the model:
-          the state noise <InlineCode>Q = δ/(1−δ)·I</InlineCode> with{" "}
-          <InlineCode>δ = 1e−5</InlineCode> (the standard parameterization from Chan), and
-          observation noise <InlineCode>R = 1e−3</InlineCode>.
+          <Formula>{String.raw`\mathrm{EWC}_t = \beta_t\,\mathrm{EWA}_t + \alpha_t + \varepsilon_t`}</Formula>. Two variances close the model:
+          the state noise <Formula>{String.raw`Q = \frac{\delta}{1-\delta}\,I`}</Formula> with{" "}
+          <Formula>{String.raw`\delta = 10^{-5}`}</Formula> (the standard parameterization from Chan), and
+          observation noise <Formula>{String.raw`R = 10^{-3}`}</Formula>.
         </P>
         <P>
           Delta is the single real knob, and it replaces the window size entirely: it is a{" "}
@@ -175,10 +175,10 @@ export default function KalmanFilterHedgeRatios() {
 
       <Section id="trading" n={5} title="Trading the spread">
         <P>
-          The spread is <InlineCode>EWC_t − β_t·EWA_t − α_t</InlineCode>, z-scored on a trailing{" "}
+          The spread is <Formula>{String.raw`\mathrm{EWC}_t - \beta_t\,\mathrm{EWA}_t - \alpha_t`}</Formula>, z-scored on a trailing{" "}
           {d.params.zWin}-day window. Rules, identical for both variants: enter long the spread
-          (long EWC, short β·EWA) when <InlineCode>z &lt; −2</InlineCode>, short when{" "}
-          <InlineCode>z &gt; +2</InlineCode>, exit when z crosses zero. Positions are sized to $1
+          (long EWC, short β·EWA) when <Formula>{String.raw`z < -2`}</Formula>, short when{" "}
+          <Formula>{String.raw`z > +2`}</Formula>, exit when z crosses zero. Positions are sized to $1
           gross notional at entry, the Kalman variant re-hedges the EWA leg to the current β
           daily, and every unit of traded notional pays 10 bp. Signals use the close and P&amp;L
           starts the next day — no lookahead in the rule. The static beta itself, of course, is one

@@ -1,4 +1,4 @@
-import { Section, Lead, P, InlineCode, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
+import { Section, Lead, P, InlineCode, Formula, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
 import { ScatterChart, Heatmap, BarChart } from "@/components/charts/DataCharts";
 import d from "./data/copulas-tail-dependence";
 
@@ -82,7 +82,7 @@ export default function CopulasTailDependence() {
           plus a <Term>copula</Term> — a joint distribution on the unit square with uniform
           margins that carries all of the dependence and none of the marginal shape. To see the
           copula empirically, replace each return by its normalised rank,{" "}
-          <InlineCode>u = rank(x) / (n + 1)</InlineCode> — the probability integral transform
+          <Formula>{String.raw`u = \frac{\operatorname{rank}(x)}{n + 1}`}</Formula> — the probability integral transform
           done with the empirical CDF. Margins become uniform by construction, so any structure
           that survives is pure dependence.
         </P>
@@ -123,7 +123,7 @@ U = pd.DataFrame({c: pseudo_obs(ret[c].values) for c in ret.columns})`}
           behaviour with a correlation matrix alone. Fitting it is one line: push the
           pseudo-observations through the standard normal quantile function
           (&ldquo;normal scores&rdquo;) and take their correlation — for SPX–FTSE that gives{" "}
-          <InlineCode>ρ = {d.pairs[0].rhoGauss.toFixed(2)}</InlineCode>. It is analytically
+          <Formula>{`\\rho = ${d.pairs[0].rhoGauss.toFixed(2)}`}</Formula>. It is analytically
           convenient, scales to any dimension, and has one fatal property:{" "}
           <Term>zero tail dependence</Term>. For any ρ &lt; 1, the probability that both
           markets sit below their q-quantile, divided by q, goes to zero as q shrinks. In the
@@ -151,7 +151,7 @@ U = pd.DataFrame({c: pseudo_obs(ret[c].values) for c in ret.columns})`}
         <P>
           The Student-t copula adds exactly one parameter — the degrees of freedom ν — and that
           single knob buys tail dependence. We set ρ by Kendall&rsquo;s τ inversion,{" "}
-          <InlineCode>ρ = sin(πτ/2)</InlineCode>, which is exact for elliptical copulas, and
+          <Formula>{String.raw`\rho = \sin\!\left(\tfrac{\pi\tau}{2}\right)`}</Formula>, which is exact for elliptical copulas, and
           profile the exact copula log-likelihood over a ν grid from {d.params.dfGridLo} to{" "}
           {d.params.dfGridHi} on the SPX–FTSE pair:
         </P>
@@ -166,7 +166,7 @@ df_hat = grid[ll.argmax()]                      # -> ${d.params.dfHat}
 lam = 2 * stats.t.cdf(-np.sqrt((df_hat+1)*(1-rho)/(1+rho)), df=df_hat+1)`}
         />
         <P>
-          The likelihood picks <InlineCode>ν = {d.params.dfHat}</InlineCode> — heavy joint
+          The likelihood picks <Formula>{`\\nu = ${d.params.dfHat}`}</Formula> — heavy joint
           tails — and prefers the t copula decisively: log-likelihood{" "}
           {d.params.llT.toFixed(1)} against the Gaussian&rsquo;s {d.params.llGauss.toFixed(1)}{" "}
           on the same pseudo-observations, one extra parameter. Unlike the Gaussian, the t

@@ -44,7 +44,7 @@ export default function GamestopShortSqueeze() {
       <Section id="squeeze" n={2} title="How a squeeze ignites">
         <P>
           A short squeeze is a <Term>forced-buyer</Term> cascade. As price rises, shorts face mounting
-          mark-to-market losses and margin calls. To cut risk they must <em>buy</em> shares to cover — but
+          mark-to-market losses and margin calls. To cut risk they must <strong className="font-bold text-pearl">buy</strong> shares to cover — but
           buying pushes the price higher, triggering more margin calls and more covering. With short
           interest above the float and few shares available to borrow or buy, the demand to cover meets a
           wall of no supply. Price is the only variable left free to move. The daily returns show the
@@ -70,8 +70,8 @@ export default function GamestopShortSqueeze() {
           />
         </Figure>
         <PullQuote>
-          A squeeze is not buyers beating sellers. It is sellers who are <em>contractually obliged to
-          become buyers</em>, into a market with nothing to sell them.
+          A squeeze is not buyers beating sellers. It is sellers who are <strong className="font-bold text-pearl">contractually obliged to
+          become buyers</strong>, into a market with nothing to sell them.
         </PullQuote>
       </Section>
 
@@ -79,7 +79,7 @@ export default function GamestopShortSqueeze() {
         <P>
           The 2021 episode added a second, faster engine: options. Retail bought enormous quantities of
           out-of-the-money <Term>call options</Term>. The dealers who sold those calls are short gamma,
-          so to stay hedged they must buy the underlying as it rises — and buy <em>more</em> as the calls
+          so to stay hedged they must buy the underlying as it rises — and buy <strong className="font-bold text-pearl">more</strong> as the calls
           move toward the money. This <Term>gamma squeeze</Term> is a feedback loop bolted onto the
           short squeeze: rising price forces dealer buying, which raises price, which forces more buying.
         </P>
@@ -174,7 +174,7 @@ print(f"run-up {run_up:.0%}   worst short P&L {short_pnl.min():.0%}")`}
           VaR was <InlineCode>{(d.stats.var99 * 100).toFixed(1)}%</InlineCode>. Jan 27 delivered{" "}
           <InlineCode>{pc(d.stats.jan27, 1)}</InlineCode> — a {d.stats.sigmaMult}σ day on that
           calibration. VaR built on a calm sample is blind to a regime change driven by
-          <em> positioning</em>, not fundamentals. The squeeze risk lived in three numbers a price-only
+          <strong className="font-bold text-pearl"> positioning</strong>, not fundamentals. The squeeze risk lived in three numbers a price-only
           model never sees: short-interest-to-float, days-to-cover, and the options gamma profile.
         </P>
         <DataTable
@@ -210,7 +210,7 @@ print(f"run-up {run_up:.0%}   worst short P&L {short_pnl.min():.0%}")`}
       <Section id="lessons" n={6} title="What it teaches">
         <P>
           GameStop is not a story about a meme; it is a story about <Term>asymmetry and crowding</Term>.
-          Capped upside and unbounded downside make a short an option you are <em>selling</em> — and a
+          Capped upside and unbounded downside make a short an option you are <strong className="font-bold text-pearl">selling</strong> — and a
           crowded short with no float is the most expensive option you can sell. A $1 short held from
           year-end was marked at {pc(d.stats.worstShort)} of its proceeds at the peak — a{" "}
           {Math.round(-d.stats.worstShort)}× loss on a position whose maximum gain was 1×. The

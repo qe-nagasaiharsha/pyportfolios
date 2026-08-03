@@ -44,7 +44,7 @@ export function ArticleToc({ sections }: { sections: ArticleSection[] }) {
               <a
                 href={`#${s.id}`}
                 aria-current={isActive ? "location" : undefined}
-                className={`-ml-px block border-l-2 py-1.5 pl-4 font-sans text-[0.9rem] leading-snug transition-colors ${
+                className={`-ml-px block border-l-2 py-1.5 pl-4 font-serif text-[0.9rem] leading-snug transition-colors ${
                   isActive
                     ? "border-aqua text-pearl"
                     : "border-transparent text-steel hover:border-pearl/30 hover:text-pearl"

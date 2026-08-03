@@ -199,8 +199,12 @@ export function InlineCode({ children }: { children: ReactNode }) {
   );
 }
 
+/* A defined term or an emphasised phrase in the reading text. Bold rather than
+   italic: italic prose sat too close to the italic that KaTeX gives maths
+   variables, so a stressed word and a symbol looked like the same thing. Bold
+   separates them and stays legible in the body's muted grey. */
 export function Term({ children }: { children: ReactNode }) {
-  return <em className="font-serif italic text-pearl">{children}</em>;
+  return <strong className="font-serif font-bold text-pearl">{children}</strong>;
 }
 
 /* -------------------------------------------------------------- Math (KaTeX) --

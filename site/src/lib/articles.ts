@@ -300,7 +300,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "copulas-tail-dependence",
-    hero: "hero/matterhorn-calame.jpg",
+    hero: "hero/hazy-blue-ridges.jpg",
     category: "risk-management",
     format: "Tutorial",
     title: "Copulas & Tail Dependence: Why Markets Crash Together More Often Than Correlation Says",
@@ -323,7 +323,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "sma-crossover-backtest",
-    hero: "hero/mountain-nathan-anderson.jpg",
+    hero: "hero/snow-peak-teal.jpg",
     category: "algorithmic-trading",
     format: "Tutorial",
     title: "The SMA Crossover, Honestly Backtested: QQQ and Bitcoin, Costs Included",
@@ -346,7 +346,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "kalman-filter-hedge-ratios",
-    hero: "hero/mountain-marc-thunis.jpg",
+    hero: "hero/alpine-ridge-pines.jpg",
     category: "algorithmic-trading",
     format: "Tutorial",
     title: "Kalman Filters for Dynamic Hedge Ratios: Tracking a Beta That Refuses to Sit Still",
@@ -392,7 +392,7 @@ export const ARTICLES: Article[] = [
   },
   {
     slug: "gamestop-short-squeeze",
-    hero: "hero/mountain-nathan-anderson.jpg",
+    hero: "hero/layered-blue-ridges.jpg",
     category: "algorithmic-trading",
     format: "Case Study",
     title: "Anatomy of a Short Squeeze: GameStop, January 2021, Reconstructed From the Tape",

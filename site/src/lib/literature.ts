@@ -1688,7 +1688,7 @@ export const PAPER_RECS: Paper[] = [
     authors: "Zhang, Z., Zohren, S., & Roberts, S.",
     title: "DeepLOB: Deep convolutional neural networks for limit order books",
     journal: "IEEE Transactions on Signal Processing",
-    logo: "ieee-transactions-signal-processing.svg",
+    logo: "ieee-transactions-signal-processing.png",
     ref: "67(11), 3001–3012",
     note: "",
     category: "Algorithmic Trading & Machine Learning",

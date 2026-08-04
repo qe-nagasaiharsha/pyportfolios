@@ -30,9 +30,18 @@ export function ArticleLayout({ article, children }: { article: Article; childre
       <ScrollReveal />
       <ArticleNav />
 
-      {/* full-bleed hero — whole image shown (section matches the photo's aspect ratio) */}
+      {/* Full-bleed hero — the section matches the photo's aspect ratio so the
+          whole image shows.
+
+          w-full is load-bearing, not decoration. Without an explicit width,
+          aspect-ratio resolves the *width* from the height, and min-h-[26rem]
+          then forced the section to 416px x 2.2556 = 938px — two and a half
+          times a 375px phone, so every article page scrolled sideways. Pinning
+          the width makes the aspect ratio drive height instead, and min-h keeps
+          the hero tall enough for the title on narrow screens (object-cover
+          crops the photo rather than stretching the box). */}
       {article.hero ? (
-        <section className="relative isolate overflow-hidden aspect-[2400/1064] min-h-[26rem]">
+        <section className="relative isolate w-full overflow-hidden aspect-[2400/1064] min-h-[26rem]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={`/${article.hero}`} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover object-center brightness-[1.06]" />
           {/* the photo's own dark foreground merges into the page with a light assist */}

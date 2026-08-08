@@ -2,15 +2,18 @@
 
 /* MobileNav — the hamburger menu for phones/tablets. Shown only below `lg`
    (desktop keeps its full horizontal nav). Tapping the button opens a
-   slide-down panel with the same links + Sign in; tapping a link, the ✕, the
-   backdrop, or Escape closes it. Locks background scroll while open. */
+   slide-down panel with the same links + a session-aware auth control; tapping
+   a link, the ✕, the backdrop, or Escape closes it. Locks background scroll
+   while open. */
 
 import { useEffect, useState } from "react";
+import { signOutSession, useSession } from "@/lib/session";
 
 type Item = { label: string; href: string };
 
-export function MobileNav({ items, signInHref }: { items: Item[]; signInHref: string }) {
+export function MobileNav({ items }: { items: Item[] }) {
   const [open, setOpen] = useState(false);
+  const { me } = useSession();
 
   // lock background scroll while the menu is open
   useEffect(() => {
@@ -86,13 +89,32 @@ export function MobileNav({ items, signInHref }: { items: Item[]; signInHref: st
               ))}
             </ul>
 
-            <a
-              href={signInHref}
-              onClick={() => setOpen(false)}
-              className="mt-5 inline-flex w-full items-center justify-center rounded-sm border border-pearl/30 py-3 t-mono text-sm font-semibold text-pearl transition-colors duration-300 hover:border-aqua hover:text-aqua"
-            >
-              Sign in
-            </a>
+            {me ? (
+              <div className="mt-5 flex items-center gap-3">
+                <a
+                  href="/account"
+                  onClick={() => setOpen(false)}
+                  className="inline-flex flex-1 items-center justify-center rounded-sm border border-pearl/30 py-3 t-mono text-sm font-semibold text-pearl transition-colors duration-300 hover:border-aqua hover:text-aqua"
+                >
+                  Account
+                </a>
+                <button
+                  type="button"
+                  onClick={() => { setOpen(false); void signOutSession(); }}
+                  className="inline-flex items-center justify-center rounded-sm px-5 py-3 t-mono text-sm font-semibold text-steel transition-colors duration-300 hover:text-aqua"
+                >
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <a
+                href="/account"
+                onClick={() => setOpen(false)}
+                className="mt-5 inline-flex w-full items-center justify-center rounded-sm border border-pearl/30 py-3 t-mono text-sm font-semibold text-pearl transition-colors duration-300 hover:border-aqua hover:text-aqua"
+              >
+                Sign in
+              </a>
+            )}
           </div>
         </div>
       ) : null}

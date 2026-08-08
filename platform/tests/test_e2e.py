@@ -266,6 +266,35 @@ def test_premium_is_a_renewing_subscription(client):
     assert client.get(f"/api/content/notebooks/{NOTEBOOK_SLUG}").status_code == 200
 
 
+def test_checkout_blocks_downgrade_and_duplicate(client):
+    """A Premium member cannot re-checkout into a lesser (or equal) plan —
+    that would overwrite better access in place and take a second payment."""
+    register(client, "grace@example.com")
+    status, _ = buy(client, "premium-monthly", CARD_SUCCESS)
+    assert status == 200
+
+    # Downgrade to Pro is refused before any checkout/payment is created.
+    r = client.post("/api/checkout", json={"plan_code": "pro-monthly"})
+    assert r.status_code == 409
+    # Buying Premium again (equal rank) is refused too.
+    assert client.post("/api/checkout", json={"plan_code": "premium-monthly"}).status_code == 409
+
+    # The original Premium subscription is untouched.
+    sub = client.get("/api/subscription").json()
+    assert sub["plan_code"] == "premium-monthly"
+    assert sub["status"] == "active"
+
+
+def test_checkout_allows_upgrade_pro_to_premium(client):
+    """A strict upgrade (Pro → Premium) is still permitted."""
+    register(client, "heidi@example.com")
+    assert buy(client, "pro-monthly", CARD_SUCCESS)[0] == 200
+    status, body = buy(client, "premium-monthly", CARD_SUCCESS)
+    assert status == 200
+    assert body["subscription"]["plan_code"] == "premium-monthly"
+    assert body["subscription"]["current_period_end"] is not None
+
+
 # ---------------------------------------------------------------------------
 # Content gating: path traversal
 # ---------------------------------------------------------------------------

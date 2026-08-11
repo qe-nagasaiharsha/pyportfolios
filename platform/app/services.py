@@ -3,7 +3,7 @@ the webhook path — both funnel through activate_subscription so behaviour is
 identical no matter how a successful payment is reported.
 """
 
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -69,6 +69,7 @@ def activate_subscription(
     provider_ref: str,
     amount_cents: int | None = None,
     currency: str = "usd",
+    provider_sub_id: str | None = None,
 ) -> Subscription:
     """Record a successful payment and activate/renew the user's subscription.
 
@@ -76,6 +77,9 @@ def activate_subscription(
     interval (only the free Basic tier, since Lifetime was retired).
     Re-activation of an existing subscription updates it in place (renewal or
     plan change) and clears any pending cancellation.
+
+    provider_sub_id: the provider's subscription handle (Stripe `sub_...`),
+    stored so renewals/cancellation can find this row later.
     """
     period = PERIOD_BY_INTERVAL.get(plan.interval or "")
     period_end = utcnow() + period if period else None
@@ -88,6 +92,8 @@ def activate_subscription(
     sub.status = "active"
     sub.current_period_end = period_end
     sub.cancel_at_period_end = False
+    if provider_sub_id is not None:
+        sub.provider_sub_id = provider_sub_id
     db.flush()  # ensure sub.id
 
     db.add(
@@ -97,6 +103,54 @@ def activate_subscription(
             provider=provider,
             provider_ref=provider_ref,
             amount_cents=plan.amount_cents if amount_cents is None else amount_cents,
+            currency=currency,
+            status="succeeded",
+        )
+    )
+    db.commit()
+    return sub
+
+
+def subscription_by_provider_sub_id(
+    db: Session, provider_sub_id: str
+) -> Subscription | None:
+    return db.execute(
+        select(Subscription).where(Subscription.provider_sub_id == provider_sub_id)
+    ).scalars().first()
+
+
+def renew_subscription(
+    db: Session,
+    provider_sub_id: str,
+    *,
+    period_end_ts: int | None,
+    amount_cents: int | None,
+    currency: str = "usd",
+    provider: str,
+    provider_ref: str,
+) -> Subscription | None:
+    """Extend a subscription on a recurring payment (Stripe invoice.paid).
+
+    Located by provider_sub_id; returns None if no matching row exists yet
+    (e.g. a renewal event that raced ahead of activation). Records the renewal
+    payment for audit and pushes current_period_end to the provider's value.
+    """
+    sub = subscription_by_provider_sub_id(db, provider_sub_id)
+    if sub is None:
+        return None
+
+    if period_end_ts is not None:
+        sub.current_period_end = datetime.fromtimestamp(
+            period_end_ts, tz=timezone.utc
+        ).replace(tzinfo=None)
+    sub.status = "active"
+    db.add(
+        Payment(
+            user_id=sub.user_id,
+            subscription_id=sub.id,
+            provider=provider,
+            provider_ref=provider_ref,
+            amount_cents=amount_cents if amount_cents is not None else 0,
             currency=currency,
             status="succeeded",
         )

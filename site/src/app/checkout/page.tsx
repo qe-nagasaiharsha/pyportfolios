@@ -52,6 +52,7 @@ function CheckoutInner() {
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+  const [provider, setProvider] = useState<string>("mock");
 
   /* auth inline */
   const [email, setEmail] = useState("");
@@ -81,12 +82,14 @@ function CheckoutInner() {
 
   useEffect(() => {
     (async () => {
-      const [ps, m] = await Promise.all([
+      const [ps, m, h] = await Promise.all([
         api.plans().catch(() => [] as Plan[]),
         api.me().catch(() => null),
+        api.health().catch(() => ({ ok: false, provider: "mock" })),
       ]);
       setPlans(ps);
       setMe(m);
+      setProvider(h.provider ?? "mock");
       if (m) setEnt(await api.entitlements().catch(() => null));
       setLoaded(true);
     })();
@@ -122,6 +125,15 @@ function CheckoutInner() {
     setBusy(true);
     try {
       const checkout = await api.createCheckout(planCode ?? "");
+      // Stripe: hand the browser off to Stripe-hosted checkout. The card is
+      // entered there (never on our server) and the subscription is activated
+      // asynchronously by the webhook — nothing more to do here.
+      const action = checkout.client_action;
+      if (action?.type === "redirect" && action.url) {
+        window.location.href = action.url;
+        return;
+      }
+      // Mock provider: the card was entered here; confirm against our sidecar.
       await api.confirmCheckout(checkout.checkout_id, {
         number: card.replace(/\s+/g, ""),
         exp,
@@ -218,26 +230,45 @@ function CheckoutInner() {
                 <h3 className="font-serif text-xl text-pearl">Payment</h3>
                 {me ? <span className="t-mono text-[0.66rem] text-steel">{me.email}</span> : null}
               </div>
-              <div>
-                <label htmlFor="co-card" className={label}>Card number · test simulator</label>
-                <input id="co-card" required inputMode="numeric" className={`${input} mt-2`} value={card} onChange={(e) => setCard(e.target.value)} />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="co-exp" className={label}>Expiry</label>
-                  <input id="co-exp" required className={`${input} mt-2`} value={exp} onChange={(e) => setExp(e.target.value)} placeholder="MM/YY" />
-                </div>
-                <div>
-                  <label htmlFor="co-cvc" className={label}>CVC</label>
-                  <input id="co-cvc" required inputMode="numeric" className={`${input} mt-2`} value={cvc} onChange={(e) => setCvc(e.target.value)} />
-                </div>
-              </div>
+
+              {provider === "stripe" ? (
+                /* Stripe: no card fields here — the card is entered on Stripe's
+                   hosted page after the redirect. */
+                <p className="rounded-md border border-pearl/15 bg-navy-elevated/40 px-4 py-3 text-sm leading-relaxed text-mist">
+                  You&apos;ll be redirected to Stripe&apos;s secure checkout to enter your card.
+                  Your card details never touch our servers.
+                </p>
+              ) : (
+                <>
+                  <div>
+                    <label htmlFor="co-card" className={label}>Card number · test simulator</label>
+                    <input id="co-card" required inputMode="numeric" className={`${input} mt-2`} value={card} onChange={(e) => setCard(e.target.value)} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="co-exp" className={label}>Expiry</label>
+                      <input id="co-exp" required className={`${input} mt-2`} value={exp} onChange={(e) => setExp(e.target.value)} placeholder="MM/YY" />
+                    </div>
+                    <div>
+                      <label htmlFor="co-cvc" className={label}>CVC</label>
+                      <input id="co-cvc" required inputMode="numeric" className={`${input} mt-2`} value={cvc} onChange={(e) => setCvc(e.target.value)} />
+                    </div>
+                  </div>
+                </>
+              )}
+
               {err ? <p className="rounded-md border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-300">{err}</p> : null}
               <button type="submit" disabled={busy || !plan} className={btn}>
-                {busy ? "Processing…" : plan ? `Pay ${money(plan.amount_cents)} (test)` : "Plan unavailable"}
+                {busy
+                  ? (provider === "stripe" ? "Redirecting…" : "Processing…")
+                  : !plan ? "Plan unavailable"
+                  : provider === "stripe" ? "Continue to secure checkout"
+                  : `Pay ${money(plan.amount_cents)} (test)`}
               </button>
               <p className="t-mono text-[0.6rem] uppercase tracking-[0.14em] leading-relaxed text-steel/70">
-                Simulated payment — no real charge, no card data stored.
+                {provider === "stripe"
+                  ? "Payments processed by Stripe."
+                  : "Simulated payment — no real charge, no card data stored."}
               </p>
             </form>
           ) : null}

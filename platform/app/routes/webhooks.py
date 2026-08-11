@@ -65,8 +65,23 @@ async def receive_webhook(
                 provider_ref=event.provider_ref or event.event_id,
                 amount_cents=event.amount_cents,
                 currency=event.currency,
+                provider_sub_id=event.subscription_id,
             )
             handled = True
+    elif event.event_type == "invoice.paid":
+        # Recurring renewal: extend the period on the subscription this invoice
+        # belongs to. No-op (acknowledged) if we don't recognise the sub yet.
+        if event.subscription_id:
+            renewed = services.renew_subscription(
+                db,
+                event.subscription_id,
+                period_end_ts=event.period_end_ts,
+                amount_cents=event.amount_cents,
+                currency=event.currency,
+                provider=provider.name,
+                provider_ref=event.provider_ref or event.event_id,
+            )
+            handled = renewed is not None
 
     db.add(
         WebhookEvent(

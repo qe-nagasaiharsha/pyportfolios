@@ -7,6 +7,8 @@ from .. import services
 from ..auth import get_current_user
 from ..db import get_db
 from ..models import User
+from ..payments import get_provider
+from ..payments.base import ConfigurationError
 
 router = APIRouter(prefix="/api/subscription", tags=["subscription"])
 
@@ -40,7 +42,14 @@ def cancel_subscription(
         raise HTTPException(status_code=404, detail="No active subscription to cancel")
 
     # Access continues until current_period_end; renewal simply won't happen.
-    # (Lifetime has no period end — the flag is recorded but has no effect.)
     sub.cancel_at_period_end = True
+    # Tell the provider to stop renewing too, or the card keeps getting charged.
+    # Mock is a no-op; Stripe flips cancel_at_period_end on its side. A provider
+    # that can't cancel (no sub id / not configured) raises ConfigurationError —
+    # the local flag still stands so the UI is consistent.
+    try:
+        get_provider().cancel(sub)
+    except ConfigurationError:
+        pass
     db.commit()
     return _serialize(sub)

@@ -65,12 +65,15 @@ export interface Entitlements {
 
 export interface CheckoutSession {
   checkout_id: string;
-  client_action: string;
+  /** What to do next: mock → {type:"collect_card"}; Stripe → {type:"redirect", url}. */
+  client_action: { type: string; url?: string };
 }
 
 /* ------------------------------------------------------------------ calls -- */
 
 export const api = {
+  /** Liveness + which payment provider is active ("mock" | "stripe"). */
+  health: () => req<{ ok: boolean; provider: string }>("/health"),
   register: (email: string, password: string, name?: string) =>
     req<Me>("/auth/register", { method: "POST", body: JSON.stringify({ email, password, name }) }),
   login: (email: string, password: string) =>

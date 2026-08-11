@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     # "mock" (default; in-process fake checkout) or "stripe".
     payment_provider: str = "mock"
 
+    # Public origin of the site, used to build Stripe success/cancel redirect
+    # URLs. Override per environment (e.g. https://pyportfolios.vercel.app).
+    public_base_url: str = "https://pyportfolios.com"
+
     # Stripe credentials — empty by default so the Stripe adapter stays inert.
     stripe_secret_key: str = ""
     stripe_webhook_secret: str = ""

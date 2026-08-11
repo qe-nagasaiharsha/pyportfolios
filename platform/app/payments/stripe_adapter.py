@@ -124,8 +124,11 @@ class StripeProvider:
         key = self._require_key()
         price_id = self._price_id_for(plan)
         mode = "subscription" if plan.interval in ("month", "year") else "payment"
+        base = get_settings().public_base_url.rstrip("/")
 
         # Stripe expects application/x-www-form-urlencoded with bracketed keys.
+        # For subscription mode, propagate the metadata onto the subscription too
+        # so renewal invoices can be traced back if ever needed.
         form = {
             "mode": mode,
             "line_items[0][price]": price_id,
@@ -134,9 +137,12 @@ class StripeProvider:
             "client_reference_id": str(user.id),
             "metadata[user_id]": str(user.id),
             "metadata[plan_code]": plan.code,
-            "success_url": "https://pyportfolios.com/account?checkout=success",
-            "cancel_url": "https://pyportfolios.com/#pricing",
+            "success_url": f"{base}/account?checkout=success",
+            "cancel_url": f"{base}/#pricing",
         }
+        if mode == "subscription":
+            form["subscription_data[metadata][user_id]"] = str(user.id)
+            form["subscription_data[metadata][plan_code]"] = plan.code
         response = httpx.post(
             f"{STRIPE_API_BASE}/checkout/sessions",
             data=form,
@@ -176,6 +182,29 @@ class StripeProvider:
                 amount_cents=obj.get("amount_total"),
                 currency=obj.get("currency", "usd"),
                 provider_ref=obj.get("id", ""),
+                # `subscription` is the sub_... id for subscription-mode sessions
+                # (None for one-time payments); stored to match renewals/cancels.
+                subscription_id=obj.get("subscription"),
+                raw=event,
+            )
+
+        if event_type in ("invoice.paid", "invoice.payment_succeeded"):
+            # The first invoice of a subscription is the initial charge, already
+            # handled by checkout.session.completed — only act on renewals.
+            if obj.get("billing_reason") == "subscription_create":
+                return NormalizedEvent(
+                    event_id=event["id"], event_type=event_type, raw=event
+                )
+            lines = (obj.get("lines") or {}).get("data") or []
+            period = lines[0].get("period", {}) if lines else {}
+            return NormalizedEvent(
+                event_id=event["id"],
+                event_type="invoice.paid",
+                subscription_id=obj.get("subscription"),
+                amount_cents=obj.get("amount_paid"),
+                currency=obj.get("currency", "usd"),
+                provider_ref=obj.get("id", ""),
+                period_end_ts=period.get("end"),
                 raw=event,
             )
 
@@ -188,21 +217,23 @@ class StripeProvider:
         )
 
     def cancel(self, subscription: Subscription) -> None:
-        """Set cancel_at_period_end on the Stripe subscription.
+        """Set cancel_at_period_end on the Stripe subscription so it stops
+        renewing (access continues until the current period ends).
 
-        Requires storing the Stripe subscription id on activation — captured
-        via provider_ref today; extend Subscription with a provider_sub_id
-        column when going live. Left as a guarded call so it is explicit.
+        Uses the sub_... id captured on activation (Subscription.provider_sub_id).
+        A subscription without one — a mock purchase, or one predating the Stripe
+        integration — can't be cancelled provider-side; the caller keeps the
+        local cancel flag regardless.
         """
         key = self._require_key()
-        # Example call (needs the stripe subscription id, sub_...):
-        # httpx.post(
-        #     f"{STRIPE_API_BASE}/subscriptions/{stripe_sub_id}",
-        #     data={"cancel_at_period_end": "true"},
-        #     auth=(key, ""),
-        #     timeout=20.0,
-        # ).raise_for_status()
-        raise ConfigurationError(
-            "Stripe-side cancellation requires the provider subscription id; "
-            "see StripeProvider.cancel comments before enabling."
-        )
+        stripe_sub_id = subscription.provider_sub_id
+        if not stripe_sub_id:
+            raise ConfigurationError(
+                "Cannot cancel on Stripe: subscription has no provider_sub_id."
+            )
+        httpx.post(
+            f"{STRIPE_API_BASE}/subscriptions/{stripe_sub_id}",
+            data={"cancel_at_period_end": "true"},
+            auth=(key, ""),
+            timeout=20.0,
+        ).raise_for_status()

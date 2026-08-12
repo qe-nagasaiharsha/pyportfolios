@@ -13,7 +13,7 @@ from ..auth import get_current_user
 from ..db import get_db
 from ..models import Plan, User
 from ..payments import get_provider
-from ..payments.base import ConfigurationError
+from ..payments.base import ConfigurationError, PaymentError
 from ..payments.mock import MockProvider
 
 router = APIRouter(prefix="/api/checkout", tags=["checkout"])
@@ -60,6 +60,9 @@ def create_checkout(
         result = provider.create_checkout(user, plan)
     except ConfigurationError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except PaymentError as exc:
+        # Provider reached but rejected the request (bad price id, key, network).
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
     return {
         "checkout_id": result.checkout_id,
         "client_action": result.client_action,

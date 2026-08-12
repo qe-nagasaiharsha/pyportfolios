@@ -42,6 +42,7 @@ from .base import (
     CheckoutResult,
     ConfigurationError,
     NormalizedEvent,
+    PaymentError,
     WebhookVerificationError,
 )
 
@@ -143,13 +144,27 @@ class StripeProvider:
         if mode == "subscription":
             form["subscription_data[metadata][user_id]"] = str(user.id)
             form["subscription_data[metadata][plan_code]"] = plan.code
-        response = httpx.post(
-            f"{STRIPE_API_BASE}/checkout/sessions",
-            data=form,
-            auth=(key, ""),
-            timeout=20.0,
-        )
-        response.raise_for_status()
+        try:
+            response = httpx.post(
+                f"{STRIPE_API_BASE}/checkout/sessions",
+                data=form,
+                auth=(key, ""),
+                timeout=20.0,
+            )
+            response.raise_for_status()
+        except httpx.HTTPStatusError as exc:
+            # Stripe rejected it (bad price id, wrong/insufficient key, …).
+            # Surface Stripe's own message instead of a blank 500.
+            try:
+                reason = exc.response.json().get("error", {}).get("message", "")
+            except Exception:
+                reason = exc.response.text
+            raise PaymentError(
+                f"Stripe rejected the checkout ({exc.response.status_code}): {reason}"
+            ) from exc
+        except httpx.HTTPError as exc:  # network / timeout
+            raise PaymentError(f"Could not reach Stripe: {exc}") from exc
+
         session = response.json()
         return CheckoutResult(
             checkout_id=session["id"],

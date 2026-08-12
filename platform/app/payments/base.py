@@ -17,6 +17,11 @@ class ConfigurationError(RuntimeError):
     """Provider is selected but not configured (e.g. missing API keys)."""
 
 
+class PaymentError(RuntimeError):
+    """The provider was reached but rejected the request (bad price id, declined
+    key, network failure) — carries a human-readable reason for the caller."""
+
+
 class WebhookVerificationError(ValueError):
     """Webhook payload failed signature verification or was malformed."""
 

@@ -4,16 +4,18 @@ A week-long, always-on staging of pyportfolios.com for client approval. No real
 money (Stripe stays in **test** mode). Two hosts + the domain:
 
 ```
-visitor browser ─► pyportfolios.com (Vercel: static Next.js from site/)
-                     └─ /api/*  ─(Vercel proxy, same-origin)─►  Render (FastAPI, platform/)
-                                                                   │
-Stripe ──────────────── webhook ──────────────────────────────────┘  (direct to Render URL)
-                                                                   └─ Postgres (Render managed)
+visitor browser ─► Vercel (static Next.js from site/)
+                     └─ API calls ─► Render (FastAPI, platform/)   [cross-origin + CORS]
+                                        │
+Stripe ──────────── webhook ───────────┘  (direct to Render URL)
+                                        └─ Postgres (Render managed)
 ```
 
-Why the `/api` proxy: the session cookie is `SameSite=Lax`. Routing API calls
-through pyportfolios.com keeps them same-origin, so login works and there's no
-CORS to configure.
+Cross-origin wiring: a Next.js **static export** ignores `vercel.json` rewrites,
+so the browser talks to Render directly. That makes it cross-origin, which needs
+two things on the backend: the session cookie set `SameSite=None; Secure`
+(`COOKIE_SAMESITE=none`), and the Vercel origin allow-listed for credentialed
+CORS (`CORS_ORIGINS=https://<your>.vercel.app`). Both are env-driven.
 
 ---
 
@@ -37,12 +39,15 @@ CORS to configure.
 ## 2. Frontend → Vercel
 
 1. Vercel → **Add New → Project** → import this repo.
-2. **Root Directory: `site`** (critical).
-3. Edit [`site/vercel.json`](site/vercel.json): set the proxy `destination` to
-   **your** Render URL (`https://pyportfolios-api.onrender.com/api/:path*`),
-   commit, and let Vercel redeploy.
-4. No `NEXT_PUBLIC_API_BASE` needed — the client defaults to `/api`, which the
-   proxy forwards to Render.
+2. **Root Directory: `site`** (critical), **Production Branch: `stripe-integration`**
+   (Settings → Environments → Production → Branch Tracking).
+3. **Environment Variable:** `NEXT_PUBLIC_API_BASE` = your Render API base, e.g.
+   `https://pyportfolios-api.onrender.com/api`. (Inlined at build → redeploy after changing.)
+4. Then set the matching backend env on Render so the cross-origin cookie works:
+   - `COOKIE_SAMESITE=none`  (cookie rides cross-site fetches)
+   - `CORS_ORIGINS=https://<your-project>.vercel.app`  (allow the frontend origin)
+   - `PUBLIC_BASE_URL=https://<your-project>.vercel.app`  (Stripe redirects back here)
+   `COOKIE_SECURE` is already `true`.
 
 ## 3. Domain → pyportfolios.com  (needs the domain owner)
 

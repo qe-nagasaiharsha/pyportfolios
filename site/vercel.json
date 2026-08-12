@@ -1,9 +1,0 @@
-{
-  "$comment": "Proxies /api/* to the Render backend so the browser only ever talks to pyportfolios.com (same-origin → the SameSite=Lax session cookie works, and no CORS). Replace the destination host with your Render service URL after it deploys, then redeploy. Webhooks go straight to Render, not through this proxy.",
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "https://pyportfolios-api.onrender.com/api/:path*"
-    }
-  ]
-}

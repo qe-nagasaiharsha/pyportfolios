@@ -8,7 +8,7 @@ export default function BlackLitterman() {
       <Lead>
         Plain mean-variance optimization has a dirty secret: feed it your historical-average returns
         and it hands back wild, concentrated, unstable portfolios (see the{" "}
-        <a href="/research/mvo-efficient-frontier">previous tutorial</a>). Fischer Black and Robert
+        previous tutorial). Fischer Black and Robert
         Litterman&apos;s 1990 fix at Goldman Sachs was elegant — <b>start from the portfolio the
         market is already holding</b>, then tilt it only where you have a genuine view. The result is
         stable, intuitive weights that collapse back to the market when you stay quiet.
@@ -227,9 +227,9 @@ export default function BlackLitterman() {
           <Bullets
             items={[
               <><b>Idzorek&apos;s confidence method</b> — specify view confidence as an intuitive 0–100% instead of an abstract Ω (used above)</>,
-              <><b>Risk parity</b> — skips return estimation entirely (the <a href="/research/risk-parity-futures">next tutorial</a>)</>,
+              <><b>Risk parity</b> — skips return estimation entirely (the next tutorial)</>,
               <><b>Entropy pooling (Meucci)</b> — a more general way to impose views, including on higher moments</>,
-              <><b>Mean-variance optimization</b> — the raw method Black-Litterman was invented to tame (the <a href="/research/mvo-efficient-frontier">previous tutorial</a>)</>,
+              <><b>Mean-variance optimization</b> — the raw method Black-Litterman was invented to tame (the previous tutorial)</>,
             ]}
           />
         </SubSection>

@@ -14,7 +14,7 @@ export default function BlackScholesGreeks() {
       <Section id="summary" n={1} title="Summary">
         <P>
           BSM assumes the underlying follows <b>Geometric Brownian Motion</b> (see the{" "}
-          <a href="/research/brownian-motion">previous tutorial</a>) and shows that an option&apos;s
+          previous tutorial) and shows that an option&apos;s
           payoff can be <b>replicated</b> by continuously trading the stock and a bond — so the
           option&apos;s price is the cost of that replication, independent of anyone&apos;s market
           view. The result is a closed-form price for European calls and puts, and analytic{" "}
@@ -133,7 +133,7 @@ export default function BlackScholesGreeks() {
           <Bullets
             items={[
               <><b>Put-call parity</b> must hold to machine precision.</>,
-              <><b>Monte Carlo under GBM</b> (the simulator from the <a href="/research/brownian-motion">previous tutorial</a>, with drift <Formula key="r">{String.raw`r`}</Formula>) must converge to the closed-form price — Black-Scholes <em>is</em> the GBM expectation in disguise.</>,
+              <><b>Monte Carlo under GBM</b> (the simulator from the previous tutorial, with drift <Formula key="r">{String.raw`r`}</Formula>) must converge to the closed-form price — Black-Scholes <em>is</em> the GBM expectation in disguise.</>,
             ]}
           />
           <CodeBlock code={SANITY_CODE} />

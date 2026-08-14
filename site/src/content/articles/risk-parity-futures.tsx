@@ -242,7 +242,7 @@ export default function RiskParityFutures() {
             items={[
               <><b>Hierarchical Risk Parity (HRP)</b> — clusters assets first, avoiding matrix inversion for stabler weights</>,
               <><b>Risk budgeting</b> — the general case, assigning <em>unequal</em> target risk shares by conviction</>,
-              <><b>Mean-variance & Black-Litterman</b> — the return-driven alternatives (<a href="/research/mvo-efficient-frontier">here</a> and <a href="/research/black-litterman">here</a>)</>,
+              <><b>Mean-variance & Black-Litterman</b> — the return-driven alternatives (here and here)</>,
               <><b>CVaR risk parity</b> — equalize tail-risk contributions instead of variance contributions</>,
             ]}
           />

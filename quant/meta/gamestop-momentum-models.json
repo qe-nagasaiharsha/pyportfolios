@@ -1,0 +1,39 @@
+{
+  "slug": "gamestop-momentum-models",
+  "category": "algorithmic-trading",
+  "format": "Case Study",
+  "title": "The GameStop Squeeze: When Momentum Models Broke",
+  "dek": "During January 2021, short-momentum strategies failed because the most crowded trade in the market became the most dangerous one.",
+  "date": "2026-08-11",
+  "readMinutes": 10,
+  "level": "Intermediate",
+  "notebook": "gamestop-momentum-models.ipynb",
+  "excerpt": "In January 2021 a dying mall retailer became, briefly, the most traded stock on Earth.",
+  "stack": [
+    "Pandas",
+    "NumPy",
+    "matplotlib"
+  ],
+  "sections": [
+    {
+      "id": "setting",
+      "title": "The setting"
+    },
+    {
+      "id": "event",
+      "title": "The event"
+    },
+    {
+      "id": "mechanism",
+      "title": "The mechanism"
+    },
+    {
+      "id": "evidence",
+      "title": "The evidence"
+    },
+    {
+      "id": "post-mortem",
+      "title": "Post-mortem"
+    }
+  ]
+}

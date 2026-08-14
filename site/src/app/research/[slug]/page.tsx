@@ -7,18 +7,19 @@ import { ArticleLayout } from "@/components/article/ArticleLayout";
 import BrownianMotion from "@/content/articles/brownian-motion";
 import BlackScholesGreeks from "@/content/articles/black-scholes-greeks";
 import BondDurationConvexity from "@/content/articles/bond-duration-convexity";
+import HestonVsBlackScholes from "@/content/articles/heston-vs-black-scholes";
+import SixtyFortyCorrelationFlip from "@/content/articles/sixty-forty-correlation-flip";
+import GaussianVsTCopula from "@/content/articles/gaussian-vs-t-copula";
+import GamestopMomentumModels from "@/content/articles/gamestop-momentum-models";
+import AlphaDecayMomentum from "@/content/articles/alpha-decay-momentum";
 import MvoEfficientFrontier from "@/content/articles/mvo-efficient-frontier";
 import BlackLitterman from "@/content/articles/black-litterman";
 import RiskParityFutures from "@/content/articles/risk-parity-futures";
-import BlackScholes from "@/content/articles/black-scholes-from-first-principles";
 import VarThreeWays from "@/content/articles/var-three-ways";
 import CvarExpectedShortfall from "@/content/articles/cvar-expected-shortfall";
 import CopulasTailDependence from "@/content/articles/copulas-tail-dependence";
 import SmaCrossoverBacktest from "@/content/articles/sma-crossover-backtest";
 import KalmanFilterHedgeRatios from "@/content/articles/kalman-filter-hedge-ratios";
-import KellyCriterion from "@/content/articles/kelly-criterion-position-sizing";
-import GamestopShortSqueeze from "@/content/articles/gamestop-short-squeeze";
-import GoldWarAndInflation from "@/content/articles/gold-war-and-inflation";
 
 /* Body registry — each article's prose lives in its own component so figures
    and code can be hand-crafted. Static import (only 8) keeps the export simple. */
@@ -27,18 +28,19 @@ const BODIES: Record<string, () => ReactElement> = {
   "brownian-motion": BrownianMotion,
   "black-scholes-greeks": BlackScholesGreeks,
   "bond-duration-convexity": BondDurationConvexity,
+  "heston-vs-black-scholes": HestonVsBlackScholes,
+  "sixty-forty-correlation-flip": SixtyFortyCorrelationFlip,
+  "gaussian-vs-t-copula": GaussianVsTCopula,
+  "gamestop-momentum-models": GamestopMomentumModels,
+  "alpha-decay-momentum": AlphaDecayMomentum,
   "mvo-efficient-frontier": MvoEfficientFrontier,
   "black-litterman": BlackLitterman,
   "risk-parity-futures": RiskParityFutures,
-  "black-scholes-from-first-principles": BlackScholes,
   "var-three-ways": VarThreeWays,
   "cvar-expected-shortfall": CvarExpectedShortfall,
   "copulas-tail-dependence": CopulasTailDependence,
   "sma-crossover-backtest": SmaCrossoverBacktest,
   "kalman-filter-hedge-ratios": KalmanFilterHedgeRatios,
-  "kelly-criterion-position-sizing": KellyCriterion,
-  "gamestop-short-squeeze": GamestopShortSqueeze,
-  "gold-war-and-inflation": GoldWarAndInflation,
 };
 
 export const dynamicParams = false;

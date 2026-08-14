@@ -1,0 +1,20 @@
+{
+  "slug": "heston-vs-black-scholes",
+  "category": "quant-finance-foundations",
+  "format": "Quant Insights",
+  "title": "Heston vs Black–Scholes: Fitting the Volatility Smile",
+  "dek": "One model prices every strike with the same number. The other doesn't have to.",
+  "date": "2026-08-10",
+  "readMinutes": 9,
+  "level": "Advanced",
+  "notebook": "heston-vs-black-scholes.ipynb",
+  "excerpt": "Black-Scholes assumes a single, constant volatility — so it predicts the same implied vol at every strike. The market flatly disagrees: implied vol curves into a smile/skew. The Heston model, by letting volatility itself be random, can bend to fit that curve. This piece pits the two against a real SPX-style implied-vol surface and measures who fits, by how much, and at what cost.",
+  "stack": ["QuantLib", "SciPy", "NumPy"],
+  "sections": [
+    { "id": "disagreement", "title": "The disagreement" },
+    { "id": "contenders", "title": "The contenders" },
+    { "id": "test", "title": "The test" },
+    { "id": "scoreboard", "title": "The scoreboard" },
+    { "id": "verdict", "title": "Verdict" }
+  ]
+}

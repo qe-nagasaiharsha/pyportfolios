@@ -1,0 +1,40 @@
+{
+  "slug": "gaussian-vs-t-copula",
+  "category": "risk-management",
+  "format": "Quant Insights",
+  "title": "Gaussian vs t-Copula: Capturing Joint Crashes",
+  "dek": "Two models of “moving together.” Only one believes in contagion.",
+  "date": "2026-08-10",
+  "readMinutes": 11,
+  "level": "Advanced",
+  "notebook": "gaussian-vs-t-copula.ipynb",
+  "excerpt": "A correlation number tells you how two assets co-move on average — it says nothing about whether they crash together.",
+  "stack": [
+    "SciPy",
+    "NumPy",
+    "Pandas",
+    "seaborn"
+  ],
+  "sections": [
+    {
+      "id": "disagreement",
+      "title": "The disagreement"
+    },
+    {
+      "id": "contenders",
+      "title": "The contenders"
+    },
+    {
+      "id": "test",
+      "title": "The test"
+    },
+    {
+      "id": "scoreboard",
+      "title": "The scoreboard"
+    },
+    {
+      "id": "verdict",
+      "title": "Verdict"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "slug": "sixty-forty-correlation-flip",
+  "category": "portfolio-optimization",
+  "format": "Case Study",
+  "title": "60/40 in 2022: When the Stock-Bond Correlation Flipped",
+  "dek": "During the 2022 inflation shock, the balanced portfolio failed because its diversifier stopped diversifying.",
+  "date": "2026-08-10",
+  "readMinutes": 10,
+  "level": "Intermediate",
+  "notebook": "sixty-forty-correlation-flip.ipynb",
+  "excerpt": "For two decades the 60/40 portfolio rested on one quiet assumption: when stocks fall, bonds rally. In 2022 that assumption broke — stocks fell ~18%, long Treasuries fell ~31%.",
+  "stack": [
+    "Pandas",
+    "NumPy",
+    "matplotlib",
+    "seaborn"
+  ],
+  "sections": [
+    {
+      "id": "setting",
+      "title": "The setting"
+    },
+    {
+      "id": "event",
+      "title": "The event"
+    },
+    {
+      "id": "mechanism",
+      "title": "The mechanism"
+    },
+    {
+      "id": "evidence",
+      "title": "The evidence"
+    },
+    {
+      "id": "post-mortem",
+      "title": "Post-mortem"
+    }
+  ]
+}

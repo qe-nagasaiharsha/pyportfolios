@@ -198,8 +198,8 @@ export default function MvoEfficientFrontier() {
         <SubSection label="5d" title="Alternatives & Extensions">
           <Bullets
             items={[
-              <><b>Black-Litterman</b> — fixes the input-sensitivity problem by blending market equilibrium with views (the <a href="/research/black-litterman">next tutorial</a>)</>,
-              <><b>Risk parity</b> — sidesteps return estimation entirely by allocating on risk contribution (our <a href="/research/risk-parity-futures">futures-based piece</a>)</>,
+              <><b>Black-Litterman</b> — fixes the input-sensitivity problem by blending market equilibrium with views (the next tutorial)</>,
+              <><b>Risk parity</b> — sidesteps return estimation entirely by allocating on risk contribution (our futures-based piece)</>,
               <><b>Hierarchical Risk Parity</b> — uses clustering instead of matrix inversion for stabler weights</>,
               <><b>CVaR optimization</b> — replaces variance with a genuine tail-risk measure</>,
             ]}

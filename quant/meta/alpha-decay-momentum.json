@@ -1,0 +1,39 @@
+{
+  "slug": "alpha-decay-momentum",
+  "category": "algorithmic-trading",
+  "format": "Research Note",
+  "title": "Alpha Decay: Measuring Momentum's Shrinking Half-Life",
+  "dek": "The data shows that sector momentum's predictive power fades within weeks — and has weakened decade over decade.",
+  "date": "2026-08-11",
+  "readMinutes": 9,
+  "level": "Advanced",
+  "notebook": "alpha-decay-momentum.ipynb",
+  "excerpt": "How long does a momentum signal keep working? Measured across horizons from 1 to 126 days on the 11 SPDR sector ETFs.",
+  "stack": [
+    "Alphalens",
+    "Pandas",
+    "statsmodels"
+  ],
+  "sections": [
+    {
+      "id": "data",
+      "title": "Data & signal"
+    },
+    {
+      "id": "decay",
+      "title": "The IC decay curve"
+    },
+    {
+      "id": "erosion",
+      "title": "Decade-over-decade erosion"
+    },
+    {
+      "id": "robustness",
+      "title": "Robustness"
+    },
+    {
+      "id": "implications",
+      "title": "Implications & limitations"
+    }
+  ]
+}

@@ -209,7 +209,7 @@ lam = 2 * stats.t.cdf(-np.sqrt((df_hat+1)*(1-rho)/(1+rho)), df=df_hat+1)`}
           {pc(d.pairs[2].condCrash)} and {pc(d.pairs[0].condCrash)}:
         </P>
         <DataTable
-          head={["Pair", "Kendall τ", "ρ (t copula)", "P(both worst-decile | one is)", "Gaussian @10%", "t copula λL (ν = " + String(d.params.dfHat) + ")"]}
+          head={["Pair", "Kendall tau", "Rho (t copula)", "P(both worst-decile | one is)", "Gaussian @10%", "t copula lambda-L (nu = " + String(d.params.dfHat) + ")"]}
           rows={d.pairs.map((p) => [
             p.pair,
             p.tau.toFixed(2),

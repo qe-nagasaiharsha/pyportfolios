@@ -49,7 +49,7 @@ export const MODULES: Module[] = [
     blurb: "From replication to a hedged book.",
     lessons: [
       { title: "No-arbitrage and replication", summary: "The single idea that prices everything.", minutes: 12 },
-      { title: "Black–Scholes from first principles", summary: "Derive the formula from a hedged portfolio, then code it.", minutes: 18, article: "black-scholes-from-first-principles" },
+      { title: "Black–Scholes from first principles", summary: "Derive the formula from a hedged portfolio, then code it.", minutes: 18 },
       { title: "The Greeks: delta to theta", summary: "How a desk measures and manages its risk.", minutes: 14, article: "black-scholes-greeks" },
       { title: "Where the model breaks: the volatility smile", summary: "Why constant vol is a fiction — and what to do about it.", minutes: 12 },
     ],

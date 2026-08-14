@@ -64,7 +64,7 @@ export function ArticleLayout({ article, children }: { article: Article; childre
               <h1 className="mt-5 font-sans text-[2.6rem] capitalize leading-[1.02] tracking-tight text-pearl md:text-[3.7rem]" style={{ fontWeight: 900 }}>
                 {article.title}
               </h1>
-              <p className="mt-6 max-w-2xl t-mono text-[0.95rem] font-bold italic leading-relaxed text-pearl">
+              <p className="mt-6 max-w-2xl font-sans text-[1.05rem] leading-relaxed text-pearl">
                 {article.dek}
               </p>
               <p className="mt-6 t-mono text-[0.72rem] text-pearl/70">
@@ -116,7 +116,7 @@ export function ArticleLayout({ article, children }: { article: Article; childre
                 <h1 className="mt-5 font-sans text-[2.5rem] capitalize leading-[1.02] tracking-tight text-pearl md:text-[3.5rem]" style={{ fontWeight: 900 }}>
                   {article.title}
                 </h1>
-                <p className="mt-6 max-w-2xl t-mono text-[0.95rem] font-bold italic leading-relaxed text-pearl">
+                <p className="mt-6 max-w-2xl font-sans text-[1.05rem] leading-relaxed text-pearl">
                   {article.dek}
                 </p>
 

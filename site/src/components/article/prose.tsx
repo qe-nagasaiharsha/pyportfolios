@@ -167,19 +167,28 @@ function leadsBold(node: ReactNode): boolean {
 
 /* a plain bulleted list on the reading surface — the bullet colour matches the
    colour of the text beside it (white next to a bold lead-in, grey otherwise) */
-export function Bullets({ items }: { items: ReactNode[] }) {
+/* `ordered` swaps the dot marker for "1." — same grey as the body text, no
+   brackets, matching the reference markers. */
+export function Bullets({ items, ordered = false }: { items: ReactNode[]; ordered?: boolean }) {
+  const List = ordered ? "ol" : "ul";
   return (
-    <ul className="mt-5 space-y-2.5 text-[1.05rem] leading-[1.7] text-pearl/65">
+    <List className="mt-5 space-y-2.5 text-[1.05rem] leading-[1.7] text-pearl/65">
       {items.map((it, i) => (
         <li key={i} className="flex gap-3">
-          <span
-            className={`mt-[0.55rem] h-1 w-1 shrink-0 rounded-full ${leadsBold(it) ? "bg-pearl" : "bg-pearl/65"}`}
-            aria-hidden="true"
-          />
-          <span>{it}</span>
+          {ordered ? (
+            <span className="shrink-0 tnum">{i + 1}.</span>
+          ) : (
+            <span
+              className={`mt-[0.55rem] h-1 w-1 shrink-0 rounded-full ${leadsBold(it) ? "bg-pearl" : "bg-pearl/65"}`}
+              aria-hidden="true"
+            />
+          )}
+          {/* a div, not a span: bullets carry block content (display formulas,
+              which render as <div>), and a <div> inside a <span> is invalid */}
+          <div className="min-w-0 flex-1">{it}</div>
         </li>
       ))}
-    </ul>
+    </List>
   );
 }
 

@@ -13,7 +13,18 @@
 import Link from "next/link";
 import { articlesByCategory, CATEGORIES, type CategorySlug } from "@/lib/articles";
 
-export function CategoryNavItem({ label, href }: { label: string; href: string }) {
+/** `align="right"` anchors the panel to the item's right edge instead of its
+    left. The last category sits far enough across the header that a 34rem panel
+    opening leftwards runs off the viewport below ~1100px wide. */
+export function CategoryNavItem({
+  label,
+  href,
+  align = "left",
+}: {
+  label: string;
+  href: string;
+  align?: "left" | "right";
+}) {
   const slug = href.split("/").pop() as CategorySlug;
   const posts = articlesByCategory(slug);
 
@@ -27,13 +38,23 @@ export function CategoryNavItem({ label, href }: { label: string; href: string }
           <span key={word} className="block">{word}</span>
         ))}
       </Link>
+      {/* Panel is sized so four articles fit without scrolling — the common case
+          today. Two things drive the height: the max-h cap below, and how often a
+          long title wraps. At 27rem the text column was ~272px and titles ran to
+          three or four lines (items up to 191px, four of them overflowing a 34rem
+          cap by ~60px). 34rem gives the text ~350px, keeping most titles to two
+          lines. A fifth article scrolls, by design. */}
       {posts.length > 0 && (
-        <div className="invisible absolute left-0 top-full z-50 w-[27rem] translate-y-1 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
+        <div
+          className={`invisible absolute ${
+            align === "right" ? "right-0" : "left-0"
+          } top-full z-50 w-[34rem] max-w-[calc(100vw-2rem)] translate-y-1 pt-4 opacity-0 transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100`}
+        >
           <div className="overflow-hidden rounded-xl border border-pearl/15 bg-coal/95 p-2 shadow-2xl shadow-black/50 backdrop-blur-md">
             <p className="px-3 pb-2 pt-1 font-sans text-[0.6rem] font-black uppercase tracking-[0.15em] text-pearl/45">
               {CATEGORIES[slug].name}
             </p>
-            <ul className="nav-dropdown-scroll max-h-[min(34rem,calc(100vh-9rem))] space-y-0.5 overflow-y-auto overscroll-contain pr-1">
+            <ul className="nav-dropdown-scroll max-h-[min(42rem,calc(100vh-7rem))] space-y-0.5 overflow-y-auto overscroll-contain pr-1">
               {posts.map((a) => (
                 <li key={a.slug}>
                   <Link

@@ -131,8 +131,14 @@ export default function StyleTile({
               )}
             </a>
             <ul className="hidden flex-1 items-center justify-between gap-4 lg:flex">
-              {NAV.map((item) => (
-                <CategoryNavItem key={item.label} label={item.label} href={item.href} />
+              {NAV.map((item, i) => (
+                <CategoryNavItem
+                  key={item.label}
+                  label={item.label}
+                  href={item.href}
+                  /* last category sits far right; open its panel leftwards */
+                  align={i === NAV.length - 1 ? "right" : "left"}
+                />
               ))}
               <li>
                 <a href="/course" className="block text-center font-sans font-black text-[0.68rem] leading-[1.05] tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl"><span className="block">Course</span><span className="block">Structure</span></a>

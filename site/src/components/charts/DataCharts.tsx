@@ -81,6 +81,28 @@ function Frame({
   );
 }
 
+/* Axis titles. The x title sits BELOW the tick row (which Frame draws at h-6),
+   so callers extend the viewBox by AXIS_PAD when they pass one. */
+const AXIS_PAD = 14;
+
+function AxisTitles({ w, h, xLabel, yLabel }: { w: number; h: number; xLabel?: string; yLabel?: string }) {
+  const midY = (M.t + h - M.b) / 2;
+  return (
+    <>
+      {xLabel ? (
+        <text x={(M.l + w - M.r) / 2} y={h + AXIS_PAD - 4} textAnchor="middle" fontSize="9" fill="#4a4a42" fillOpacity="0.9" className="t-mono">
+          {xLabel}
+        </text>
+      ) : null}
+      {yLabel ? (
+        <text x={11} y={midY} textAnchor="middle" fontSize="9" fill="#4a4a42" fillOpacity="0.9" className="t-mono" transform={`rotate(-90 11 ${midY})`}>
+          {yLabel}
+        </text>
+      ) : null}
+    </>
+  );
+}
+
 /* -------------------------------------------------------------- LineChart -- */
 
 export interface LineSeries {
@@ -103,6 +125,8 @@ export function LineChart({
   yMax,
   yFmt,
   hLines = [],
+  xLabel,
+  yLabel,
   className = "w-full",
   ariaLabel,
 }: {
@@ -116,6 +140,9 @@ export function LineChart({
   yFmt?: (v: number) => string;
   /** horizontal reference lines, e.g. a VaR threshold */
   hLines?: { v: number; color?: ChartColor; dash?: string; label?: string }[];
+  /** axis titles, drawn outside the plot area */
+  xLabel?: string;
+  yLabel?: string;
   className?: string;
   ariaLabel: string;
 }) {
@@ -131,13 +158,14 @@ export function LineChart({
   const gid = `lc${Math.round(sy(lo) * 7 + w + series.length * 13)}`; // deterministic id
 
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className={className} role="img" aria-label={ariaLabel}>
+    <svg viewBox={`0 0 ${w} ${h + (xLabel ? AXIS_PAD : 0)}`} className={className} role="img" aria-label={ariaLabel}>
       <defs>
         <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#0a8a8a" stopOpacity="0.16" />
           <stop offset="100%" stopColor="#0a8a8a" stopOpacity="0" />
         </linearGradient>
       </defs>
+      <AxisTitles w={w} h={h} xLabel={xLabel} yLabel={yLabel} />
       <Frame w={w} h={h} yTicks={ticks} xLabels={labels} yFmt={yFmt}>
         {series.map((s, si) => {
           const n = s.y.length;
@@ -196,6 +224,8 @@ export function BarChart({
   w = 600,
   h = 220,
   yFmt,
+  xLabel,
+  yLabel,
   className = "w-full",
   ariaLabel,
 }: {
@@ -205,6 +235,9 @@ export function BarChart({
   w?: number;
   h?: number;
   yFmt?: (v: number) => string;
+  /** axis titles, drawn outside the plot area */
+  xLabel?: string;
+  yLabel?: string;
   className?: string;
   ariaLabel: string;
 }) {
@@ -221,7 +254,8 @@ export function BarChart({
   const xLabels = labels.map((text, i) => ({ text, x: M.l + slot * i + slot / 2 }));
 
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className={className} role="img" aria-label={ariaLabel}>
+    <svg viewBox={`0 0 ${w} ${h + (xLabel ? AXIS_PAD : 0)}`} className={className} role="img" aria-label={ariaLabel}>
+      <AxisTitles w={w} h={h} xLabel={xLabel} yLabel={yLabel} />
       <Frame w={w} h={h} yTicks={ticks} xLabels={xLabels} yFmt={yFmt}>
         {groups.map((g, gi) =>
           g.values.map((v, i) => {

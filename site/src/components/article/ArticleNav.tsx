@@ -30,8 +30,14 @@ export function ArticleNav() {
         <ul className="hidden flex-1 items-center justify-between gap-4 lg:flex">
           {/* each nav item points at its own category page
               (/research/<category>), not an anchor on /research */}
-          {NAV.map((item) => (
-            <CategoryNavItem key={item.label} label={item.label} href={item.href} />
+          {NAV.map((item, i) => (
+            <CategoryNavItem
+              key={item.label}
+              label={item.label}
+              href={item.href}
+              /* last category sits far right; open its panel leftwards */
+              align={i === NAV.length - 1 ? "right" : "left"}
+            />
           ))}
           {EXTRA.map((item) => (
             <li key={item.label}>

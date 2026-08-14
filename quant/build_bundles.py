@@ -44,7 +44,7 @@ PIP_NAME = {
     "PyPortfolioOpt": "PyPortfolioOpt", "Riskfolio-Lib": "Riskfolio-Lib",
     "Polars": "polars", "DuckDB": "duckdb",
     "vectorbt": "vectorbt", "Pyfolio": "pyfolio-reloaded",
-    "seaborn": "seaborn",
+    "seaborn": "seaborn", "QuantLib": "QuantLib", "Alphalens": "alphalens-reloaded",
 }
 
 # legacy articles (pre-Batch-1) get a safe superset

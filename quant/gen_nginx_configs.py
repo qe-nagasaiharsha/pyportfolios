@@ -18,6 +18,8 @@ DEPLOY = Path(__file__).resolve().parent.parent / "deploy"
 
 # port -> (config filename, extra listen lines, note)
 CONFIGS = {
+    80:   ("nginx-80.conf", [], "public — the default HTTP port, so no :port in the URL. "
+                               "Corporate networks that block outbound 8080 usually allow 80"),
     8080: ("nginx-8080.conf", [], "public — commonly allowed through corporate firewalls"),
     8000: ("nginx-8000.conf", [], "public — alternate"),
     8081: ("nginx-pyportfolios.conf", [], "named instance"),

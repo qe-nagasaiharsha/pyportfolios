@@ -20,8 +20,11 @@ $ErrorActionPreference = "Stop"
 $deploy = $PSScriptRoot
 $repo = Split-Path -Parent $deploy
 
-# config filename is not always nginx-<port>.conf (historical names)
-$map = @{ 8080 = "nginx-8080.conf"; 8000 = "nginx-8000.conf"; 8081 = "nginx-pyportfolios.conf";
+# config filename is not always nginx-<port>.conf (historical names).
+# Keep this in step with CONFIGS in quant/gen_nginx_configs.py — the generator
+# writes the files, this map is what lets you start them by port.
+$map = @{ 80   = "nginx-80.conf";
+          8080 = "nginx-8080.conf"; 8000 = "nginx-8000.conf"; 8081 = "nginx-pyportfolios.conf";
           5000 = "nginx-5000.conf"; 5500 = "nginx-local-5500.conf"; 5501 = "nginx-local-5501.conf";
           1133 = "nginx-1133.conf" }
 if (-not $map.ContainsKey($Port)) { throw "No config for port $Port. Known: $($map.Keys -join ', ')" }

@@ -557,6 +557,13 @@ html.lenis body {
 .reveal-js [data-reveal].in-view {
   opacity: 1;
   transform: none;
+  /* Drop the compositor hint once the reveal has finished. Without this the
+     element keeps its own GPU layer for the life of the page: the browser
+     rasterises its text once at layer creation and reuses that bitmap, so type
+     and images stay permanently soft — obvious on scaled displays (125/150%),
+     invisible at 100%. will-change is a promise about what is ABOUT to change,
+     not a decoration; leaving it set after the animation is the bug. */
+  will-change: auto;
 }
 
 /* line that draws itself when its reveal block enters view */

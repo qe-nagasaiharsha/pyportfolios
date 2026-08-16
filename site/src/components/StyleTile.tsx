@@ -119,7 +119,7 @@ export default function StyleTile({
       <Lightbox />
       {/* ============ STICKY TOP: version toggle row + site nav ========= */}
       <div className="sticky top-0 z-50">
-        <header className="border-b border-pearl/10 bg-navy/80 backdrop-blur-md">
+        <header className="border-b border-pearl/10 bg-navy/95">
           <nav className="nav-condense mx-auto flex max-w-7xl items-center gap-8 px-6 py-4">
             <a href="#top" className="group nav-logo shrink-0">
               {f.crest ? (

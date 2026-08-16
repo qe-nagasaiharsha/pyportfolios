@@ -19,8 +19,13 @@ const EXTRA = [
 ] as const;
 
 export function ArticleNav() {
+  /* No backdrop-blur on this bar. A sticky element with backdrop-filter blurs
+     everything scrolling beneath it, and in Chrome it pushes the whole scrolling
+     area onto a composited path — text is rasterised into a bitmap and reused
+     while moving, so the page reads soft during scroll and snaps sharp when it
+     stops. A near-opaque background gives the same separation for free. */
   return (
-    <header className="sticky top-0 z-50 border-b border-pearl/10 bg-anthracite/85 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-pearl/10 bg-anthracite/95">
       <nav className="mx-auto flex max-w-7xl items-center gap-8 px-6 py-4">
         <Link href="/" className="shrink-0">
           <span className="font-sans text-lg tracking-tight text-pearl" style={{ fontWeight: 900 }}>

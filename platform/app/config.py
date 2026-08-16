@@ -26,9 +26,22 @@ class Settings(BaseSettings):
 
     # Set true behind HTTPS (nginx terminates TLS in production).
     cookie_secure: bool = False
+    # Session-cookie SameSite policy. "lax" for same-origin (nginx proxy). Set
+    # "none" when the frontend is a different origin (e.g. Vercel → Render) so
+    # the cookie rides cross-site fetches — requires cookie_secure=true.
+    cookie_samesite: str = "lax"
+
+    # Extra CORS origins allowed to call the API with credentials, comma-
+    # separated (e.g. "https://pyportfolios.vercel.app"). localhost is always
+    # allowed for dev. Needed when the frontend is a separate origin.
+    cors_origins: str = ""
 
     # "mock" (default; in-process fake checkout) or "stripe".
     payment_provider: str = "mock"
+
+    # Public origin of the site, used to build Stripe success/cancel redirect
+    # URLs. Override per environment (e.g. https://pyportfolios.vercel.app).
+    public_base_url: str = "https://pyportfolios.com"
 
     # Stripe credentials — empty by default so the Stripe adapter stays inert.
     stripe_secret_key: str = ""

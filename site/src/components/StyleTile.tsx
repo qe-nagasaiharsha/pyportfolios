@@ -30,6 +30,7 @@ import { StackCards } from "@/components/brand/StackCards";
 import { ExchangeRow } from "@/components/brand/ExchangeRow";
 import { DerivativesRow } from "@/components/brand/DerivativesRow";
 import { MobileNav } from "@/components/MobileNav";
+import { AuthNavButton } from "@/components/AuthNavButton";
 import { SectorsIndices } from "@/components/brand/SectorsIndices";
 import { EtfProviders } from "@/components/brand/EtfProviders";
 import { WorldClockBand } from "@/components/brand/WorldClockBand";
@@ -148,10 +149,9 @@ export default function StyleTile({
               </li>
             </ul>
             <div className="ml-auto flex shrink-0 items-center gap-2">
-              <a href="#course" className="hidden w-[183px] items-center justify-center rounded-sm border border-pearl/30 py-2 t-mono text-xs font-semibold text-pearl transition-colors duration-300 hover:border-aqua hover:text-aqua lg:inline-flex">Sign in</a>
+              <AuthNavButton />
               <MobileNav
                 items={[...NAV, { label: "Course Structure", href: "/course" }, { label: "Literature Recommendations", href: "/literature" }]}
-                signInHref="#course"
               />
             </div>
           </nav>

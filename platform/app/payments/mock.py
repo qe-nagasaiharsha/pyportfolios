@@ -76,6 +76,8 @@ class MockProvider:
                 plan_code=data.get("plan_code"),
                 amount_cents=data.get("amount_cents"),
                 provider_ref=data.get("provider_ref", ""),
+                subscription_id=data.get("subscription_id"),
+                period_end_ts=data.get("period_end_ts"),
                 raw=payload,
             )
         except (ValueError, KeyError, TypeError) as exc:

@@ -17,6 +17,11 @@ class ConfigurationError(RuntimeError):
     """Provider is selected but not configured (e.g. missing API keys)."""
 
 
+class PaymentError(RuntimeError):
+    """The provider was reached but rejected the request (bad price id, declined
+    key, network failure) — carries a human-readable reason for the caller."""
+
+
 class WebhookVerificationError(ValueError):
     """Webhook payload failed signature verification or was malformed."""
 
@@ -33,12 +38,18 @@ class CheckoutResult:
 @dataclass
 class NormalizedEvent:
     event_id: str
-    event_type: str  # "checkout.completed" | "payment.failed" | other passthrough
+    event_type: str  # "checkout.completed" | "invoice.paid" | other passthrough
     user_id: int | None = None
     plan_code: str | None = None
     amount_cents: int | None = None
     currency: str = "usd"
     provider_ref: str = ""
+    # Provider-side subscription id (Stripe `sub_...`), captured on checkout so
+    # renewals and cancellation can be tied back to the local subscription row.
+    subscription_id: str | None = None
+    # New period end for a renewal, as a unix timestamp (converted to a
+    # naive-UTC datetime in the service). None outside renewal events.
+    period_end_ts: int | None = None
     raw: dict[str, Any] = field(default_factory=dict)
 
 

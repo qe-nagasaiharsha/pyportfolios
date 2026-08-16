@@ -266,6 +266,35 @@ def test_premium_is_a_renewing_subscription(client):
     assert client.get(f"/api/content/notebooks/{NOTEBOOK_SLUG}").status_code == 200
 
 
+def test_checkout_blocks_downgrade_and_duplicate(client):
+    """A Premium member cannot re-checkout into a lesser (or equal) plan —
+    that would overwrite better access in place and take a second payment."""
+    register(client, "grace@example.com")
+    status, _ = buy(client, "premium-monthly", CARD_SUCCESS)
+    assert status == 200
+
+    # Downgrade to Pro is refused before any checkout/payment is created.
+    r = client.post("/api/checkout", json={"plan_code": "pro-monthly"})
+    assert r.status_code == 409
+    # Buying Premium again (equal rank) is refused too.
+    assert client.post("/api/checkout", json={"plan_code": "premium-monthly"}).status_code == 409
+
+    # The original Premium subscription is untouched.
+    sub = client.get("/api/subscription").json()
+    assert sub["plan_code"] == "premium-monthly"
+    assert sub["status"] == "active"
+
+
+def test_checkout_allows_upgrade_pro_to_premium(client):
+    """A strict upgrade (Pro → Premium) is still permitted."""
+    register(client, "heidi@example.com")
+    assert buy(client, "pro-monthly", CARD_SUCCESS)[0] == 200
+    status, body = buy(client, "premium-monthly", CARD_SUCCESS)
+    assert status == 200
+    assert body["subscription"]["plan_code"] == "premium-monthly"
+    assert body["subscription"]["current_period_end"] is not None
+
+
 # ---------------------------------------------------------------------------
 # Content gating: path traversal
 # ---------------------------------------------------------------------------
@@ -355,5 +384,113 @@ def test_stripe_provider_inert_without_keys(client, monkeypatch):
         r = client.post("/api/checkout", json={"plan_code": "pro-monthly"})
         assert r.status_code == 503
         assert "STRIPE_SECRET_KEY" in r.json()["detail"]
+    finally:
+        get_settings.cache_clear()
+
+
+# ---------------------------------------------------------------------------
+# Subscription lifecycle via webhooks: activation stores the provider sub id,
+# recurring invoice.paid extends the period, the initial invoice is a no-op.
+# ---------------------------------------------------------------------------
+
+FAR_FUTURE_TS = 4102444800  # 2100-01-01T00:00:00 UTC
+
+
+def test_webhook_renewal_extends_period(client):
+    """Mock-webhook path: checkout.completed activates + stores the sub id, and
+    a later invoice.paid (matched by that id) pushes current_period_end out."""
+    user = register(client, "ivan@example.com")
+
+    r = client.post("/api/webhooks/mock", json={
+        "id": "evt_create", "type": "checkout.completed",
+        "data": {"user_id": user["id"], "plan_code": "pro-monthly",
+                 "amount_cents": 2900, "subscription_id": "sub_mock_1",
+                 "provider_ref": "cs_mock_1"},
+    })
+    assert r.json()["handled"] is True
+    first_end = client.get("/api/subscription").json()["current_period_end"]
+
+    r = client.post("/api/webhooks/mock", json={
+        "id": "evt_renew", "type": "invoice.paid",
+        "data": {"subscription_id": "sub_mock_1", "period_end_ts": FAR_FUTURE_TS,
+                 "amount_cents": 2900, "provider_ref": "in_mock_1"},
+    })
+    assert r.status_code == 200
+    assert r.json()["handled"] is True
+    sub = client.get("/api/subscription").json()
+    assert sub["current_period_end"].startswith("2100")
+    assert sub["current_period_end"] != first_end
+
+    # A renewal for a subscription we don't know is acknowledged, not acted on.
+    r = client.post("/api/webhooks/mock", json={
+        "id": "evt_orphan", "type": "invoice.paid",
+        "data": {"subscription_id": "sub_unknown", "period_end_ts": FAR_FUTURE_TS,
+                 "provider_ref": "in_orphan"},
+    })
+    assert r.status_code == 200
+    assert r.json()["handled"] is False
+
+
+def test_stripe_lifecycle_via_signed_webhooks(client, monkeypatch):
+    """Full Stripe path, no network: signed checkout.session.completed activates
+    and stores sub_..., a signed renewal invoice extends the period, and the
+    initial (subscription_create) invoice is correctly ignored."""
+    user = register(client, "judy@example.com")
+    monkeypatch.setenv("PAYMENT_PROVIDER", "stripe")
+    monkeypatch.setenv("STRIPE_WEBHOOK_SECRET", "whsec_test")
+    get_settings.cache_clear()
+    secret = "whsec_test"
+
+    def post_event(event: dict) -> dict:
+        body = json.dumps(event).encode()
+        sig = _sign(body, secret, int(time.time()))
+        r = client.post(
+            "/api/webhooks/stripe",
+            content=body,
+            headers={"Stripe-Signature": sig, "Content-Type": "application/json"},
+        )
+        assert r.status_code == 200, r.text
+        return r.json()
+
+    try:
+        # Activation
+        assert post_event({
+            "id": "evt_cs", "type": "checkout.session.completed",
+            "data": {"object": {
+                "id": "cs_1", "subscription": "sub_stripe_1",
+                "amount_total": 2900, "currency": "usd",
+                "client_reference_id": str(user["id"]),
+                "metadata": {"user_id": str(user["id"]), "plan_code": "pro-monthly"},
+            }},
+        })["handled"] is True
+        sub = client.get("/api/subscription").json()
+        assert sub["status"] == "active" and sub["plan_code"] == "pro-monthly"
+        first_end = sub["current_period_end"]
+
+        # Initial invoice (subscription_create) must NOT double-charge/extend.
+        assert post_event({
+            "id": "evt_in0", "type": "invoice.paid",
+            "data": {"object": {"id": "in_0", "subscription": "sub_stripe_1",
+                     "billing_reason": "subscription_create",
+                     "lines": {"data": [{"period": {"end": FAR_FUTURE_TS}}]}}},
+        })["handled"] is False
+        assert client.get("/api/subscription").json()["current_period_end"] == first_end
+
+        # Recurring renewal extends the period.
+        assert post_event({
+            "id": "evt_in1", "type": "invoice.paid",
+            "data": {"object": {"id": "in_1", "subscription": "sub_stripe_1",
+                     "amount_paid": 2900, "currency": "usd",
+                     "billing_reason": "subscription_cycle",
+                     "lines": {"data": [{"period": {"end": FAR_FUTURE_TS}}]}}},
+        })["handled"] is True
+        assert client.get("/api/subscription").json()["current_period_end"].startswith("2100")
+
+        # A tampered signature is rejected.
+        body = json.dumps({"id": "evt_bad", "type": "invoice.paid", "data": {}}).encode()
+        bad = client.post("/api/webhooks/stripe", content=body,
+                          headers={"Stripe-Signature": _sign(body, "whsec_wrong", int(time.time())),
+                                   "Content-Type": "application/json"})
+        assert bad.status_code == 400
     finally:
         get_settings.cache_clear()

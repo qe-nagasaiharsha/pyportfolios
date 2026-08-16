@@ -103,6 +103,10 @@ class Subscription(Base):
     status: Mapped[str] = mapped_column(String(16), nullable=False, default="active")
     current_period_end: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     cancel_at_period_end: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    # Provider-side subscription id (Stripe `sub_...`) — needed to cancel and to
+    # match renewal (invoice.paid) webhooks back to this row. Null for the mock
+    # provider and for one-time purchases.
+    provider_sub_id: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
 
 

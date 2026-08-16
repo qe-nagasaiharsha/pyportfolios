@@ -64,18 +64,22 @@ def create_session(db: Session, user: User, response: Response) -> None:
         )
     )
     db.commit()
+    # SameSite=None requires Secure=True (browsers reject an insecure None cookie).
+    samesite = settings.cookie_samesite.lower()
+    secure = settings.cookie_secure or samesite == "none"
     response.set_cookie(
         SESSION_COOKIE,
         token,
         max_age=settings.session_ttl_days * 86400,
         httponly=True,
-        samesite="lax",
-        secure=settings.cookie_secure,  # true behind HTTPS/nginx in production
+        samesite=samesite,
+        secure=secure,
         path="/",
     )
 
 
 def destroy_session(db: Session, request: Request, response: Response) -> None:
+    settings = get_settings()
     token = request.cookies.get(SESSION_COOKIE)
     if token:
         row = db.execute(
@@ -84,7 +88,13 @@ def destroy_session(db: Session, request: Request, response: Response) -> None:
         if row is not None:
             db.delete(row)
             db.commit()
-    response.delete_cookie(SESSION_COOKIE, path="/")
+    samesite = settings.cookie_samesite.lower()
+    response.delete_cookie(
+        SESSION_COOKIE,
+        path="/",
+        samesite=samesite,
+        secure=settings.cookie_secure or samesite == "none",
+    )
 
 
 def get_current_user(request: Request, db: Session = Depends(get_db)) -> User:

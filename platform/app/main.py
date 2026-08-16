@@ -39,11 +39,16 @@ app = FastAPI(
     openapi_url="/api/openapi.json",
 )
 
-# Dev CORS: the static site is served from another localhost port during
-# development. In production both are same-origin behind nginx, so CORS is
-# effectively moot there. allow_credentials is required for the session cookie.
+# CORS. localhost is always allowed (dev). When the frontend is a separate
+# origin (e.g. Vercel → Render), list it in CORS_ORIGINS so credentialed fetches
+# are accepted. allow_credentials is required for the session cookie; note a
+# credentialed request cannot use the "*" wildcard, hence explicit origins.
+_extra_origins = [
+    o.strip() for o in get_settings().cors_origins.split(",") if o.strip()
+]
 app.add_middleware(
     CORSMiddleware,
+    allow_origins=_extra_origins,
     allow_origin_regex=r"^http://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["*"],

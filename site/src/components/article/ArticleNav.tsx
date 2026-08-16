@@ -1,13 +1,14 @@
 /* Global top nav for article pages — kept visually identical to the landing
    page header (StyleTile) so navigation is consistent across the site.
-   Server Component; links only. */
+   Server Component; the auth control is a client island. */
 
 import Link from "next/link";
 import { MobileNav } from "@/components/MobileNav";
 import { CategoryNavItem } from "@/components/nav/CategoryNavItem";
+import { AuthNavButton } from "@/components/AuthNavButton";
 
 const NAV = [
-  { label: "Quant Finance Foundations", href: "/research/quant-finance-foundations" },
+  { label: "Quant Finance Foundations", href: "/research/quant-finance-foundations" },
   { label: "Portfolio Optimization", href: "/research/portfolio-optimization" },
   { label: "Risk Management", href: "/research/risk-management" },
   { label: "Algorithmic Trading", href: "/research/algorithmic-trading" },
@@ -58,13 +59,8 @@ export function ArticleNav() {
           ))}
         </ul>
         <div className="ml-auto flex shrink-0 items-center gap-2">
-          <Link
-            href="/account"
-            className="hidden w-[183px] items-center justify-center rounded-sm border border-pearl/30 py-2 t-mono text-xs font-semibold text-pearl transition-colors duration-300 hover:border-aqua hover:text-aqua lg:inline-flex"
-          >
-            Sign in
-          </Link>
-          <MobileNav items={[...NAV, ...EXTRA]} signInHref="/account" />
+          <AuthNavButton />
+          <MobileNav items={[...NAV, ...EXTRA]} />
         </div>
       </nav>
     </header>

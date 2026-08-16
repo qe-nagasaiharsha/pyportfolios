@@ -13,7 +13,7 @@ from ..auth import get_current_user
 from ..db import get_db
 from ..models import Plan, User
 from ..payments import get_provider
-from ..payments.base import ConfigurationError
+from ..payments.base import ConfigurationError, PaymentError
 from ..payments.mock import MockProvider
 
 router = APIRouter(prefix="/api/checkout", tags=["checkout"])
@@ -39,11 +39,30 @@ def create_checkout(
     if plan.amount_cents == 0:
         raise HTTPException(status_code=400, detail="The Starter plan is free — nothing to buy")
 
+    # Reject downgrades and duplicate purchases. Because activate_subscription
+    # overwrites the single subscription row in place, buying a plan of equal or
+    # lower rank than the active one would silently replace better access (e.g.
+    # Premium → a cheaper Pro) and take a second payment. Only strict upgrades
+    # are allowed here; managing an existing plan happens on the account page.
+    current = services.get_subscription(db, user.id)
+    if (
+        current is not None
+        and services.effective_status(current) == "active"
+        and services.plan_rank(plan.code) <= services.plan_rank(current.plan_code)
+    ):
+        raise HTTPException(
+            status_code=409,
+            detail=f"You already have an active {current.plan_code} plan — nothing to buy here.",
+        )
+
     provider = get_provider()
     try:
         result = provider.create_checkout(user, plan)
     except ConfigurationError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except PaymentError as exc:
+        # Provider reached but rejected the request (bad price id, key, network).
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
     return {
         "checkout_id": result.checkout_id,
         "client_action": result.client_action,

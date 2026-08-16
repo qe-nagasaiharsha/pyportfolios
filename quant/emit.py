@@ -7,7 +7,7 @@ and emits:
   2. a runnable notebook -> site/public/notebooks/<slug>.ipynb
 
 The TS module is consumed by the article body via the generic chart components
-(site/src/components/charts/DataCharts.tsx). Never hand-edit generated files.
+(site/src/components/charts/echarts/). Never hand-edit generated files.
 """
 
 from __future__ import annotations

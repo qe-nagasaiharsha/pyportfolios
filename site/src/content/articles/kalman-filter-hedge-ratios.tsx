@@ -1,5 +1,5 @@
 import { Section, Lead, P, InlineCode, Formula, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
-import { LineChart } from "@/components/charts/DataCharts";
+import { Line } from "@/components/charts/echarts/Line";
 import d from "./data/kalman-filter-hedge-ratios";
 
 /* T14 / topic card 14-16 — all figures below render REAL computed results
@@ -59,11 +59,11 @@ export default function KalmanFilterHedgeRatios() {
             { label: "EWA", tone: "muted" },
           ]}
         >
-          <LineChart
+          <Line
             ariaLabel="Normalized EWA and EWC prices 2010 to 2024: the two series track each other broadly, with EWC roughly doubling while EWA ends near 1.9, diverging and reconverging repeatedly."
             series={[
-              { y: d.prices.ewc as unknown as number[], color: "teal", width: 1.8 },
-              { y: d.prices.ewa as unknown as number[], color: "graphite", width: 1.4, opacity: 0.8 },
+              { name: "EWC", y: d.prices.ewc as unknown as number[], color: "teal", width: 1.8 },
+              { name: "EWA", y: d.prices.ewa as unknown as number[], color: "graphite", width: 1.4, opacity: 0.8 },
             ]}
             xLabels={d.prices.xLabels as unknown as [number, string][]}
           />
@@ -154,15 +154,15 @@ export default function KalmanFilterHedgeRatios() {
             { label: "static OLS", tone: "muted" },
           ]}
         >
-          <LineChart
+          <Line
             ariaLabel="Hedge ratio estimates 2011 to 2024: the Kalman beta drifts smoothly between roughly 0.7 and 1.5, the rolling OLS beta oscillates violently between about 0.2 and 2.7, and the static beta sits flat at 1.57."
             series={[
-              { y: d.beta.rolling as unknown as number[], color: "amber", width: 1.2, opacity: 0.85 },
-              { y: d.beta.kalman as unknown as number[], color: "teal", width: 2.2 },
+              { name: "rolling OLS β", y: d.beta.rolling as unknown as number[], color: "amber", width: 1.2, opacity: 0.85 },
+              { name: "Kalman β", y: d.beta.kalman as unknown as number[], color: "teal", width: 2.2 },
             ]}
-            hLines={[{ v: d.params.betaStatic, color: "rust", dash: "5 4", label: `static ${d.params.betaStatic.toFixed(2)}` }]}
+            hLines={[{ v: d.params.betaStatic, color: "rust", label: `static ${d.params.betaStatic.toFixed(2)}` }]}
             xLabels={d.beta.xLabels as unknown as [number, string][]}
-            h={250}
+            height={250}
           />
         </Figure>
         <P>
@@ -203,13 +203,13 @@ elif p == -1 and z[t] <= 0: p = 0              # short leg reverted`}
             { label: "±2σ entry", tone: "muted" },
           ]}
         >
-          <LineChart
+          <Line
             ariaLabel="Z-score of the Kalman spread oscillating rapidly around zero between roughly minus four and plus four, crossing the plus and minus two entry bands many times across the sample."
-            series={[{ y: d.zscore.z as unknown as number[], color: "teal", width: 1.1 }]}
+            series={[{ name: "z-score", y: d.zscore.z as unknown as number[], color: "teal", width: 1.1 }]}
             hLines={[
-              { v: d.params.entryZ, color: "rust", dash: "5 4", label: "+2σ" },
-              { v: -d.params.entryZ, color: "rust", dash: "5 4", label: "−2σ" },
-              { v: 0, color: "graphite", dash: "2 4" },
+              { v: d.params.entryZ, color: "rust", label: "+2σ" },
+              { v: -d.params.entryZ, color: "rust", label: "−2σ" },
+              { v: 0, color: "graphite" },
             ]}
             xLabels={d.zscore.xLabels as unknown as [number, string][]}
           />
@@ -235,11 +235,11 @@ elif p == -1 and z[t] <= 0: p = 0              # short leg reverted`}
             { label: "static β", tone: "muted" },
           ]}
         >
-          <LineChart
+          <Line
             ariaLabel="Net equity curves 2011 to 2024: the static-beta strategy grinds up to roughly 1.24 with visible drawdowns, while the Kalman-beta strategy decays slowly to about 0.89 under transaction costs."
             series={[
-              { y: d.equity.static as unknown as number[], color: "graphite", width: 1.4 },
-              { y: d.equity.kalman as unknown as number[], color: "teal", width: 2 },
+              { name: "static β", y: d.equity.static as unknown as number[], color: "graphite", width: 1.4 },
+              { name: "Kalman β", y: d.equity.kalman as unknown as number[], color: "teal", width: 2 },
             ]}
             xLabels={d.equity.xLabels as unknown as [number, string][]}
           />

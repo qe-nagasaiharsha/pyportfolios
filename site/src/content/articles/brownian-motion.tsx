@@ -26,6 +26,8 @@
 
 import { Section, P, Bullets, CodeBlock, Figure, Formula } from "@/components/article/prose";
 import { ProjectCard } from "@/components/article/ProjectCard";
+import { Histogram } from "@/components/charts/echarts/Histogram";
+import gbm from "./data/brownian-motion";
 import {
   SETUP_CODE, IMPL_CODE, CALIBRATE_CODE, PATHS_CODE, TERMINAL_CODE, MARTINGALE_CODE,
   CALIBRATE_OUT, MARTINGALE_OUT,
@@ -212,10 +214,18 @@ export default function BrownianMotion() {
         />
         <CodeBlock code={TERMINAL_CODE} />
         <Figure caption="SPY: terminal price distribution after 5 years">
-          <img
-            src="/figures/gbm-terminal.png"
-            alt="Histogram of simulated terminal SPY prices with the theoretical log-normal density overlaid; vertical lines mark the mean above the median, showing the right skew"
-            className="w-full rounded-sm"
+          <Histogram
+            ariaLabel="Histogram of simulated terminal SPY prices with the theoretical log-normal density overlaid; vertical lines mark the mean above the median, showing the right skew"
+            height={260}
+            binEdges={[...gbm.terminal.edges]}
+            counts={[...gbm.terminal.density]}
+            barName="simulated"
+            overlay={{ name: "log-normal density", y: [...gbm.terminal.lognormal], color: "graphite" }}
+            vLines={[
+              { v: gbm.terminal.mean, color: "rust", label: `Mean ${Math.round(gbm.terminal.mean).toLocaleString()}` },
+              { v: gbm.terminal.median, color: "teal", label: `Median ${Math.round(gbm.terminal.median).toLocaleString()}` },
+            ]}
+            xFmt={{ decimals: 0, prefix: "$", group: true }}
           />
         </Figure>
 

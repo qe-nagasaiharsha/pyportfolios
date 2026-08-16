@@ -1,6 +1,8 @@
 import { Section, Lead, P, InlineCode, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
-import { LineChart, BarChart, Histogram } from "@/components/charts/DataCharts";
 import d from "./data/cvar-expected-shortfall";
+import { Bar } from "@/components/charts/echarts/Bar";
+import { Histogram } from "@/components/charts/echarts/Histogram";
+import { Line } from "@/components/charts/echarts/Line";
 
 /* T10 / topic card 10-16 — all figures below render REAL computed results
    (HYG + VWO 2007 – 2024, incl. the GFC) baked in by quant/tutorials/t10_cvar.py. */
@@ -93,8 +95,8 @@ export default function CvarExpectedShortfall() {
             ariaLabel="Sharply peaked histogram of HYG daily returns with a Student-t curve overlaid; dashed vertical lines mark the 99 percent VaR and the further-left 99 percent CVaR."
             binEdges={d.hist.edges as unknown as number[]}
             counts={d.hist.counts as unknown as number[]}
-            overlay={{ y: d.hist.tOverlay as unknown as number[] }}
-            xFmt={pcAxis}
+            overlay={{ name: "tOverlay", y: d.hist.tOverlay as unknown as number[] }}
+            xFmt={{ percent: true, decimals: 0 }}
             vLines={[
               { v: d.hist.var99, label: "99% VaR", color: "rust" },
               { v: d.hist.cvar99, label: "99% CVaR", color: "amber" },
@@ -158,14 +160,14 @@ def cvar_t(params, a):                    # Acerbi & Tasche closed form
             { label: "99% CVaR", tone: "muted" },
           ]}
         >
-          <BarChart
+          <Bar
             ariaLabel="Grouped bar chart: for HYG, VWO and the 50/50 portfolio, the CVaR bar is roughly one and a half times the VaR bar."
             labels={["HYG", "VWO", "50/50"]}
-            groups={[
-              { values: [H.var99, V.var99, Pt.var99] },
-              { values: [H.cvar99, V.cvar99, Pt.cvar99] },
+            series={[
+              { name: "99% VaR", values: [H.var99, V.var99, Pt.var99] },
+              { name: "99% CVaR", values: [H.cvar99, V.cvar99, Pt.cvar99] },
             ]}
-            yFmt={pcAxis}
+            yFmt={{ percent: true, decimals: 0 }}
           />
         </Figure>
         <DataTable
@@ -228,12 +230,12 @@ def cvar_t(params, a):                    # Acerbi & Tasche closed form
           caption={`HYG cumulative return, ${d.params.start} → 2010 — the GFC drawdown that a ${pc(H.var99)} VaR never described`}
           legend={[{ label: "HYG growth of $1", tone: "aqua" }]}
         >
-          <LineChart
+          <Line
             ariaLabel="Line chart of HYG cumulative return 2007 to 2010: roughly flat, collapsing about a third below its start into early 2009, then recovering by 2010."
-            series={[{ y: d.gfc.y as unknown as number[], area: true }]}
+            series={[{ name: "HYG cumulative", y: d.gfc.y as unknown as number[], area: true }]}
             xLabels={d.gfc.xLabels as unknown as [number, string][]}
-            hLines={[{ v: 1, color: "graphite", dash: "3 3", label: "start" }]}
-            yFmt={(v) => v.toFixed(2)}
+            hLines={[{ v: 1, color: "graphite", label: "start" }]}
+            yFmt={{ decimals: 2 }}
           />
         </Figure>
         <P>

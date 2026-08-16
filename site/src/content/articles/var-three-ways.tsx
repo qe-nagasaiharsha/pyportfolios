@@ -1,6 +1,7 @@
 import { Section, Lead, P, InlineCode, Formula, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
-import { LineChart, Histogram } from "@/components/charts/DataCharts";
 import d from "./data/var-three-ways";
+import { Line } from "@/components/charts/echarts/Line";
+import { Histogram } from "@/components/charts/echarts/Histogram";
 
 /* T09 / topic card 09-16 — all figures below render REAL computed results
    (DAX Jan 2010 – Dec 2024, seed 42) baked in by quant/tutorials/t09_var.py.
@@ -114,11 +115,11 @@ var_t = -(loc + scale * stats.t.ppf(0.01, df))  # ${pc(v99.tVar)}`}
             ariaLabel="Histogram of DAX daily returns with a fitted Student-t curve; vertical VaR markers show the normal line well inside the historical and t lines, which nearly coincide."
             binEdges={d.histogram.edges as unknown as number[]}
             counts={d.histogram.counts as unknown as number[]}
-            overlay={{ y: d.histogram.tOverlay as unknown as number[] }}
-            xFmt={(v) => `${(v * 100).toFixed(0)}%`}
+            overlay={{ name: "tOverlay", y: d.histogram.tOverlay as unknown as number[] }}
+            xFmt={{ percent: true, decimals: 0 }}
             vLines={[
               { v: d.histogram.var99.normal, color: "amber", label: `normal ${pc(v99.normalVar)}` },
-              { v: d.histogram.var99.hist, color: "rust", dash: "2 3" },
+              { v: d.histogram.var99.hist, color: "rust" },
               { v: d.histogram.var99.t, color: "teal", label: `t ≈ hist ${pc(v99.tVar)}` },
             ]}
           />
@@ -136,15 +137,15 @@ var_t = -(loc + scale * stats.t.ppf(0.01, df))  # ${pc(v99.tVar)}`}
             { label: "normal / empirical", tone: "muted" },
           ]}
         >
-          <LineChart
+          <Line
             ariaLabel="Left tail zoom: the normal density collapses to zero beyond minus three percent while the Student-t and the empirical kernel density remain close and clearly positive."
             series={[
-              { y: d.tail.empirical as unknown as number[], color: "graphite", width: 1.2 },
-              { y: d.tail.normal as unknown as number[], color: "amber", width: 1.6, dash: "5 4" },
-              { y: d.tail.t as unknown as number[], color: "teal", width: 2 },
+              { name: "empirical", y: d.tail.empirical as unknown as number[], color: "graphite", width: 1.2 },
+              { name: "normal", y: d.tail.normal as unknown as number[], color: "amber", width: 1.6 },
+              { name: "Student-t", y: d.tail.t as unknown as number[], color: "teal", width: 2 },
             ]}
             xLabels={d.tail.xLabels as unknown as [number, string][]}
-            h={210}
+            height={210}
           />
         </Figure>
       </Section>
@@ -183,15 +184,15 @@ cvar_mc = -draws[draws <= np.quantile(draws, 0.01)].mean()   # ${pc(v99.mcCvar)}
             { label: "daily return", tone: "muted" },
           ]}
         >
-          <LineChart
+          <Line
             ariaLabel="Fifteen years of DAX daily returns as a thin noisy line with the rolling historical 99 percent VaR threshold beneath it; the threshold plunges after 2011, 2020 and 2022 as crash days enter the estimation window."
             series={[
-              { y: d.rolling.ret as unknown as number[], color: "graphite", width: 0.6, opacity: 0.55 },
-              { y: d.rolling.negVar as unknown as number[], color: "teal", width: 1.8 },
+              { name: "daily return", y: d.rolling.ret as unknown as number[], color: "graphite", width: 0.6, opacity: 0.55 },
+              { name: "rolling 99% VaR", y: d.rolling.negVar as unknown as number[], color: "teal", width: 1.8 },
             ]}
             xLabels={d.rolling.xLabels as unknown as [number, string][]}
-            yFmt={(v) => `${(v * 100).toFixed(0)}%`}
-            h={240}
+            yFmt={{ percent: true, decimals: 0 }}
+            height={240}
           />
         </Figure>
         <P>

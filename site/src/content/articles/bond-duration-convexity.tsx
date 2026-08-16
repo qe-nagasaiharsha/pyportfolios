@@ -1,7 +1,9 @@
 import { Section, SubSection, Lead, P, Bullets, CodeBlock, DataTable, Figure, Formula } from "@/components/article/prose";
 import { BOND_FUNCS, PRICE_YIELD_CODE, LADDER_CODE, ETF_CODE, TAYLOR_CODE } from "./bond-code";
+import d from "./data/bond-pricing-duration-convexity";
+import { Bar } from "@/components/charts/echarts/Bar";
+import { Line } from "@/components/charts/echarts/Line";
 
-/* eslint-disable @next/next/no-img-element */
 export default function BondDurationConvexity() {
   return (
     <>
@@ -78,7 +80,16 @@ export default function BondDurationConvexity() {
           </P>
           <CodeBlock code={PRICE_YIELD_CODE} />
           <Figure caption="Figure 4.1 · Price vs yield — 4% coupon, three maturities">
-            <img src="/figures/bond-price-yield.png" alt="Price against yield for 2-year, 10-year and 30-year 4% Treasuries; all cross par at a 4% yield, but the 30-year line is far steeper and more curved than the 2-year" className="w-full rounded-sm" />
+            <Line
+              ariaLabel="Price against yield for a 4% coupon bond at three maturities; every curve slopes down and the longest maturity is both the steepest and the most curved"
+              height={260}
+              series={[{ name: "price", y: [...d.priceYield.price], color: "teal", width: 2 },
+                       { name: "duration tangent", y: [...d.priceYield.tangent], color: "graphite", dash: true }]}
+              xLabels={d.priceYield.xLabels.map((x) => [x[0], x[1]] as [number, string])}
+              yFmt={{ decimals: 0 }}
+              xName="Yield"
+              yName="Price"
+            />
           </Figure>
         </SubSection>
 
@@ -120,7 +131,17 @@ export default function BondDurationConvexity() {
             ]}
           />
           <Figure caption="Figure 4.3 · 2022 — the duration ladder in real life (indexed to 100)">
-            <img src="/figures/bond-etf-2022.png" alt="SHY, IEF and TLT indexed to 100 through 2022; TLT (longest duration) falls the most, IEF in the middle, and SHY barely moves" className="w-full rounded-sm" />
+            <Line
+              ariaLabel="SHY, IEF and TLT indexed to 100 through 2022; all three fall, and the drawdown deepens with duration"
+              height={260}
+              series={[{ name: "SHY", y: [...d.etf2022.shy], color: "teal", width: 1.6 },
+                       { name: "IEF", y: [...d.etf2022.ief], color: "amber", width: 1.6 },
+                       { name: "TLT", y: [...d.etf2022.tlt], color: "rust", width: 1.6 }]}
+              xLabels={d.etf2022.xLabels.map((x) => [x[0], x[1]] as [number, string])}
+              yFmt={{ decimals: 0 }}
+              xName="2022"
+              yName="Indexed to 100"
+            />
           </Figure>
           <P>
             The ranking is exactly as duration predicts — and the gaps between predicted and actual
@@ -137,7 +158,19 @@ export default function BondDurationConvexity() {
           </P>
           <CodeBlock code={TAYLOR_CODE} />
           <Figure caption="Figure 4.4 · 30y bond — Taylor approximation quality">
-            <img src="/figures/bond-taylor.png" alt="Price change vs yield shock for a 30-year bond; the duration-only line drifts away from the exact repricing curve, while the duration-plus-convexity line tracks it closely across ±3%" className="w-full rounded-sm" />
+            <Bar
+              ariaLabel="Actual price change against the duration-only and duration-plus-convexity approximations across yield shocks from minus 200 to plus 200 basis points"
+              height={250}
+              labels={d.stress.rows.map((r) => `${r.bp > 0 ? "+" : ""}${r.bp}bp`)}
+              series={[
+                { name: "duration only", values: d.stress.rows.map((r) => r.durOnly), color: "graphite" },
+                { name: "duration + convexity", values: d.stress.rows.map((r) => r.durConv), color: "teal" },
+                { name: "actual", values: d.stress.rows.map((r) => r.full), color: "rust" },
+              ]}
+              yFmt={{ decimals: 0, suffix: "%" }}
+              xName="Yield shock"
+              yName="Price change"
+            />
           </Figure>
         </SubSection>
       </Section>

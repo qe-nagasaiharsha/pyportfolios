@@ -1,6 +1,8 @@
 import { Section, Lead, P, InlineCode, Formula, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
-import { ScatterChart, Heatmap, BarChart } from "@/components/charts/DataCharts";
+import { Scatter } from "@/components/charts/echarts/Scatter";
 import d from "./data/copulas-tail-dependence";
+import { Bar } from "@/components/charts/echarts/Bar";
+import { Heatmap } from "@/components/charts/echarts/Heatmap";
 
 /* T11 / topic card 11-16 — all figures below render REAL computed results
    (^GSPC, ^FTSE, ^N225 weekly returns, Jan 2000 – Dec 2024) baked in by
@@ -63,9 +65,9 @@ export default function CopulasTailDependence() {
             rows={d.corr.labels as unknown as string[]}
             cols={d.corr.labels as unknown as string[]}
             values={d.corr.kendall as unknown as number[][]}
-            lo={0}
-            hi={1}
-            h={240}
+            min={0}
+            max={1}
+            height={240}
           />
         </Figure>
         <Callout kind="Why practitioners care">
@@ -99,14 +101,16 @@ U = pd.DataFrame({c: pseudo_obs(ret[c].values) for c in ret.columns})`}
           caption="Pseudo-observations, SPX vs FTSE — 400 of 1,302 weeks"
           legend={[{ label: "one point = one week", tone: "muted" }]}
         >
-          <ScatterChart
+          <Scatter
             ariaLabel="Scatter of rank-transformed SPX versus FTSE weekly returns on the unit square, with visible clustering in the lower-left and upper-right corners."
-            points={[{ xy: d.pseudo.pts as unknown as [number, number][], color: "teal", r: 2.2, opacity: 0.4 }]}
-            xLabel="u = F(SPX weekly return)"
-            yLabel="v = F(FTSE)"
-            xFmt={(v) => v.toFixed(1)}
-            yFmt={(v) => v.toFixed(1)}
-            h={300}
+            height={300}
+            xName="u = F(SPX weekly return)"
+            yName="v = F(FTSE)"
+            xFmt={{ decimals: 2 }}
+            yFmt={{ decimals: 2 }}
+            xLines={[0.05]}
+            yLines={[0.05]}
+            series={[{ name: "one week", points: d.pseudo.pts as unknown as [number, number][], color: "teal", size: 5, opacity: 0.45 }]}
           />
         </Figure>
         <P>
@@ -181,15 +185,15 @@ lam = 2 * stats.t.cdf(-np.sqrt((df_hat+1)*(1-rho)/(1+rho)), df=df_hat+1)`}
             { label: "Gaussian at 5% · t copula λ", tone: "muted" },
           ]}
         >
-          <BarChart
+          <Bar
             ariaLabel="Grouped bars for three index pairs comparing empirical tail dependence at the 5 percent level with Gaussian-implied and t-copula values; empirical bars are highest, Gaussian lowest."
             labels={d.tail.pairs as unknown as string[]}
-            groups={[
-              { values: d.tail.empirical.q05 as unknown as number[], color: "teal" },
-              { values: d.tail.gauss.q05 as unknown as number[], color: "graphite" },
-              { values: d.tail.tLambda as unknown as number[], color: "amber" },
+            series={[
+              { name: "empirical", values: d.tail.empirical.q05 as unknown as number[], color: "teal" },
+              { name: "Gaussian copula", values: d.tail.gauss.q05 as unknown as number[], color: "graphite" },
+              { name: "t-copula", values: d.tail.tLambda as unknown as number[], color: "amber" },
             ]}
-            yFmt={(v) => `${Math.round(v * 100)}%`}
+            yFmt={{ percent: true, decimals: 0 }}
           />
         </Figure>
         <P>

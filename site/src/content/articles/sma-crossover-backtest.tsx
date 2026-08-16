@@ -1,6 +1,7 @@
 import { Section, Lead, P, InlineCode, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
-import { LineChart, Heatmap } from "@/components/charts/DataCharts";
 import d from "./data/sma-crossover-backtest";
+import { Heatmap } from "@/components/charts/echarts/Heatmap";
+import { Line } from "@/components/charts/echarts/Line";
 
 /* T13 / topic card 13-16 — all figures below render REAL computed results
    (QQQ + BTC-USD, Jan 2015 – Dec 2024, deterministic) baked in by
@@ -125,14 +126,14 @@ export default function SmaCrossoverBacktest() {
             { label: "buy & hold", tone: "muted" },
           ]}
         >
-          <LineChart
+          <Line
             ariaLabel="QQQ: strategy and buy-and-hold equity curves track each other closely; the strategy sidesteps part of the 2022 drawdown and ends slightly below buy-and-hold."
             series={[
-              { y: q.eqLog.buyhold as unknown as number[], color: "graphite", width: 1.3, opacity: 0.75 },
-              { y: q.eqLog.strategy as unknown as number[], color: "teal", width: 2 },
+              { name: "buy & hold", y: q.eqLog.buyhold as unknown as number[], color: "graphite", width: 1.3, opacity: 0.75 },
+              { name: "SMA strategy", y: q.eqLog.strategy as unknown as number[], color: "teal", width: 2 },
             ]}
             xLabels={q.eqLog.xLabels as unknown as [number, string][]}
-            yFmt={logFmt}
+            yFmt={{ decimals: 0 }}
           />
         </Figure>
         <Figure
@@ -142,14 +143,14 @@ export default function SmaCrossoverBacktest() {
             { label: "buy & hold", tone: "muted" },
           ]}
         >
-          <LineChart
+          <Line
             ariaLabel="Bitcoin: both curves rise from 100 dollars into the tens of thousands; the strategy line steps flat through the 2018 and 2022 bear markets while buy-and-hold collapses and recovers."
             series={[
-              { y: b.eqLog.buyhold as unknown as number[], color: "graphite", width: 1.3, opacity: 0.75 },
-              { y: b.eqLog.strategy as unknown as number[], color: "teal", width: 2 },
+              { name: "buy & hold", y: b.eqLog.buyhold as unknown as number[], color: "graphite", width: 1.3, opacity: 0.75 },
+              { name: "SMA strategy", y: b.eqLog.strategy as unknown as number[], color: "teal", width: 2 },
             ]}
             xLabels={b.eqLog.xLabels as unknown as [number, string][]}
-            yFmt={logFmt}
+            yFmt={{ decimals: 0 }}
           />
         </Figure>
         <DataTable
@@ -193,10 +194,10 @@ export default function SmaCrossoverBacktest() {
             rows={FAST_LABELS}
             cols={SLOW_LABELS}
             values={q.grid as unknown as number[][]}
-            vFmt={gridFmt}
-            lo={d.params.gridLo}
-            hi={d.params.gridHi}
-            h={220}
+            vFmt={{ decimals: 2 }}
+            min={d.params.gridLo}
+            max={d.params.gridHi}
+            height={220}
           />
         </Figure>
         <Figure
@@ -207,10 +208,10 @@ export default function SmaCrossoverBacktest() {
             rows={FAST_LABELS}
             cols={SLOW_LABELS}
             values={b.grid as unknown as number[][]}
-            vFmt={gridFmt}
-            lo={d.params.gridLo}
-            hi={d.params.gridHi}
-            h={220}
+            vFmt={{ decimals: 2 }}
+            min={d.params.gridLo}
+            max={d.params.gridHi}
+            height={220}
           />
         </Figure>
         <P>

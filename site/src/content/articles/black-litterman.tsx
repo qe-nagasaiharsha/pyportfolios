@@ -1,7 +1,8 @@
 import { Section, SubSection, Lead, P, Bullets, CodeBlock, DataTable, Figure, Formula } from "@/components/article/prose";
 import { LOAD_CODE, PRIOR_CODE, VIEW_CODE, OPT_CODE, NOVIEW_CODE } from "./bl-code";
+import { BarChart } from "@/components/charts/DataCharts";
+import d from "./data/black-litterman-equilibrium-views";
 
-/* eslint-disable @next/next/no-img-element */
 export default function BlackLitterman() {
   return (
     <>
@@ -142,7 +143,18 @@ export default function BlackLitterman() {
             ]}
           />
           <Figure caption="Figure 4.3 · One view on Germany moves every posterior — via correlation">
-            <img src="/figures/bl-returns.png" alt="Dumbbell chart of implied prior versus Black-Litterman posterior expected returns for the five country ETFs; Germany moves most, from 8.2% to 9.1%, but every other market's posterior also shifts up because the markets are correlated" className="w-full rounded-sm" />
+            <BarChart
+              ariaLabel="Implied prior against Black-Litterman posterior expected returns for the five country ETFs; Germany moves most, but every other market's posterior also shifts because the markets are correlated"
+              h={250}
+              labels={[...d.params.countries]}
+              groups={[
+                { values: d.returns.prior.map((v) => v * 100), color: "graphite" },
+                { values: d.returns.posterior.map((v) => v * 100), color: "teal" },
+              ]}
+              yFmt={(v) => `${v.toFixed(0)}%`}
+              xLabel="Market"
+              yLabel="Expected return"
+            />
           </Figure>
           <P>
             Only EWG had a view — but every posterior moved, because the markets are correlated. A
@@ -169,7 +181,19 @@ export default function BlackLitterman() {
             ]}
           />
           <Figure caption="Figure 4.4 · Allocations — market prior vs Black-Litterman vs naive MVO">
-            <img src="/figures/bl-weights.png" alt="Grouped bar chart comparing three allocations across the five countries; naive MVO concentrates 75% in Japan and zeros out three markets, while Black-Litterman stays spread out and tilts toward Germany where the view was expressed" className="w-full rounded-sm" />
+            <BarChart
+              ariaLabel="Three allocations across the five countries; naive MVO concentrates heavily and takes short positions, while Black-Litterman stays close to market weights and tilts only where a view was expressed"
+              h={260}
+              labels={[...d.params.countries]}
+              groups={[
+                { values: d.weights.market.map((v) => v * 100), color: "graphite" },
+                { values: d.weights.blUnc.map((v) => v * 100), color: "teal" },
+                { values: d.weights.histUnc.map((v) => v * 100), color: "rust" },
+              ]}
+              yFmt={(v) => `${v.toFixed(0)}%`}
+              xLabel="Market"
+              yLabel="Portfolio weight"
+            />
           </Figure>
           <P>
             The story in one chart: <b>naive MVO</b> lurches to extremes — 74.8% in Japan (the

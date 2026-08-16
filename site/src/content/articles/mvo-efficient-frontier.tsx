@@ -1,7 +1,8 @@
 import { Section, SubSection, Lead, P, Bullets, CodeBlock, DataTable, Figure, Formula } from "@/components/article/prose";
 import { LOAD_CODE, CORR_CODE, CLOUD_CODE, OPT_CODE } from "./mvo-code";
+import { Heatmap, ScatterChart } from "@/components/charts/DataCharts";
+import d from "./data/mvo-efficient-frontier";
 
-/* eslint-disable @next/next/no-img-element */
 export default function MvoEfficientFrontier() {
   return (
     <>
@@ -115,7 +116,15 @@ export default function MvoEfficientFrontier() {
           </P>
           <CodeBlock code={CORR_CODE} />
           <Figure caption="Figure 4.2 · Correlation of daily returns, 2015–2024">
-            <img src="/figures/mvo-corr.png" alt="Six-by-six correlation matrix of daily ETF returns; the equity block (SPY, VNQ, VEA, VWO) is highly correlated at 0.55 to 0.86, while TLT is slightly negative against equities and GLD is near zero" className="w-full rounded-sm" />
+            <Heatmap
+              ariaLabel="Six-by-six correlation matrix of daily ETF returns; the equity block (SPY, VNQ, VEA, VWO) is highly correlated at 0.55 to 0.86, while TLT is slightly negative against equities and GLD is near zero"
+              h={300}
+              rows={[...d.corr.labels]}
+              cols={[...d.corr.labels]}
+              values={d.corr.values.map((r) => [...r])}
+              lo={-0.3}
+              hi={1}
+            />
           </Figure>
         </SubSection>
 
@@ -152,7 +161,26 @@ export default function MvoEfficientFrontier() {
             performance.
           </P>
           <Figure caption="Figure 4.4 · 20,000 random portfolios, the exact frontier, and the two special portfolios">
-            <img src="/figures/mvo-frontier.png" alt="Scatter of 20,000 random portfolios forming a bullet shape in risk-return space, shaded by Sharpe ratio, with the exact efficient frontier drawn along the upper-left edge; a star marks the maximum-Sharpe portfolio and an open circle the minimum-variance portfolio, with the six individual ETFs plotted as diamonds well inside the cloud" className="w-full rounded-sm" />
+            <ScatterChart
+              ariaLabel="Scatter of random portfolios forming a bullet in risk-return space, the exact efficient frontier along its upper-left edge, the capital market line, and the six individual ETFs plotted well inside the cloud"
+              h={330}
+              points={[
+                { xy: d.frontier.cloud.map((p) => [p[0], p[1]] as [number, number]), color: "slate", r: 1.5, opacity: 0.35 },
+                { xy: d.frontier.assets.map((a) => [a.vol, a.ret] as [number, number]), color: "amber", r: 4 },
+              ]}
+              lines={[
+                { xy: d.frontier.line.map((p) => [p[0], p[1]] as [number, number]), color: "teal", width: 2 },
+                { xy: d.frontier.cml.map((p) => [p[0], p[1]] as [number, number]), color: "graphite", dash: "5 4" },
+              ]}
+              marks={[
+                { x: d.frontier.maxSharpe.vol, y: d.frontier.maxSharpe.ret, label: "max Sharpe", color: "rust" },
+                { x: d.frontier.minVol.vol, y: d.frontier.minVol.ret, label: "min variance", color: "plum" },
+              ]}
+              xLabel="Annualised volatility"
+              yLabel="Annualised return"
+              xFmt={(v) => `${(v * 100).toFixed(0)}%`}
+              yFmt={(v) => `${(v * 100).toFixed(0)}%`}
+            />
           </Figure>
           <P>
             Every single ETF plots <em>inside</em> the cloud, well below the frontier — even SPY, the

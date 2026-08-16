@@ -25,6 +25,9 @@
    copy. Left out; the format and category already render from the catalogue. */
 
 import { Section, P, Bullets, CodeBlock, Figure, Formula } from "@/components/article/prose";
+import { ProjectCard } from "@/components/article/ProjectCard";
+import { Histogram } from "@/components/charts/DataCharts";
+import gbm from "./data/brownian-motion";
 import {
   SETUP_CODE, IMPL_CODE, CALIBRATE_CODE, PATHS_CODE, TERMINAL_CODE, MARTINGALE_CODE,
   CALIBRATE_OUT, MARTINGALE_OUT,
@@ -34,27 +37,34 @@ import {
 export default function BrownianMotion() {
   return (
     <>
-      <P>
-        <b>Key Highlights:</b>
-      </P>
-      <Bullets
-        items={[
-          <>
-            <b>Geometric Brownian Motion (GBM)</b>{" "}is the canonical continuous-time model for asset
-            prices.
-          </>,
-          <>GBM powers the <b>Black&ndash;Scholes</b> framework and <b>Monte-Carlo</b> risk engines.</>,
-          <>
-            It entails most of the <b>intuition practitioners</b>{" "}carry about &ldquo;what could the
-            price do?&rdquo;.
-          </>,
-          <>
-            The framework serves as fundamental bedrock of mathematical finance &mdash; advanced
-            applications layer additional features on top of it.
-          </>,
-        ]}
-      />
-
+      {/* Key Highlights and the project card share the top band — Louis asked for
+          the card "next to the intro text" rather than stacked under it. Stacks
+          on narrow screens, where side-by-side would squeeze both. */}
+      <div className="grid gap-6 lg:grid-cols-[1fr_19rem] lg:items-start lg:gap-8">
+        <div>
+          <P>
+            <b>Key Highlights:</b>
+          </P>
+          <Bullets
+            items={[
+              <>
+                <b>Geometric Brownian Motion (GBM)</b>{" "}is the canonical continuous-time model for asset
+                prices.
+              </>,
+              <>GBM powers the <b>Black&ndash;Scholes</b> framework and <b>Monte-Carlo</b> risk engines.</>,
+              <>
+                It entails most of the <b>intuition practitioners</b>{" "}carry about &ldquo;what could the
+                price do?&rdquo;.
+              </>,
+              <>
+                The framework serves as fundamental bedrock of mathematical finance &mdash; advanced
+                applications layer additional features on top of it.
+              </>,
+            ]}
+          />
+        </div>
+        <ProjectCard slug="brownian-motion" />
+      </div>
 
       <CodeBlock code={SETUP_CODE} />
 
@@ -204,10 +214,17 @@ export default function BrownianMotion() {
         />
         <CodeBlock code={TERMINAL_CODE} />
         <Figure caption="SPY: terminal price distribution after 5 years">
-          <img
-            src="/figures/gbm-terminal.png"
-            alt="Histogram of simulated terminal SPY prices in aqua with the theoretical log-normal density overlaid in black; vertical lines mark the mean above the median, showing the right skew"
-            className="w-full rounded-sm"
+          <Histogram
+            ariaLabel="Histogram of simulated terminal SPY prices with the theoretical log-normal density overlaid; vertical lines mark the mean above the median, showing the right skew"
+            h={260}
+            binEdges={[...gbm.terminal.edges]}
+            counts={[...gbm.terminal.density]}
+            overlay={{ y: [...gbm.terminal.lognormal], color: "graphite" }}
+            vLines={[
+              { v: gbm.terminal.mean, color: "rust", label: `Mean ${Math.round(gbm.terminal.mean).toLocaleString()}`, dash: "5 4" },
+              { v: gbm.terminal.median, color: "teal", label: `Median ${Math.round(gbm.terminal.median).toLocaleString()}` },
+            ]}
+            xFmt={(v) => `$${Math.round(v).toLocaleString()}`}
           />
         </Figure>
 

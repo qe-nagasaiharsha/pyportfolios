@@ -61,6 +61,24 @@ export interface Article {
   excerpt: string;
   /** Libraries the case study leans on — shown as a tech line. */
   stack: string[];
+  /* The five fields below are TOPIC_CARDS.html verbatim and drive <ProjectCard>.
+     Optional: only the sixteen commissioned pieces have topic cards.
+
+     cardCategory and cardLibraries exist because the card's wording differs from
+     the site's own — it says "Quant Foundations & Derivatives" where the nav says
+     "Quant Finance Foundations", and it orders and capitalises the library list
+     differently ("Pandas", "Matplotlib"). The card reproduces the card; the rest
+     of the site keeps its own names. */
+  /** Category, as the card words it (NOT the site's category name). */
+  cardCategory?: string;
+  /** Library line, as the card words and orders it (NOT `stack`). */
+  cardLibraries?: string;
+  /** Instruments the piece is built on, as the card words it. */
+  assets?: string;
+  /** Sample period, as the card words it. */
+  timeframe?: string;
+  /** What the technique is FOR — the card's plain-English "why this matters". */
+  use?: string;
 }
 
 export const CATEGORIES: Record<CategorySlug, Category> = {
@@ -113,6 +131,11 @@ export const ARTICLES: Article[] = [
     excerpt:
       "The canonical continuous-time model for asset prices. Why returns compound rather than add, the SDE and its closed-form solution, an exact simulation scheme — then calibrated to seven years of SPY and run out 1,000 paths over five years, with the terminal distribution checked against the theoretical log-normal.",
     stack: ["NumPy", "pandas", "SciPy", "matplotlib", "yfinance"],
+    cardCategory: "Quant Foundations & Derivatives",
+    cardLibraries: "NumPy · Pandas · Matplotlib · yfinance · SciPy",
+    assets: "SPY (S&P 500 ETF, State Street)",
+    timeframe: "Jan 2018 – Dec 2024",
+    use: "Scenario cones for wealth projections; the engine inside Monte-Carlo pricing & risk systems",
     sections: [
       { id: "introduction", title: "Introduction" },
       { id: "intuition", title: "Intuition" },

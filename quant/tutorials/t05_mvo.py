@@ -92,15 +92,7 @@ def main() -> None:
         "spy": 100 * (1 + rets["SPY"].values).cumprod(),
     }
 
-    # correlation of daily returns — drives the heatmap that replaced the
-    # static mvo-corr.png (charts are drawn from data, not shipped as images)
-    corr = rets[TICKERS].corr()
-
     payload = {
-        "corr": {
-            "labels": TICKERS,
-            "values": [[r(float(corr.loc[a, b]), 2) for b in TICKERS] for a in TICKERS],
-        },
         "params": {
             "start": str(px.index[0].date()), "end": str(px.index[-1].date()),
             "n_obs": int(len(px)), "seed": SEED, "rf": RF,

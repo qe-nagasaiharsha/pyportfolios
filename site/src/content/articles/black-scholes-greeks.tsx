@@ -1,8 +1,7 @@
 import { Section, SubSection, Lead, P, Bullets, CodeBlock, DataTable, Figure, Formula } from "@/components/article/prose";
 import { BSM_CODE, QQQ_CODE, GREEKS_STRIKES_CODE, THETA_CODE, SANITY_CODE } from "./black-scholes-greeks-code";
-import { LineChart } from "@/components/charts/DataCharts";
-import d from "./data/black-scholes-and-the-greeks";
 
+/* eslint-disable @next/next/no-img-element */
 export default function BlackScholesGreeks() {
   return (
     <>
@@ -113,16 +112,7 @@ export default function BlackScholesGreeks() {
           </P>
           <CodeBlock code={GREEKS_STRIKES_CODE} />
           <Figure caption="Figure 4.2 · QQQ 3-month call — the Greeks across strikes">
-            <LineChart
-              ariaLabel="Delta and Gamma of a 3-month QQQ call against moneyness; Delta falls smoothly from 1 to 0 while Gamma peaks at the money"
-              h={230}
-              series={[{ y: [...d.greeksCurve.delta], color: "teal", width: 2 },
-                       { y: d.greeksCurve.gamma.map((g) => g * 100), color: "amber", width: 2 }]}
-              xLabels={[0, 0.25, 0.5, 0.75, 1].map((f) => [f, d.greeksCurve.m[Math.round(f * (d.greeksCurve.m.length - 1))].toFixed(2)] as [number, string])}
-              yFmt={(v) => v.toFixed(1)}
-              xLabel="Moneyness  K / S"
-              yLabel="Delta · Gamma (×100)"
-            />
+            <img src="/figures/bs-greeks.png" alt="Four panels showing Delta, Gamma, Vega and Theta of a 3-month QQQ call as functions of moneyness K/S; Delta falls smoothly from 1 to 0, Gamma and Vega peak at the money, and Theta is most negative at the money" className="w-full rounded-sm" />
           </Figure>
         </SubSection>
 
@@ -134,16 +124,7 @@ export default function BlackScholesGreeks() {
           </P>
           <CodeBlock code={THETA_CODE} />
           <Figure caption="Figure 4.3 · QQQ call value vs time to expiry — Theta accelerates near zero">
-            <LineChart
-              ariaLabel="Call value against time to expiry for an at-the-money and a 5% out-of-the-money QQQ call; both decay toward zero and steepen in the final weeks"
-              h={230}
-              series={[{ y: [...d.maturity.callAtm], color: "teal", width: 2 },
-                       { y: [...d.maturity.callOtm5], color: "rust", width: 2, dash: "5 4" }]}
-              xLabels={[0, 0.25, 0.5, 0.75, 1].map((f) => [f, `${d.maturity.t[Math.round(f * (d.maturity.t.length - 1))].toFixed(1)}y`] as [number, string])}
-              yFmt={(v) => `$${v.toFixed(0)}`}
-              xLabel="Time to expiry"
-              yLabel="Call value"
-            />
+            <img src="/figures/bs-theta.png" alt="Call value against months to expiry for an at-the-money and a 5% out-of-the-money QQQ call; both decay toward zero, with the curve steepening in the final weeks before expiry" className="w-full rounded-sm" />
           </Figure>
         </SubSection>
 

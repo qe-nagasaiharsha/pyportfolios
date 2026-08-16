@@ -99,23 +99,13 @@ def main() -> None:
     put_k = bs_price(s0, strikes, T_1Y, RF, sigma, "put")
 
     # --- (c) delta & gamma vs moneyness ------------------------------------
-    # vega and theta come along too: the article's Greeks figure shows all four
-    # across strikes, and it is drawn from this payload rather than shipped as
-    # a static image.
-    delta_m, gamma_m, vega_m, theta_m, _ = bs_greeks(s0, strikes, T_1Y, RF, sigma, "call")
-    vega_m_pt = vega_m / 100.0        # per vol point
-    theta_m_day = theta_m / 365.0     # per calendar day
+    delta_m, gamma_m, *_ = bs_greeks(s0, strikes, T_1Y, RF, sigma, "call")
 
     # --- (d) vega & theta vs maturity for the ATM strike --------------------
     mats = np.linspace(0.05, 2.0, 40)
     _, _, vega_t, theta_t, _ = bs_greeks(s0, k_atm, mats, RF, sigma, "call")
     vega_t_pt = vega_t / 100.0        # per vol point
     theta_t_day = theta_t / 365.0     # per calendar day
-
-    # --- (d2) call value vs maturity, ATM and 5% OTM -----------------------
-    # the decay figure: both curves fall toward zero, steepening near expiry
-    call_atm_t = bs_price(s0, k_atm, mats, RF, sigma, "call")
-    call_otm_t = bs_price(s0, k_atm * 1.05, mats, RF, sigma, "call")
 
     # --- (a supplement) the ATM 1y call priced through time ----------------
     # each day: spot + that day's trailing vol -> today's cost of 1y ATM insurance
@@ -147,15 +137,11 @@ def main() -> None:
             "m": r(list(m)),
             "delta": r(list(delta_m)),
             "gamma": r(list(gamma_m), 6),
-            "vegaPt": r(list(vega_m_pt), 3),
-            "thetaDay": r(list(theta_m_day), 4),
         },
         "maturity": {
             "t": r(list(mats)),
             "vegaPt": r(list(vega_t_pt), 3),
             "thetaDay": r(list(theta_t_day), 4),
-            "callAtm": r(list(call_atm_t), 2),
-            "callOtm5": r(list(call_otm_t), 2),
         },
         "atm": {
             "call": r(c_atm, 2), "put": r(p_atm, 2),

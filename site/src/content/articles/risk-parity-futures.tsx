@@ -1,8 +1,7 @@
 import { Section, SubSection, Lead, P, Bullets, Callout, CodeBlock, DataTable, Figure, Formula } from "@/components/article/prose";
 import { LOAD_CODE, RC_CODE, SOLVE_CODE, VALIDATE_CODE, LEVERAGE_CODE } from "./rp-code";
-import { BarChart } from "@/components/charts/DataCharts";
-import d from "./data/risk-parity-from-scratch";
 
+/* eslint-disable @next/next/no-img-element */
 export default function RiskParityFutures() {
   return (
     <>
@@ -158,18 +157,7 @@ export default function RiskParityFutures() {
             25.2% to 6.9%.
           </P>
           <Figure caption="Figure 4.3 · Capital weight vs risk share — equal weight vs risk parity">
-            <BarChart
-              ariaLabel="Share of portfolio risk per asset under equal weighting and under risk parity; equal weights give every asset the same capital but very different risk shares, while risk parity equalises them"
-              h={250}
-              labels={[...d.params.assets]}
-              groups={[
-                { values: d.naive.riskContrib.map((v) => v * 100), color: "graphite" },
-                { values: d.erc.riskContrib.map((v) => v * 100), color: "teal" },
-              ]}
-              yFmt={(v) => `${v.toFixed(0)}%`}
-              xLabel="Asset"
-              yLabel="Share of portfolio risk"
-            />
+            <img src="/figures/rp-risk-shares.png" alt="Two-panel bar chart; left panel shows equal 20% capital weights with WTI's risk share towering at 87%, right panel shows risk-parity weights where the 10y note holds 55% of capital and every asset's risk share sits exactly on the 20% line" className="w-full rounded-sm" />
           </Figure>
         </SubSection>
 

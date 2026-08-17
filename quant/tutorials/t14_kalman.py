@@ -310,7 +310,9 @@ dates = px.index[t0:]
 plt.plot(dates, beta_kf[t0:], label="Kalman", lw=1.6)
 plt.plot(dates, beta_roll[t0:], label="rolling OLS (252d)", lw=1.2)
 plt.axhline(beta_static, color="k", ls="--", lw=1, label="static OLS")
-plt.legend(); plt.title("EWC~EWA hedge ratio, three estimators");"""),
+plt.legend(); plt.title("EWC~EWA hedge ratio, three estimators");
+plt.show()
+"""),
         md(f"""## 5 · Trading the spread
 
 Identical rules on both spreads: z-score the spread on a trailing {Z_WIN}-day
@@ -373,7 +375,9 @@ eq_st, st_st = backtest(np.full(len(ewa), beta_static),
 
 plt.plot(px.index[252:], eq_kf, label="Kalman beta")
 plt.plot(px.index[252:], eq_st, label="static beta")
-plt.legend(); plt.title("Spread mean reversion, net of 10 bp costs");"""),
+plt.legend(); plt.title("Spread mean reversion, net of 10 bp costs");
+plt.show()
+"""),
         md("""## 6 · What the numbers actually say
 
 Run the comparison gross (cost = 0) as well as net, because the two answers

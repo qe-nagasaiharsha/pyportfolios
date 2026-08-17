@@ -299,7 +299,9 @@ grid = np.linspace(edges[0], edges[-1], 400)
 plt.plot(grid, stats.t.pdf(grid, nu, loc, scale), lw=2, label=f"Student-t (nu={nu:.1f})")
 plt.axvline(-var_hist(x, .99),  ls="--", c="firebrick", label="99% VaR")
 plt.axvline(-cvar_hist(x, .99), ls="--", c="darkorange", label="99% CVaR")
-plt.legend(); plt.title("HYG daily returns — the gap between VaR and CVaR is the tail");"""),
+plt.legend(); plt.title("HYG daily returns — the gap between VaR and CVaR is the tail");
+plt.show()
+"""),
         md("""## 4 · Subadditivity — the coherence test
 
 Artzner et al. (1999) demand of a *coherent* risk measure that diversification never

@@ -236,7 +236,9 @@ the probability of a concordant pair minus a discordant one."""),
 fig, ax = plt.subplots(figsize=(5, 4))
 sns.heatmap(ret.corr(method="kendall"), annot=True, fmt=".2f",
             cmap="crest", vmin=0, vmax=1, square=True, ax=ax)
-ax.set_title("Kendall's tau — weekly returns, 2000–2024");"""),
+ax.set_title("Kendall's tau — weekly returns, 2000–2024");
+plt.show()
+"""),
         md("""## 3 · Pseudo-observations: stripping the marginals
 
 Sklar's theorem says any joint distribution splits into marginals + a copula.
@@ -308,7 +310,9 @@ print(f"log-lik: t copula {ll.max():.1f}  vs  Gaussian "
 
 plt.plot(grid, ll); plt.axvline(df_hat, ls="--", c="k")
 plt.xlabel("degrees of freedom"); plt.ylabel("log-likelihood")
-plt.title("Profile likelihood over df — SPX-FTSE t copula");"""),
+plt.title("Profile likelihood over df — SPX-FTSE t copula");
+plt.show()
+"""),
         md("""## 6 · Tail dependence: the empirical verdict
 
 Lower-tail dependence at level q is

@@ -212,7 +212,9 @@ frontier = np.array(frontier)
 
 plt.scatter(rand_vol, rand_ret, s=6, alpha=0.3, label="random portfolios")
 plt.plot(frontier[:, 0], frontier[:, 1], lw=2.5, color="teal", label="efficient frontier")
-plt.xlabel("volatility (ann.)"); plt.ylabel("expected return (ann.)"); plt.legend();"""),
+plt.xlabel("volatility (ann.)"); plt.ylabel("expected return (ann.)"); plt.legend();
+plt.show()
+"""),
         md(f"""## 4 · Max-Sharpe, min-vol, and the capital market line
 
 With a risk-free rate the whole frontier collapses to one risky portfolio: the
@@ -237,7 +239,9 @@ plt.scatter([vol_minv], [ret_minv], marker="D", s=70, color="crimson", label="mi
 for t in TICKERS:
     plt.annotate(t, (np.sqrt(S.loc[t, t]), mu[t]))
 plt.scatter(np.sqrt(np.diag(S)), mu, marker="x", color="k")
-plt.xlabel("volatility (ann.)"); plt.ylabel("expected return (ann.)"); plt.legend();"""),
+plt.xlabel("volatility (ann.)"); plt.ylabel("expected return (ann.)"); plt.legend();
+plt.show()
+"""),
         md("""## 5 · The weights — and the concentration problem
 
 Look at what the optimiser actually holds. Max-Sharpe piles into the few assets

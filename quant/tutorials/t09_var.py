@@ -345,7 +345,9 @@ for name, f in [("hist", f_hist), ("normal", f_norm), ("t", f_t), ("mc", f_mc)]:
 plt.plot(ret.index[WINDOW:], f_hist[WINDOW:], lw=1.4, label="rolling 99% -VaR (hist)")
 breach = rv < f_hist
 plt.scatter(ret.index[breach], rv[breach], s=14, color="crimson", zorder=3, label="breach")
-plt.legend(); plt.title("DAX daily returns vs rolling 250d historical 99% VaR");"""),
+plt.legend(); plt.title("DAX daily returns vs rolling 250d historical 99% VaR");
+plt.show()
+"""),
         md("""## 6 · The same VaR in Polars and DuckDB
 
 Historical VaR is just a quantile over a column — exactly the shape of problem

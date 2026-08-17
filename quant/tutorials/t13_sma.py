@@ -254,7 +254,9 @@ for ax, (name, px, ann) in zip(axes, [("QQQ", qqq, 252), ("BTC-USD", btc, 365)])
     n_tr = int((pos.diff() > 0).sum() + (pos.iloc[0] > 0))
     print(f"{name:8s} strat: Sharpe {s['sharpe']:.2f} maxDD {s['maxDD']:+.1%} "
           f"({n_tr} trades, {pos.mean():.0%} in market)  |  "
-          f"b&h: Sharpe {b['sharpe']:.2f} maxDD {b['maxDD']:+.1%}")"""),
+          f"b&h: Sharpe {b['sharpe']:.2f} maxDD {b['maxDD']:+.1%}")
+plt.show()
+"""),
         md(f"""Numbers to expect (deterministic — this is all closed historical data):
 
 | | ann ret | Sharpe | maxDD | trades | time in mkt |
@@ -326,7 +328,9 @@ for ax, (name, px, ann) in zip(axes, [("QQQ", qqq, 252), ("BTC-USD", btc, 365)])
     ax.set_xticks(range(len(SLOWS)), SLOWS); ax.set_yticks(range(len(FASTS)), FASTS)
     ax.set_xlabel("slow"); ax.set_ylabel("fast")
     ax.set_title(f"{name} — Sharpe (buy-hold = {bh_sh:.2f})")
-plt.colorbar(im, ax=axes, shrink=0.8);"""),
+plt.colorbar(im, ax=axes, shrink=0.8);
+plt.show()
+"""),
         md(f"""Read the two grids side by side — this is the card's thesis in one picture:
 
 - **QQQ**: every cell lands between {blk_q['gridWorst']:.2f} and {blk_q['gridBest']:.2f},

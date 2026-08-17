@@ -67,13 +67,11 @@ export function ArticleLayout({ article, children }: { article: Article; childre
               <p className="mt-6 max-w-2xl font-sans text-[1.05rem] leading-relaxed text-pearl">
                 {article.dek}
               </p>
-              <p className="mt-6 t-mono text-[0.72rem] text-pearl/70">
-                <span className="text-pearl/70">Stack — </span>
-                {article.stack.join(" · ")}
-                <span className="ml-auto float-right lg:hidden">
-                  <GatedBadge slug={article.slug} />
-                </span>
-              </p>
+              {/* The stack line used to sit here. The badge stays: the sidebar
+                  copy is lg-only, so this is the only one on a phone. */}
+              <div className="mt-6 lg:hidden">
+                <GatedBadge slug={article.slug} />
+              </div>
             </div>
           </div>
         </section>
@@ -120,13 +118,10 @@ export function ArticleLayout({ article, children }: { article: Article; childre
                   {article.dek}
                 </p>
 
-                <p className="mt-7 t-mono text-[0.72rem] text-steel/80">
-                  <span className="text-steel">Stack — </span>
-                  {article.stack.join(" · ")}
-                  <span className="ml-auto float-right lg:hidden">
-                    <GatedBadge slug={article.slug} />
-                  </span>
-                </p>
+                {/* stack line removed; badge kept for the same reason as above */}
+                <div className="mt-7 lg:hidden">
+                  <GatedBadge slug={article.slug} />
+                </div>
               </header>
             ) : null}
 

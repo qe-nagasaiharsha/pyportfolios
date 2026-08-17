@@ -14,7 +14,6 @@ import {
 import { ArticleNav } from "@/components/article/ArticleNav";
 import { ArticleToc } from "@/components/article/ArticleToc";
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
-import { ReadingProgress } from "@/components/motion/ReadingProgress";
 import { GatedBadge, GatedCta } from "@/components/article/GatedDownload";
 
 export function ArticleLayout({ article, children }: { article: Article; children: ReactNode }) {
@@ -26,7 +25,6 @@ export function ArticleLayout({ article, children }: { article: Article; childre
 
   return (
     <div className="min-h-screen bg-anthracite">
-      <ReadingProgress />
       <ScrollReveal />
       <ArticleNav />
 

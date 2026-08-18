@@ -45,13 +45,14 @@ export default function KalmanFilterHedgeRatios() {
           <Formula>{`\\beta = ${d.params.betaStatic.toFixed(2)}`}</Formula>, with an ADF p-value of{" "}
           <InlineCode>{d.params.adfP.toFixed(3)}</InlineCode> on the residual spread — cointegrated,
           by the book (Engle–Granger: regress one price on the other, then unit-root-test the
-          residual). The problem is the word{" "}
-          <Term>one</Term>. A hedge ratio is an estimate of an economic relationship — commodity
-          mix, currency betas, index composition — and every one of those drifted between 2010 and
-          2024. A rolling window is the standard fix, and it limps: every observation inside the
-          window carries equal weight, so year-old data moves today&apos;s estimate as much as
-          yesterday&apos;s, and each point falling out of the window jerks the estimate — the{" "}
-          <Term>window cliff</Term>.
+          residual). The problem is the word <Term>one</Term>. A hedge ratio is not a constant
+          of nature; it is a snapshot of an economic relationship — commodity mix, currency
+          betas, index composition — and every one of those drifted between 2010 and 2024. The
+          standard fix is a rolling window, and it limps for a reason worth understanding:
+          every observation inside the window carries equal weight, so year-old data moves
+          today&apos;s estimate exactly as much as yesterday&apos;s does — and the day an old
+          observation falls out of the window, the estimate jerks for no economic reason at
+          all. That artefact has a name: the <Term>window cliff</Term>.
         </P>
         <Figure
           caption={`EWA & EWC, normalized to 1.0 at ${d.params.start} — related, not identical`}
@@ -79,9 +80,13 @@ export default function KalmanFilterHedgeRatios() {
 
       <Section id="state-space" n={2} title="Beta as a state, not a constant">
         <P>
-          The Kalman filter starts from a different premise: the regression coefficients are{" "}
-          <Term>unobserved states</Term> that evolve through time, and each day&apos;s prices are a
-          noisy measurement of them. Two equations define the model. The <Term>state equation</Term>{" "}
+          The Kalman filter starts from a different premise, and it is worth sitting with for a
+          moment: the &ldquo;true&rdquo; hedge ratio is something you can never observe directly
+          — you only see prices, which are noisy evidence about it. So treat the regression
+          coefficients as <Term>unobserved states</Term> drifting through time, and treat each
+          day&apos;s prices as one more noisy measurement of where they are. (A GPS does
+          exactly this with your position; here the hidden position is β.) Two equations define
+          the model. The <Term>state equation</Term>{" "}
           says the hedge ratio and intercept follow a random walk —{" "}
           <Formula>{String.raw`[\beta_t, \alpha_t] = [\beta_{t-1}, \alpha_{t-1}] + \omega_t`}</Formula> — tomorrow&apos;s relationship
           is today&apos;s, plus noise. The <Term>observation equation</Term> says{" "}
@@ -104,10 +109,12 @@ export default function KalmanFilterHedgeRatios() {
         <P>
           No library, no black box — the whole filter is a predict step and an update step,
           looped over the sample. Predict: with a random-walk transition the state estimate is
-          unchanged and its covariance grows by <InlineCode>Q</InlineCode> (uncertainty leaks in).
-          Update: compare the observed EWC to the prediction, and shift the states toward the
-          error in proportion to the <Term>Kalman gain</Term> — the ratio of state uncertainty to
-          total uncertainty.
+          unchanged and its covariance grows by <InlineCode>Q</InlineCode> — a day passes, so
+          the filter becomes a little less sure of where β is. Update: compare the observed EWC
+          to the prediction, and shift the states toward the error in proportion to the{" "}
+          <Term>Kalman gain</Term> — the ratio of state uncertainty to total uncertainty. Big
+          surprise while unsure of yourself: move a lot. Big surprise while confident: blame
+          measurement noise, barely move.
         </P>
         <CodeBlock
           file="kalman.py"
@@ -174,7 +181,8 @@ export default function KalmanFilterHedgeRatios() {
 
       <Section id="trading" n={5} title="Trading the spread">
         <P>
-          The spread is <Formula>{String.raw`\mathrm{EWC}_t - \beta_t\,\mathrm{EWA}_t - \alpha_t`}</Formula>, z-scored on a trailing{" "}
+          Now make the estimator earn its living — a better β is only worth money if it makes a
+          better spread. The spread is <Formula>{String.raw`\mathrm{EWC}_t - \beta_t\,\mathrm{EWA}_t - \alpha_t`}</Formula>, z-scored on a trailing{" "}
           {d.params.zWin}-day window. Rules, identical for both variants: enter long the spread
           (long EWC, short β·EWA) when <Formula>{String.raw`z < -2`}</Formula>, short when{" "}
           <Formula>{String.raw`z > +2`}</Formula>, exit when z crosses zero. Positions are sized to $1

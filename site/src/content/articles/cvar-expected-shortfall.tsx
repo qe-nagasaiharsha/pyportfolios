@@ -20,13 +20,14 @@ export default function CvarExpectedShortfall() {
   return (
     <>
       <Lead>
-        Value-at-Risk tells you where the tail begins; it says nothing about what lives inside
-        it. Two books with identical 99% VaR can differ threefold in what they lose once the
-        threshold breaks — and for fat-tailed assets like high-yield credit, that difference is
-        the whole risk. Expected shortfall (CVaR) averages the tail instead of pointing at its
+        Value-at-Risk tells you where the tail begins. It says nothing about what lives inside
+        it — and inside the tail is where portfolios actually die. Two books can report
+        identical 99% VaR yet differ threefold in what they lose once the threshold breaks; for
+        fat-tailed assets like high-yield credit, that difference is the whole risk. Expected
+        shortfall (CVaR) fixes the blind spot by averaging the tail instead of pointing at its
         door, which is why Basel made it the regulatory standard. We estimate both, historically
         and with a Student-t, on {d.params.nObs.toLocaleString()} days of HYG and VWO — a sample
-        that includes the crisis these measures were built for.
+        that deliberately includes the crisis these measures were built for.
       </Lead>
 
       <Pipeline
@@ -42,19 +43,22 @@ export default function CvarExpectedShortfall() {
 
       <Section id="blind" n={1} title="What VaR cannot see">
         <P>
-          VaR at confidence α is a <Term>quantile</Term>: the smallest loss exceeded on only the
-          worst (1−α) of days. It is a threshold, not an average — so it is structurally blind
-          to everything beyond itself. The demonstration takes ten lines: two 1,000-day P&L
-          histories that agree on 990 benign days <Term>and</Term> on the day that sets the 99%
-          quantile, but whose ten worst days differ by a factor of six.
+          VaR at confidence α is a <Term>quantile</Term>: the smallest loss exceeded on only
+          the worst (1−α) of days. Read that definition again and notice what it does not say —
+          nothing about <Term>how much</Term> you lose on those days. VaR is a threshold, not
+          an average, so it is structurally blind to everything beyond itself. A ten-line
+          thought experiment makes the blindness concrete: build two 1,000-day P&L histories
+          that agree on 990 benign days <Term>and</Term> on the day that sets the 99% quantile,
+          but whose ten worst days differ by a factor of six.
         </P>
         <P>
-          Both books report a 99% VaR of {pc(d.blind.varA)} — yet book A's CVaR
-          is {pc(d.blind.cvarA)} against book B's {pc(d.blind.cvarB)}, with worst days of −2.60%
-          and −15.00%. Identical VaR, {(d.blind.cvarB / d.blind.cvarA).toFixed(1)}× the expected
-          tail loss. CVaR — the <Term>mean</Term> loss conditional on breaching the VaR quantile —
-          separates the two books instantly, because it integrates over the tail instead of
-          reading one point of it.
+          Both books report a 99% VaR of {pc(d.blind.varA)}, so a risk report built on VaR
+          alone calls them equally risky. Yet book A&apos;s CVaR is {pc(d.blind.cvarA)} against
+          book B&apos;s {pc(d.blind.cvarB)}, with worst days of −2.60% and −15.00% — identical
+          VaR, {(d.blind.cvarB / d.blind.cvarA).toFixed(1)}× the expected tail loss. CVaR —
+          the <Term>mean</Term> loss conditional on breaching the VaR quantile — separates the
+          two books instantly, because it averages over the whole tail instead of reading one
+          point at its edge.
         </P>
         <Callout kind="Why practitioners care">
           Basel's Fundamental Review of the Trading Book (FRTB) replaced 99% VaR with 97.5%
@@ -67,16 +71,19 @@ export default function CvarExpectedShortfall() {
 
       <Section id="data" n={2} title="Two fat-tailed assets">
         <P>
-          HYG (iShares high-yield corporate bond ETF) and VWO (Vanguard emerging-markets equity)
-          are chosen deliberately: EM equity is honestly volatile, while credit is the classic
-          smile-now-cry-later asset — a {pc1(H.annVol)} annualised vol that looks safer than
-          VWO's {pc1(V.annVol)}, wrapped around a worst day of {pc(H.worstDay)}. The aligned
-          sample runs {d.params.start} (HYG's listing) to {d.params.end}. A Student-t fitted to
-          HYG's daily returns lands at ν ≈ {H.nu} degrees of freedom — below 2, which means the
-          fitted distribution does not possess a finite variance at all. Read that as a
-          diagnostic as much as an estimate: an unconditional iid fit has nowhere to put 2008's
-          volatility clustering except the tail parameter, so it buys realism at the extremes by
-          overstating how wild a <Term>typical</Term> day is. (Condition on a GARCH filter and
+          Now the real thing. HYG (iShares high-yield corporate bond ETF) and VWO (Vanguard
+          emerging-markets equity) are chosen because they are risky in opposite ways. EM
+          equity is honestly volatile — it looks risky and it is. Credit is the trap: it
+          collects small, steady coupons in calm markets and hands them back all at once in a
+          crisis. On paper HYG&apos;s {pc1(H.annVol)} annualised vol looks far safer than
+          VWO&apos;s {pc1(V.annVol)} — until you notice that the quiet series hides a worst day
+          of {pc(H.worstDay)}. The aligned sample runs {d.params.start} (HYG's listing)
+          to {d.params.end}. A Student-t fitted to HYG's daily returns lands at
+          ν ≈ {H.nu} degrees of freedom — below 2, which means the fitted distribution does not
+          even possess a finite variance. Read that as a diagnostic as much as an estimate: an
+          unconditional iid fit has nowhere to put 2008's volatility clustering except the tail
+          parameter, so it buys realism at the extremes by overstating how wild a{" "}
+          <Term>typical</Term> day is. (Condition on a GARCH filter and
           the residual df comes out higher; the unconditional fit is the honest worst case.)
         </P>
         <Figure
@@ -107,10 +114,12 @@ export default function CvarExpectedShortfall() {
 
       <Section id="estimate" n={3} title="Historical and Student-t estimates">
         <P>
-          The historical estimator reads the empirical distribution directly: sort, take the
-          quantile, average beyond it. The parametric route fits a Student-t and uses{" "}
+          Estimating CVaR comes down to two philosophies. The historical estimator trusts the
+          data: sort, take the quantile, average everything beyond it. The parametric route
+          trusts the model: fit a Student-t and use{" "}
           <Term>Acerbi's closed-form expected shortfall</Term> — the analytic mean of the t's
-          tail — which extrapolates severity even past the worst observed day:
+          tail — which can extrapolate to days worse than anything the sample has actually
+          seen:
         </P>
         <CodeBlock
           file="estimators.py"
@@ -192,14 +201,16 @@ def cvar_t(params, a):                    # Acerbi & Tasche closed form
 
       <Section id="coherence" n={4} title="Subadditivity — the coherence test">
         <P>
-          Artzner, Delbaen, Eber and Heath (1999) axiomatised what a risk measure should do; the
-          axiom VaR fails is <Term>subadditivity</Term>: ρ(A+B) ≤ ρ(A) + ρ(B), i.e.
+          In 1999, Artzner, Delbaen, Eber and Heath wrote down four axioms any sane risk
+          measure should satisfy. VaR fails one — and it is the one your intuition cares most
+          about: <Term>subadditivity</Term>, ρ(A+B) ≤ ρ(A) + ρ(B), the rule that
           diversification must never create risk. The classic counterexample needs only two
           independent bonds, each defaulting with probability 0.7%. Held alone, each has{" "}
-          <Term>zero</Term> 99% VaR — a 0.7% loss probability hides entirely below the 1%
-          threshold. A 50/50 mix loses on {pc1(d.sub.bondMixP)} of scenarios, which is above 1% —
-          so the diversified book has strictly <Term>positive</Term> 99% VaR. Diversifying
-          "created" risk, says VaR.
+          <Term>zero</Term> 99% VaR: a 0.7% loss probability hides entirely below the 1%
+          threshold, so VaR literally cannot see it. Mix them 50/50 and the book loses
+          on {pc1(d.sub.bondMixP)} of scenarios — above 1% — so the diversified book has
+          strictly <Term>positive</Term> 99% VaR. Diversifying &ldquo;created&rdquo; risk, says
+          VaR. The risk was there all along, of course. VaR was hiding it.
         </P>
         <P>
           It is not just a parlour trick. On the full HYG/VWO sample the 50/50 portfolio behaves
@@ -251,14 +262,16 @@ def cvar_t(params, a):                    # Acerbi & Tasche closed form
 
       <Section id="optimize" n={6} title="Spending a tail budget: CVaR vs MV">
         <P>
-          With two assets, pure min-risk is degenerate here — volatility and tail agree that HYG
-          is the quieter asset, and both <InlineCode>rm=&quot;MV&quot;</InlineCode> and{" "}
+          So far CVaR has been the better thermometer. The sharper question is whether it
+          changes what you <Term>do</Term>. With two assets, pure risk-minimising is degenerate
+          here — volatility and tail agree that HYG is the quieter asset, so both{" "}
+          <InlineCode>rm=&quot;MV&quot;</InlineCode> and{" "}
           <InlineCode>rm=&quot;CVaR&quot;</InlineCode> corner at 100% HYG. The measures diverge
           the moment you <Term>spend a risk budget</Term>. Hand two desks the same mandate — an
           expected loss on the worst 1% of days of at most {pcAxis(d.rf.budget)} — and let each
-          maximise return against it. The MV desk translates the budget into a volatility cap
-          via normality (ES₉₉ = 2.665σ for a Gaussian, so σ ≤ {pc(d.rf.sigBudget)} daily); the
-          CVaR desk constrains the realised tail directly:
+          maximise return against it. The MV desk speaks only volatility, so it must translate
+          the budget through a normal distribution (ES₉₉ = 2.665σ for a Gaussian, so
+          σ ≤ {pc(d.rf.sigBudget)} daily); the CVaR desk constrains the realised tail directly:
         </P>
         <CodeBlock
           file="riskfolio_budget.py"

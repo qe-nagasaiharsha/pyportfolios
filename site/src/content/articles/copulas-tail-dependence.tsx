@@ -38,14 +38,15 @@ export default function CopulasTailDependence() {
         <P>
           The sample is {d.params.nWeeks.toLocaleString()} aligned weekly returns for the
           S&amp;P 500, FTSE 100 and Nikkei 225, {d.params.start} to {d.params.end} — dot-com
-          bust, 2008, the euro crisis, COVID and the 2022 rates shock all included. Two
-          alignment problems come free with global indices. Each exchange keeps its own holiday
-          calendar, so returns are computed jointly and rows with a missing market dropped. And
-          the markets do not even trade at the same time: Tokyo's 15:00 JST close lands roughly
-          ten hours before London's and some fifteen before New York's, so a same-calendar-day Nikkei
-          close <Term>leads</Term> the US close and daily cross-market correlations are
-          structurally understated. Resampling to weekly (Friday-to-Friday) returns absorbs
-          most of that offset — the SPX–Nikkei Pearson correlation jumps from{" "}
+          bust, 2008, the euro crisis, COVID and the 2022 rates shock all included. Before any
+          statistics, two traps come free with global indices, and both are worth learning to
+          spot. First, each exchange keeps its own holiday calendar, so returns are computed
+          jointly and any week missing a market is dropped. Second — subtler — the markets do
+          not even trade at the same time. Tokyo closes roughly ten hours before London and
+          some fifteen before New York, so a same-calendar-day Nikkei close <Term>leads</Term>{" "}
+          the US close, and daily cross-market correlations are structurally understated: the
+          two prices are answering questions asked at different moments. Resampling to weekly (Friday-to-Friday) returns absorbs
+          most of that offset — watch the SPX–Nikkei Pearson correlation jump from{" "}
           <InlineCode>{d.params.dailyPearsonSpxNky.toFixed(2)}</InlineCode> on daily data to{" "}
           <InlineCode>{d.params.weeklyPearsonSpxNky.toFixed(2)}</InlineCode> on weekly.
         </P>
@@ -80,13 +81,16 @@ export default function CopulasTailDependence() {
 
       <Section id="sklar" n={2} title="Sklar's theorem & pseudo-observations">
         <P>
-          Sklar&rsquo;s theorem (1959) says any joint distribution factors into its marginals
-          plus a <Term>copula</Term> — a joint distribution on the unit square with uniform
-          margins that carries all of the dependence and none of the marginal shape. To see the
+          Here is the idea that makes the whole subject click. Sklar&rsquo;s theorem (1959)
+          says any joint distribution factors cleanly into two parts: the{" "}
+          <Term>marginals</Term> — what each market does on its own — and a <Term>copula</Term>,
+          a joint distribution on the unit square that carries all of the togetherness and none
+          of the marginal shape. Separate the dancers from the dance. To see the
           copula empirically, replace each return by its normalised rank,{" "}
           <Formula>{String.raw`u = \frac{\operatorname{rank}(x)}{n + 1}`}</Formula> — the probability integral transform
-          done with the empirical CDF. Margins become uniform by construction, so any structure
-          that survives is pure dependence.
+          done with the empirical CDF. Ranks are uniform by construction, so the marginals are
+          washed out entirely — any structure that survives in the picture below is pure
+          dependence.
         </P>
         <CodeBlock
           file="pseudo_obs.py"
@@ -128,10 +132,11 @@ U = pd.DataFrame({c: pseudo_obs(ret[c].values) for c in ret.columns})`}
           pseudo-observations through the standard normal quantile function
           (&ldquo;normal scores&rdquo;) and take their correlation — for SPX–FTSE that gives{" "}
           <Formula>{`\\rho = ${d.pairs[0].rhoGauss.toFixed(2)}`}</Formula>. It is analytically
-          convenient, scales to any dimension, and has one fatal property:{" "}
-          <Term>zero tail dependence</Term>. For any ρ &lt; 1, the probability that both
-          markets sit below their q-quantile, divided by q, goes to zero as q shrinks. In the
-          limit, joint crashes are not just rare — they are assumed away.
+          convenient, it scales to any dimension, and it has one fatal property:{" "}
+          <Term>zero tail dependence</Term>. Ask it &ldquo;given one market is having a
+          1-in-q disaster, how often is the other one too?&rdquo; and as q deepens its answer
+          marches to zero — for any ρ &lt; 1, no matter how high. In the limit, joint crashes
+          are not just rare. They are assumed away.
         </P>
         <P>
           You can watch the assumption fail at finite depth. At the 10% level the fitted

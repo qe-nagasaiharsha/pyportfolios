@@ -21,11 +21,14 @@ export default function VarThreeWays() {
   return (
     <>
       <Lead>
-        Value-at-Risk is the number desks set daily loss limits with and regulators size capital
-        against — and it has three standard recipes that disagree exactly when it matters. We
-        compute all three on fifteen years of real DAX data, backtest every one of them out of
-        sample, and then recompute the historical quantile with Polars and DuckDB to show what
-        the modern data stack changes (answer: the scaling, never the number).
+        How much could we lose tomorrow? Every trading desk has to answer that question before
+        the market opens, and Value-at-Risk is the industry&apos;s standard answer: one number
+        that says &ldquo;on 99 days out of 100, the loss stays below this line.&rdquo; The catch
+        is that there are three standard recipes for computing that line — and they disagree
+        exactly when it matters, on the bad days. We compute all three on fifteen years of real
+        DAX data, put every one of them on trial out of sample, and then recompute the
+        historical quantile with Polars and DuckDB to show what the modern data stack changes
+        (answer: the scaling, never the number).
       </Lead>
 
       <Pipeline
@@ -41,10 +44,14 @@ export default function VarThreeWays() {
 
       <Section id="definitions" n={1} title="The number, and the data">
         <P>
-          <Term>VaR</Term> at level α is the loss you do not expect to exceed with probability α
-          over one day — the (1−α)-quantile of returns, negated. <Term>CVaR</Term> (expected
-          shortfall) is the average loss <Term>given</Term> a breach, and we report it alongside
-          every method because it is the number you actually want for limits. Our laboratory is
+          Line up fifteen years of daily returns from worst to best. <Term>VaR</Term> at 99% is
+          a marker planted one percent of the way in from the bad end: the loss you do not
+          expect to exceed on 99 days out of 100. Formally it is the (1−α)-quantile of returns,
+          negated — but &ldquo;the flood line&rdquo; is the right mental picture.{" "}
+          <Term>CVaR</Term> (expected shortfall) answers the question a good risk manager asks
+          next: <Term>and when the water does cross the line, how deep does it get?</Term> It is
+          the average loss given a breach, and we report it alongside every method because it is
+          the number you actually want for limits. Our laboratory is
           the DAX from {d.params.start} to {d.params.end}: {d.params.nObs.toLocaleString()} daily
           returns spanning the euro crisis, COVID and the 2022 energy shock. The worst day in the
           sample is {d.params.worstDay} at <InlineCode>{pc(d.params.worstRet)}</InlineCode> — keep
@@ -58,7 +65,8 @@ export default function VarThreeWays() {
 
       <Section id="historical" n={2} title="Historical simulation">
         <P>
-          No model, no parameters: sort fifteen years of returns and read the empirical quantile.
+          The first recipe refuses to assume anything. Sort the returns, walk one percent of the
+          way in from the worst end, read off the number — that is the entire method.
           On the full sample the 99% VaR is <InlineCode>{pc(v99.histVar)}</InlineCode> and the 99%
           CVaR — the average of the worst {Math.round(d.params.nObs * 0.01)} days —{" "}
           is <InlineCode>{pc(v99.histCvar)}</InlineCode>. At 95% the pair
@@ -75,18 +83,25 @@ def hist_var_cvar(x, alpha=0.99):
 hist_var_cvar(ret.values)               # (${v99.histVar.toFixed(6)}, ${v99.histCvar.toFixed(6)})`}
         />
         <P>
-          The honesty of the method is also its weakness: it weights a sleepy 2017 day the same as
-          March 2020, and it cannot produce a loss larger than anything already in the window.
+          That honesty cuts both ways. The method treats a sleepy 2017 Tuesday exactly like
+          March 2020, and it has no imagination: it cannot warn you about any loss larger than
+          one it has already lived through. History is its only teacher — a problem, because the
+          worst day of the next fifteen years is under no obligation to have a precedent in the
+          last fifteen.
         </P>
       </Section>
 
       <Section id="parametric" n={3} title="Parametric: normal, then Student-t">
         <P>
-          The variance–covariance shortcut assumes a distribution and reads VaR off its formula.
-          With a normal (<Formula>{`\\mu = ${pcTex(d.params.muDaily, 3)}`}</Formula>,{" "}
-          <Formula>{`\\sigma = ${pcTex(d.params.sigmaDaily, 3)}`}</Formula> daily) the 99% VaR
-          is <InlineCode>{pc(v99.normalVar)}</InlineCode> — roughly 60bp <Term>below</Term> the
-          empirical quantile. Refit the same idea with a Student-t and MLE hands you
+          The second recipe trades honesty for a formula: assume returns follow a known
+          distribution, and VaR drops straight out of its quantile function. Assume a normal
+          (<Formula>{`\\mu = ${pcTex(d.params.muDaily, 3)}`}</Formula>,{" "}
+          <Formula>{`\\sigma = ${pcTex(d.params.sigmaDaily, 3)}`}</Formula> daily) and the 99% VaR
+          comes out at <InlineCode>{pc(v99.normalVar)}</InlineCode> — roughly 60bp{" "}
+          <Term>below</Term> the empirical quantile. That shortfall is the price of the
+          assumption: the bell curve simply does not believe in days as bad as the ones the DAX
+          has actually had. So keep the formula but change the bell. Refit with a Student-t —
+          the normal&apos;s heavy-tailed cousin — and maximum likelihood hands you
           df = <InlineCode>{d.params.tDf}</InlineCode>: violently non-Gaussian tails. The t's 99%
           VaR of <InlineCode>{pc(v99.tVar)}</InlineCode> lands almost exactly on the historical
           number, and its CVaR ({pc(v99.tCvar)}) is fatter still. (One desk convention worth
@@ -126,10 +141,11 @@ var_t = -(loc + scale * stats.t.ppf(0.01, df))  # ${pc(v99.tVar)}`}
           />
         </Figure>
         <P>
-          Where the 60bp comes from is clearest in the left tail itself. Below, the three densities
-          over the loss region from −7.5% to −1.5%: the normal (amber) runs out of probability
-          almost immediately, while the fitted t tracks the kernel estimate of the real data the
-          whole way down.
+          Where did the normal lose those 60 basis points? Watch it happen. Below are the three
+          densities over the loss region from −7.5% to −1.5%: the normal (amber) runs out of
+          probability almost immediately — by −3% it has essentially declared such days
+          impossible — while the fitted t tracks the kernel estimate of the real data the whole
+          way down. The 60bp gap in VaR is this picture, integrated.
         </P>
         <Figure
           caption="Left-tail densities, −7.5% to −1.5% — normal vs Student-t vs empirical (KDE)"
@@ -153,12 +169,15 @@ var_t = -(loc + scale * stats.t.ppf(0.01, df))  # ${pc(v99.tVar)}`}
 
       <Section id="monte-carlo" n={4} title="Monte Carlo">
         <P>
-          Simulate {d.params.mcDraws.toLocaleString()} one-day scenarios from the fitted t
-          (seed {d.params.seed}) and read the empirical tail of the simulation. On a single linear
-          asset this is a correctness check more than a method — it must reproduce the analytic t
-          to Monte-Carlo error, and it does: <InlineCode>{pc(v99.mcVar)}</InlineCode> vs the
-          analytic {pc(v99.tVar)}. The machinery earns its keep the moment the book contains
-          options, path dependence, or anything else with no closed-form quantile.
+          The third recipe replaces formulas with brute force: simulate{" "}
+          {d.params.mcDraws.toLocaleString()} one-day scenarios from the fitted t
+          (seed {d.params.seed}) and read the tail of the simulation as if it were history you
+          simply have not lived yet. On a single linear asset this is a correctness check more
+          than a method — it must reproduce the analytic t to Monte-Carlo error, and it
+          does: <InlineCode>{pc(v99.mcVar)}</InlineCode> vs the analytic {pc(v99.tVar)}. So why
+          keep it? Because simulation does not care whether a closed form exists. The moment the
+          book contains options, path dependence, or anything else with no analytic quantile,
+          it is the only recipe still standing.
         </P>
         <CodeBlock
           file="monte_carlo.py"
@@ -172,8 +191,10 @@ cvar_mc = -draws[draws <= np.quantile(draws, 0.01)].mean()   # ${pc(v99.mcCvar)}
 
       <Section id="backtest" n={5} title="The backtest decides">
         <P>
-          A VaR is a falsifiable forecast: at 99%, tomorrow's loss should exceed it on about 1% of
-          days. We re-estimate each method on a rolling {d.params.window}-day window (t and Monte
+          Three recipes, three different answers — so who is right? Here is the beautiful thing
+          about VaR: it is a <Term>falsifiable forecast</Term>. If a 99% VaR is honest,
+          tomorrow&apos;s loss should exceed it on about 1% of days — no more, no fewer — and we
+          can simply count. We re-estimate each method on a rolling {d.params.window}-day window (t and Monte
           Carlo refit every {d.params.refitEvery} days, desk-style), forecast one day ahead —{" "}
           {bt.n.toLocaleString()} out-of-sample forecasts per method — and test the breach count
           with Kupiec's proportion-of-failures likelihood ratio.
@@ -224,27 +245,30 @@ cvar_mc = -draws[draws <= np.quantile(draws, 0.01)].mean()   # ${pc(v99.mcCvar)}
           />
         </Figure>
         <P>
-          Read it honestly: <Term>every</Term> bar clears the expected line. The t roughly halves
-          the normal's excess, but Kupiec rejects all four at the 1% level. And Kupiec is the
-          lenient examiner: the POF
-          statistic only counts breaches — it is blind to their <Term>timing</Term>. One look at
-          the chart shows them arriving in volatility clusters, which is exactly the pattern
+          Read it honestly: <Term>every</Term> bar clears the expected line — even the best
+          method understated its own failure rate. The t roughly halves the normal's excess,
+          but Kupiec rejects all four at the 1% level. And Kupiec is the lenient examiner: it
+          only counts breaches, never asking <Term>when</Term> they arrived. One look at the
+          chart shows them arriving in volatility clusters, which is exactly the pattern
           Christoffersen's (1998) independence test is built to punish and the pattern behind
-          Basel's traffic-light backtest zones. The diagnosis is structural: a rolling
-          unconditional window is late to every regime change by construction. That is not a
-          reason to despair; it is the empirical case for conditional risk models — a GARCH
-          filter rescales the tail to <Term>today's</Term> volatility, and filtered historical
-          simulation is the desk standard for precisely this failure mode.
+          Basel's traffic-light backtest zones. The diagnosis is structural, not a fixable bug:
+          a rolling window only ever looks backwards, so it is late to every regime change by
+          construction. That is not a reason to despair; it is the empirical case for
+          conditional risk models — a GARCH filter rescales the tail to <Term>today's</Term>{" "}
+          volatility, and filtered historical simulation is the desk standard for precisely
+          this failure mode.
         </P>
       </Section>
 
       <Section id="polars-duckdb" n={6} title="The same quantile in Polars and DuckDB">
         <P>
-          Historical VaR is, computationally, a quantile over a column — exactly the shape of
-          problem the modern data-engineering stack eats. <Term>Polars</Term> evaluates a lazy
-          expression pipeline over the CSV; <Term>DuckDB</Term> runs SQL straight against the
-          file. Neither needs the data in pandas, and both stream — the identical two lines still
-          work when "one index, fifteen years" becomes "every book in the firm, tick by tick".
+          Strip the finance away and historical VaR is one line of data engineering: a quantile
+          over a column. That makes it a perfect specimen for a question every quant team
+          eventually asks — does the modern data stack change the answer?{" "}
+          <Term>Polars</Term> evaluates a lazy expression pipeline over the CSV;{" "}
+          <Term>DuckDB</Term> runs SQL straight against the file. Neither needs the data in
+          pandas, and both stream — the identical two lines still work when &ldquo;one index,
+          fifteen years&rdquo; becomes &ldquo;every book in the firm, tick by tick&rdquo;.
         </P>
         <CodeBlock
           file="same_quantile.py"

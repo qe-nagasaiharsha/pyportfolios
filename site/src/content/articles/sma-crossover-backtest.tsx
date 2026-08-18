@@ -39,12 +39,14 @@ export default function SmaCrossoverBacktest() {
   return (
     <>
       <Lead>
-        The 50/200 moving-average crossover — the <Term>golden cross</Term> — is the systematic
-        trend-following workhorse: one rule, two parameters, a century of folklore. That makes it
-        the perfect vehicle for backtesting discipline 101. We run the same long-or-flat rule on
-        QQQ and BTC-USD over 2015–2024 with next-day execution and 10bp per-side costs, then do
-        what most crossover backtests skip: sweep the parameter grid, stress the costs, and admit
-        what one in-sample decade can and cannot prove.
+        Buy when the 50-day average crosses above the 200-day; step aside when it crosses back.
+        That is the <Term>golden cross</Term> — the systematic trend-following workhorse: one
+        rule, two parameters, a century of folklore. Its simplicity is exactly why it makes the
+        perfect classroom for backtesting discipline 101 — every sin that quietly ruins real
+        backtests fits on one screen of code here, where you can watch it happen. We run the
+        same long-or-flat rule on QQQ and BTC-USD over 2015–2024 with next-day execution and
+        10bp per-side costs, then do what most crossover backtests skip: sweep the parameter
+        grid, stress the costs, and admit what one in-sample decade can and cannot prove.
       </Lead>
 
       <Pipeline
@@ -60,12 +62,15 @@ export default function SmaCrossoverBacktest() {
 
       <Section id="signal" n={1} title="The rule: two moving averages">
         <P>
-          Compute a fast and a slow simple moving average of the close. When the fast SMA sits
-          above the slow one, the market is trending up — be long. When it drops below, be flat.
-          No shorting, no leverage, no discretion. With <InlineCode>fast = {d.params.fast}</InlineCode>{" "}
-          and <InlineCode>slow = {d.params.slow}</InlineCode> this is the golden cross of financial
-          television fame, and a one-asset special case of <Term>time-series momentum</Term> — the
-          effect Moskowitz, Ooi and Pedersen documented across 58 futures markets.
+          Compute a fast and a slow simple moving average of the close. Think of the slow one
+          as the market&apos;s long memory and the fast one as its recent mood. When the fast
+          SMA sits above the slow one, recent prices sit above the long trend — be long. When
+          it drops below, be flat. No shorting, no leverage, no discretion, no opinions.
+          With <InlineCode>fast = {d.params.fast}</InlineCode>{" "}
+          and <InlineCode>slow = {d.params.slow}</InlineCode> this is the golden cross of
+          financial television fame — and, more respectably, a one-asset special case of{" "}
+          <Term>time-series momentum</Term>, the effect Moskowitz, Ooi and Pedersen documented
+          across 58 futures markets.
         </P>
         <P>
           We run it on two deliberately different animals: the Nasdaq-100 ETF (exchange calendar,
@@ -180,7 +185,9 @@ export default function SmaCrossoverBacktest() {
 
       <Section id="grid" n={4} title="Discipline 101: the parameter grid">
         <P>
-          One backtest is an anecdote. Before believing 50/200, ask whether the{" "}
+          One backtest is an anecdote. If 50/200 were genuinely special, small changes to the
+          parameters should not change the story — real effects are smooth neighbourhoods,
+          and only overfit ones are sharp peaks. So before believing 50/200, ask whether the{" "}
           <Term>neighbourhood</Term> agrees: we sweep fast ∈ {"{"}
           {d.params.fasts.join(", ")}{"}"} × slow ∈ {"{"}{d.params.slows.join(", ")}{"}"} — {q.gridCells}{" "}
           valid systems per asset, identical execution, identical costs — and heat-map the Sharpe.

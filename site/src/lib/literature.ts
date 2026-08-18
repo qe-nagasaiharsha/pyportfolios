@@ -1590,8 +1590,8 @@ export const PAPER_RECS: Paper[] = [
   {
     year: 2010,
     authors: "Avellaneda, M., & Lee, J.-H.",
-    title: "Statistical arbitrage in the U.S",
-    journal: "equities market. Quantitative Finance",
+    title: "Statistical arbitrage in the U.S. equities market",
+    journal: "Quantitative Finance",
     logo: "quantitative-finance.png",
     ref: "10(7), 761–782",
     note: "",

@@ -1,4 +1,4 @@
-import { Section, Lead, P, InlineCode, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
+import { Section, Lead, P, InlineCode, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline, Bullets } from "@/components/article/prose";
 import d from "./data/sma-crossover-backtest";
 import { Heatmap } from "@/components/charts/echarts/Heatmap";
 import { Line } from "@/components/charts/echarts/Line";
@@ -10,8 +10,6 @@ import { Line } from "@/components/charts/echarts/Line";
 
 const pc = (v: number, dp = 1) => `${(v * 100).toFixed(dp)}%`;
 const usd = (v: number) => `$${Math.round(v).toLocaleString("en-US")}`;
-const logFmt = (v: number) => usd(10 ** v);
-const gridFmt = (v: number) => (v === d.params.sentinel ? "—" : v.toFixed(2));
 
 const FAST_LABELS = d.params.fasts.map(String);
 const SLOW_LABELS = d.params.slows.map(String);
@@ -157,24 +155,26 @@ export default function SmaCrossoverBacktest() {
           head={["", "Ann ret", "Ann vol", "Sharpe", "Max DD", "Trades", "In mkt"]}
           rows={[...statsRows("QQQ", q), ...statsRows("BTC", b)]}
         />
+        <Bullets
+          items={[
+            <>
+              <Term>QQQ</Term> — lost the return race ({usd(q.stats.strategy.final)} vs{" "}
+              {usd(q.stats.buyhold.final)}), but at lower vol and a third-shallower worst
+              drawdown, for a slightly better Sharpe. No return edge; a brake pedal.
+            </>,
+            <>
+              <Term>BTC</Term> — kept pace with one of the great bull markets in modern data
+              while sitting out {pc(1 - b.stats.strategy.timeInMkt, 0)} of all days, and cut the
+              max drawdown from {pc(b.stats.buyhold.maxDD)} to {pc(b.stats.strategy.maxDD)}.
+            </>,
+          ]}
+        />
         <P>
-          On QQQ the crossover ends at {usd(q.stats.strategy.final)} versus{" "}
-          {usd(q.stats.buyhold.final)} for buy-and-hold — it <Term>lost</Term> the return race —
-          but it did so at {pc(q.stats.strategy.annVol)} vol instead of{" "}
-          {pc(q.stats.buyhold.annVol)} and cut the worst drawdown from{" "}
-          {pc(q.stats.buyhold.maxDD)} to {pc(q.stats.strategy.maxDD)}, for a slightly better
-          Sharpe ({q.stats.strategy.sharpe.toFixed(2)} vs {q.stats.buyhold.sharpe.toFixed(2)}).
-          On BTC it kept pace with one of the great bull markets in modern data
-          ({usd(b.stats.strategy.final)} vs {usd(b.stats.buyhold.final)}) while sitting out{" "}
-          {pc(1 - b.stats.strategy.timeInMkt, 0)} of all days and trimming the max drawdown from{" "}
-          {pc(b.stats.buyhold.maxDD)} to {pc(b.stats.strategy.maxDD)}. Neither run is a money
-          machine. Both are drawdown insurance — and the whole 10-year QQQ position changed hands
-          just {q.stats.strategy.trades} times. Two conservatisms are baked into every number
-          above and worth naming: flat days are credited <Term>nothing</Term> (the QQQ variant
-          sits in cash {pc(1 - q.stats.strategy.timeInMkt, 0)} of the time — park that at the
-          T-bill rate and the strategy line improves while buy-and-hold&apos;s cannot), and
-          Sharpe is quoted on raw rather than excess returns. Both choices shade against the
-          strategy, which is the right direction to be wrong in.
+          Neither run is a money machine; both are drawdown insurance. Two conservatisms are
+          baked into every number above: flat days are credited <Term>nothing</Term> (park the
+          cash at the T-bill rate and the strategy line improves while buy-and-hold&apos;s
+          cannot), and Sharpe is quoted on raw rather than excess returns. Both choices shade
+          against the strategy, which is the right direction to be wrong in.
         </P>
       </Section>
 
@@ -235,11 +235,33 @@ export default function SmaCrossoverBacktest() {
           proportion to turnover. The 50/200 pair trades a handful of times a decade, so even
           25bp per side barely dents it. Speed the system up to 10/100 and the toll booth opens:
         </P>
+        <Figure
+          caption="Sharpe vs per-side cost, 0 → 25bp — slow pairs run flat, fast pairs pay the toll"
+          legend={[
+            { label: "50/200 (slow)", tone: "aqua" },
+            { label: "10/100 (fast)", tone: "muted" },
+          ]}
+        >
+          <Line
+            ariaLabel="Sharpe against per-side cost for four systems: both 50/200 lines are nearly horizontal from 0 to 25 basis points, while both 10/100 lines slope down visibly as costs rise."
+            series={[
+              { name: `QQQ ${q.costs[0].pair}`, y: [q.costs[0].s0, q.costs[0].s10, q.costs[0].s25], color: "teal", width: 2 },
+              { name: `QQQ ${q.costs[1].pair}`, y: [q.costs[1].s0, q.costs[1].s10, q.costs[1].s25], color: "teal", width: 1.4, dash: true },
+              { name: `BTC ${b.costs[0].pair}`, y: [b.costs[0].s0, b.costs[0].s10, b.costs[0].s25], color: "amber", width: 2 },
+              { name: `BTC ${b.costs[1].pair}`, y: [b.costs[1].s0, b.costs[1].s10, b.costs[1].s25], color: "amber", width: 1.4, dash: true },
+            ]}
+            x={[0, 10, 25]}
+            xName="cost per side (bp)"
+            yName="Sharpe"
+            yFmt={{ decimals: 1 }}
+            height={240}
+          />
+        </Figure>
         <DataTable
-          head={["", "Trades", "Sharpe @ 0bp", "@ 10bp", "@ 25bp", "Final $100 @ 10bp"]}
+          head={["", "Trades", "Sharpe @ 0bp", "@ 10bp", "@ 25bp"]}
           rows={[
-            ...q.costs.map((c) => [`QQQ · ${c.pair}`, String(c.trades), c.s0.toFixed(2), c.s10.toFixed(2), c.s25.toFixed(2), usd(c.final10)]),
-            ...b.costs.map((c) => [`BTC · ${c.pair}`, String(c.trades), c.s0.toFixed(2), c.s10.toFixed(2), c.s25.toFixed(2), usd(c.final10)]),
+            ...q.costs.map((c) => [`QQQ · ${c.pair}`, String(c.trades), c.s0.toFixed(2), c.s10.toFixed(2), c.s25.toFixed(2)]),
+            ...b.costs.map((c) => [`BTC · ${c.pair}`, String(c.trades), c.s0.toFixed(2), c.s10.toFixed(2), c.s25.toFixed(2)]),
           ]}
         />
         <P>

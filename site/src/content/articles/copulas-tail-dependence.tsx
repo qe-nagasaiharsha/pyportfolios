@@ -1,4 +1,4 @@
-import { Section, Lead, P, InlineCode, Formula, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
+import { Section, Lead, P, InlineCode, Formula, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline, Bullets } from "@/components/article/prose";
 import { Scatter } from "@/components/charts/echarts/Scatter";
 import d from "./data/copulas-tail-dependence";
 import { Bar } from "@/components/charts/echarts/Bar";
@@ -212,12 +212,22 @@ lam = 2 * stats.t.cdf(-np.sqrt((df_hat+1)*(1-rho)/(1+rho)), df=df_hat+1)`}
           independence the answer would be 10%. The data answers between{" "}
           {pc(d.pairs[2].condCrash)} and {pc(d.pairs[0].condCrash)}:
         </P>
+        <Figure
+          caption="P(both in worst decile | one is) per pair — dashed line = the 10% an independence assumption would give"
+        >
+          <Bar
+            ariaLabel={`Conditional crash probability per index pair: SPX–FTSE ${pc(d.pairs[0].condCrash)}, SPX–NKY ${pc(d.pairs[1].condCrash)}, FTSE–NKY ${pc(d.pairs[2].condCrash)} — every bar is far above the dashed 10 percent independence line.`}
+            labels={d.pairs.map((p) => p.pair)}
+            series={[{ name: "P(both | one)", values: d.pairs.map((p) => p.condCrash), color: "teal" }]}
+            hLines={[{ v: 0.10, label: "independence 10%", color: "rust" }]}
+            yFmt={{ percent: true, decimals: 0 }}
+            height={230}
+          />
+        </Figure>
         <DataTable
-          head={["Pair", "Kendall tau", "Rho (t copula)", "P(both worst-decile | one is)", "Gaussian @10%", "t copula lambda-L (nu = " + String(d.params.dfHat) + ")"]}
+          head={["Pair", "P(both worst-decile | one is)", "Gaussian @10%", "t copula lambda-L (nu = " + String(d.params.dfHat) + ")"]}
           rows={d.pairs.map((p) => [
             p.pair,
-            p.tau.toFixed(2),
-            p.rhoT.toFixed(2),
             `${pc(p.condCrash)}  (${p.nBoth}/${p.nCond})`,
             pc(p.gauss10),
             pc(p.lambdaT),
@@ -237,20 +247,34 @@ lam = 2 * stats.t.cdf(-np.sqrt((df_hat+1)*(1-rho)/(1+rho)), df=df_hat+1)`}
       <Section id="practitioner" n={6} title="The practitioner take">
         <P>
           For multi-asset stress testing, the workflow this tutorial rehearses is the one that
-          survives contact with a crisis. Model marginals separately — fat tails, volatility
-          clustering, whatever each series needs — then choose the dependence structure as a
-          deliberate act, not as a side effect of writing down a correlation matrix. Check any
-          candidate copula against the empirical joint-crash ratios at several depths before
-          trusting it, and when in doubt between Gaussian and t, the t copula&rsquo;s extra
-          parameter is the cheapest tail insurance in the toolbox: here it turned
-          &ldquo;joint crashes become impossible&rdquo; into λ ≈ {pc(d.pairs[0].lambdaT, 0)} for
-          the closest pair. And know where this road ends: the t copula is elliptical, so it
-          buys its lower-tail dependence bundled with an identical upper tail — it must price
-          joint booms as generously as joint crashes. When the residual crash/boom asymmetry in
-          the data matters, the next tools up are the asymmetric Archimedean families (Clayton
-          glues lower tails only) and vine constructions, which assemble a high-dimensional
-          copula from freely chosen pairs.
+          survives contact with a crisis:
         </P>
+        <Bullets
+          items={[
+            <>
+              <Term>Model marginals separately</Term> — fat tails, volatility clustering,
+              whatever each series needs — then choose the dependence structure as a deliberate
+              act, not as a side effect of writing down a correlation matrix.
+            </>,
+            <>
+              <Term>Check the candidate copula against the data</Term> — compare it to the
+              empirical joint-crash ratios at several depths before trusting it.
+            </>,
+            <>
+              <Term>When in doubt between Gaussian and t, pay the one parameter</Term> — the
+              cheapest tail insurance in the toolbox: here it turned &ldquo;joint crashes become
+              impossible&rdquo; into λ ≈ {pc(d.pairs[0].lambdaT, 0)} for the closest pair.
+            </>,
+            <>
+              <Term>Know where this road ends</Term> — the t copula is elliptical, so its
+              lower-tail dependence comes bundled with an identical upper tail: joint booms
+              priced as generously as joint crashes. When that asymmetry matters, the next tools
+              up are the asymmetric Archimedean families (Clayton glues lower tails only) and
+              vine constructions, which assemble a high-dimensional copula from freely chosen
+              pairs.
+            </>,
+          ]}
+        />
         <Callout kind="Practitioner take">
           Correlation tells you how markets dance; the copula tells you how they die. Simulate
           scenarios from a fitted t copula (ν = {d.params.dfHat} here) rather than a Gaussian

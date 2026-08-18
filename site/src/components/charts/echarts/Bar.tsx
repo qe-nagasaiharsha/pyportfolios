@@ -28,6 +28,7 @@ export function Bar({
   /** draw a zero rule when values cross it (drawdowns, error vs baseline) */
   zeroLine = false,
   horizontal = false,
+  hLines = [],
 }: {
   labels: readonly string[];
   series: BarSeries[];
@@ -38,6 +39,8 @@ export function Bar({
   yFmt?: NumFmt;
   zeroLine?: boolean;
   horizontal?: boolean;
+  /** dashed reference rules on the value axis, e.g. an expected count */
+  hLines?: readonly { v: number; label?: string; color?: keyof typeof C }[];
 }) {
   const fy = useMemo(() => makeFmt(yFmt), [yFmt]);
 
@@ -82,15 +85,26 @@ export function Bar({
         data: s.values as number[],
         itemStyle: { color: C[s.color ?? "teal"] },
         barMaxWidth: 26,
-        markLine: i === 0 && zeroLine ? {
+        markLine: i === 0 && (zeroLine || hLines.length) ? {
           silent: true, symbol: "none",
-          data: [{ [horizontal ? "xAxis" : "yAxis"]: 0 }],
-          lineStyle: { color: C.ink, width: 1, type: "solid" as const, opacity: 0.5 },
-          label: { show: false },
+          data: [
+            ...(zeroLine ? [{
+              [horizontal ? "xAxis" : "yAxis"]: 0,
+              lineStyle: { color: C.ink, width: 1, type: "solid" as const, opacity: 0.5 },
+              label: { show: false },
+            }] : []),
+            ...hLines.map((l) => ({
+              [horizontal ? "xAxis" : "yAxis"]: l.v,
+              lineStyle: { color: C[l.color ?? "graphite"], width: 1.2, type: "dashed" as const },
+              label: l.label
+                ? { show: true, formatter: l.label, fontSize: 9.5, color: C[l.color ?? "graphite"], position: "insideEndTop" as const }
+                : { show: false },
+            })),
+          ],
         } : undefined,
       })),
     };
-  }, [labels, series, xName, yName, fy, zeroLine, horizontal]);
+  }, [labels, series, xName, yName, fy, zeroLine, horizontal, hLines]);
 
   return <Chart option={option} height={height} ariaLabel={ariaLabel} />;
 }

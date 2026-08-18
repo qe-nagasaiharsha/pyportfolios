@@ -1,4 +1,4 @@
-import { Section, Lead, P, InlineCode, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
+import { Section, Lead, P, InlineCode, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline, Bullets } from "@/components/article/prose";
 import d from "./data/cvar-expected-shortfall";
 import { Bar } from "@/components/charts/echarts/Bar";
 import { Histogram } from "@/components/charts/echarts/Histogram";
@@ -48,18 +48,13 @@ export default function CvarExpectedShortfall() {
           histories that agree on 990 benign days <Term>and</Term> on the day that sets the 99%
           quantile, but whose ten worst days differ by a factor of six.
         </P>
-        <DataTable
-          head={["Synthetic book", "99% VaR", "99% CVaR", "Worst day"]}
-          rows={[
-            ["A — thin tail", pc(d.blind.varA), pc(d.blind.cvarA), "−2.60%"],
-            ["B — fat tail", pc(d.blind.varB), pc(d.blind.cvarB), "−15.00%"],
-          ]}
-        />
         <P>
-          Identical VaR, {(d.blind.cvarB / d.blind.cvarA).toFixed(1)}× the expected tail loss.
-          CVaR — the <Term>mean</Term> loss conditional on breaching the VaR quantile — separates
-          the two books instantly, because it integrates over the tail instead of reading one
-          point of it.
+          Both books report a 99% VaR of {pc(d.blind.varA)} — yet book A's CVaR
+          is {pc(d.blind.cvarA)} against book B's {pc(d.blind.cvarB)}, with worst days of −2.60%
+          and −15.00%. Identical VaR, {(d.blind.cvarB / d.blind.cvarA).toFixed(1)}× the expected
+          tail loss. CVaR — the <Term>mean</Term> loss conditional on breaching the VaR quantile —
+          separates the two books instantly, because it integrates over the tail instead of
+          reading one point of it.
         </P>
         <Callout kind="Why practitioners care">
           Basel's Fundamental Review of the Trading Book (FRTB) replaced 99% VaR with 97.5%
@@ -105,8 +100,8 @@ export default function CvarExpectedShortfall() {
         </Figure>
         <P>
           The horizontal gap between the two dashed lines — {pc(H.var99)} to {pc(H.cvar99)} — is
-          everything VaR does not price. For HYG that gap is {H.ratio99}× the VaR itself, the
-          widest of the three books we measure.
+          everything VaR does not price, and HYG's gap is the widest of the three books we
+          measure.
         </P>
       </Section>
 
@@ -141,18 +136,27 @@ def cvar_t(params, a):                    # Acerbi & Tasche closed form
             ["Student-t CVaR (Acerbi)", pc(H.cvar975t), pc(H.cvar99t)],
           ]}
         />
-        <P>
-          Note the FRTB calibration at work: HYG's 97.5% CVaR ({pc(H.cvar975)}) sits close to its
-          99% VaR ({pc(H.var99)}) — similar magnitude, but the CVaR number keeps growing when the
-          tail does. The t-parametric CVaR ({pc(H.cvar99t)}) exceeds the historical one because
-          with ν ≈ {H.nu} the fitted tail expects days worse than any yet observed. One caveat
-          belongs next to every number in this table: at 99% the historical CVaR is the mean of
-          just {Math.round(d.params.nObs * 0.01)} observations. The estimator with the best
-          theoretical properties is also the one standing on the fewest data points — which is
-          the practical argument for fitting a parametric tail and letting it extrapolate, rather
-          than trusting {Math.round(d.params.nObs * 0.01)} draws to have already shown you the
-          worst.
-        </P>
+        <P>Three things to read off that table:</P>
+        <Bullets
+          items={[
+            <>
+              <Term>The FRTB calibration at work</Term> — HYG's 97.5% CVaR ({pc(H.cvar975)}) sits
+              close to its 99% VaR ({pc(H.var99)}): similar magnitude, but the CVaR number keeps
+              growing when the tail does.
+            </>,
+            <>
+              <Term>The t extrapolates past the sample</Term> — its CVaR ({pc(H.cvar99t)}) exceeds
+              the historical one because with ν ≈ {H.nu} the fitted tail expects days worse than
+              any yet observed.
+            </>,
+            <>
+              <Term>The small-sample caveat</Term> — at 99% the historical CVaR is the mean of
+              just {Math.round(d.params.nObs * 0.01)} observations. The estimator with the best
+              theoretical properties stands on the fewest data points, which is the practical
+              argument for fitting a parametric tail and letting it extrapolate.
+            </>,
+          ]}
+        />
         <Figure
           caption="99% VaR vs 99% CVaR, historical — per asset and for the daily-rebalanced 50/50"
           legend={[
@@ -271,11 +275,30 @@ p_cv.alpha = 0.01
 p_cv.upperCVaR = ${d.rf.budget}                      # the tail budget itself
 w_cv = p_cv.optimization(model="Classic", rm="CVaR", obj="MaxRet", hist=True)`}
         />
+        <Figure
+          caption={`Same ${pcAxis(d.rf.budget)} tail budget, two allocations — how each desk spends it`}
+          legend={[
+            { label: "MV desk", tone: "muted" },
+            { label: "CVaR desk", tone: "aqua" },
+          ]}
+        >
+          <Bar
+            ariaLabel={`Portfolio weights per desk: the MV desk puts ${pc1(d.rf.mv.VWO)} in VWO where the CVaR desk allows only ${pc1(d.rf.cvar.VWO)}, with the balance in HYG in both cases.`}
+            labels={["HYG", "VWO"]}
+            series={[
+              { name: "MV desk", values: [d.rf.mv.HYG, d.rf.mv.VWO], color: "graphite" },
+              { name: "CVaR desk", values: [d.rf.cvar.HYG, d.rf.cvar.VWO], color: "teal" },
+            ]}
+            yFmt={{ percent: true, decimals: 0 }}
+            yName="portfolio weight"
+            height={230}
+          />
+        </Figure>
         <DataTable
-          head={["Desk", "HYG", "VWO", "Ann. return", "Ann. vol", "Realised 99% CVaR"]}
+          head={["Desk", "Ann. return", "Ann. vol", "Realised 99% CVaR"]}
           rows={[
-            ["MV (vol-translated budget)", pc1(d.rf.mv.HYG), pc1(d.rf.mv.VWO), pc1(d.rf.mv.annRet), pc1(d.rf.mv.annVol), `${pc(d.rf.mv.cvar99)} — budget was ${pcAxis(d.rf.budget)}`],
-            ["CVaR (direct)", pc1(d.rf.cvar.HYG), pc1(d.rf.cvar.VWO), pc1(d.rf.cvar.annRet), pc1(d.rf.cvar.annVol), pc(d.rf.cvar.cvar99)],
+            ["MV (vol-translated budget)", pc1(d.rf.mv.annRet), pc1(d.rf.mv.annVol), `${pc(d.rf.mv.cvar99)} — budget was ${pcAxis(d.rf.budget)}`],
+            ["CVaR (direct)", pc1(d.rf.cvar.annRet), pc1(d.rf.cvar.annVol), pc(d.rf.cvar.cvar99)],
           ]}
         />
         <P>
@@ -289,7 +312,7 @@ w_cv = p_cv.optimization(model="Classic", rm="CVaR", obj="MaxRet", hist=True)`}
         <Callout kind="Practitioner take">
           Use CVaR where the loss distribution is asymmetric or fat-tailed — credit, options,
           carry, anything with a "smile now, cry later" profile. HYG is the canonical trap: its
-          vol whispers safety while its CVaR/VaR ratio of {H.ratio99}× shouts the opposite.
+          vol whispers safety while its tail shouts the opposite.
           Practically: quote 97.5% ES next to any 99% VaR (FRTB's own calibration), fit a
           Student-t rather than trusting the empirical tail alone when ν comes out below ~4, and
           put the CVaR constraint <Term>inside</Term> the optimiser — Rockafellar–Uryasev makes

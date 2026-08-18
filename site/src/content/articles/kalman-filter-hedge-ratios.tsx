@@ -1,5 +1,6 @@
 import { Section, Lead, P, InlineCode, Formula, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
 import { Line } from "@/components/charts/echarts/Line";
+import { Bar } from "@/components/charts/echarts/Bar";
 import d from "./data/kalman-filter-hedge-ratios";
 
 /* T14 / topic card 14-16 — all figures below render REAL computed results
@@ -141,10 +142,8 @@ export default function KalmanFilterHedgeRatios() {
           {d.params.betaStatic.toFixed(2)}, forever. The rolling OLS swings between{" "}
           <InlineCode>{d.params.betaRollMin.toFixed(2)}</InlineCode> and{" "}
           <InlineCode>{d.params.betaRollMax.toFixed(2)}</InlineCode> — whipping around every regime
-          change a full window late. The Kalman path covers{" "}
-          <InlineCode>{d.params.betaKfMin.toFixed(2)}</InlineCode> to{" "}
-          <InlineCode>{d.params.betaKfMax.toFixed(2)}</InlineCode>, moving early and smoothly: no
-          cliff, because no window.
+          change a full window late. The Kalman path stays in a far narrower band, moving early
+          and smoothly: no cliff, because no window.
         </P>
         <Figure
           caption="The EWC~EWA hedge ratio, three ways — Kalman filter vs rolling 252d OLS vs full-sample OLS"
@@ -219,17 +218,34 @@ elif p == -1 and z[t] <= 0: p = 0              # short leg reverted`}
       <Section id="take" n={6} title="What the numbers actually say">
         <P>
           Here is the honest scoreboard, and it is more interesting than a clean win. Gross of
-          costs, the Kalman spread is the better signal on every risk-adjusted axis: Sharpe{" "}
-          <InlineCode>{gross.kalman.sharpe.toFixed(2)}</InlineCode> vs{" "}
-          <InlineCode>{gross.static.sharpe.toFixed(2)}</InlineCode>, volatility{" "}
-          {pc(gross.kalman.annVol)} vs {pc(gross.static.annVol)}, max drawdown{" "}
-          {pc(gross.kalman.maxDD)} vs {pc(gross.static.maxDD)} — half the risk, more reward per
-          unit of it. But the filtered spread mean-reverts <Term>fast</Term>, so it trades{" "}
-          {net.kalman.trades} round trips to the static variant&apos;s {net.static.trades} — and at
-          10 bp per unit of traded notional, that turnover consumes the entire edge and then some.
+          costs, the Kalman spread is the better signal on every risk-adjusted axis — more
+          Sharpe, half the volatility, half the drawdown. But the filtered spread mean-reverts{" "}
+          <Term>fast</Term>, so it trades {net.kalman.trades} round trips to the static
+          variant&apos;s {net.static.trades} — and at 10 bp per unit of traded notional, that
+          turnover consumes the entire edge and then some.
         </P>
         <Figure
-          caption="Strategy equity, net of 10 bp costs — the cost drag on 2.7× turnover flips the ranking"
+          caption="Sharpe, gross vs net of 10 bp costs — adaptivity wins the signal and loses the implementation"
+          legend={[
+            { label: "gross", tone: "muted" },
+            { label: "net", tone: "aqua" },
+          ]}
+        >
+          <Bar
+            ariaLabel={`Sharpe ratios gross and net of costs: the Kalman variant leads gross (${gross.kalman.sharpe.toFixed(2)} vs ${gross.static.sharpe.toFixed(2)}) but drops below the static variant once 10 basis point costs apply (${net.kalman.sharpe.toFixed(2)} vs ${net.static.sharpe.toFixed(2)}).`}
+            labels={["Kalman β", "static β"]}
+            series={[
+              { name: "gross", values: [gross.kalman.sharpe, gross.static.sharpe], color: "graphite" },
+              { name: "net of 10 bp", values: [net.kalman.sharpe, net.static.sharpe], color: "teal" },
+            ]}
+            zeroLine
+            yName="Sharpe"
+            yFmt={{ decimals: 1 }}
+            height={230}
+          />
+        </Figure>
+        <Figure
+          caption="Strategy equity, net of 10 bp costs — the cost drag flips the ranking"
           legend={[
             { label: "Kalman β", tone: "aqua" },
             { label: "static β", tone: "muted" },

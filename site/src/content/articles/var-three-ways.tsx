@@ -1,6 +1,7 @@
 import { Section, Lead, P, InlineCode, Formula, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
 import d from "./data/var-three-ways";
 import { Line } from "@/components/charts/echarts/Line";
+import { Bar } from "@/components/charts/echarts/Bar";
 import { Histogram } from "@/components/charts/echarts/Histogram";
 
 /* T09 / topic card 09-16 — all figures below render REAL computed results
@@ -210,11 +211,22 @@ cvar_mc = -draws[draws <= np.quantile(draws, 0.01)].mean()   # ${pc(v99.mcCvar)}
             ["Monte Carlo (t)", pc(v99.mcVar), pc(v99.mcCvar), bt.mc.breaches, bt.mc.kupiecLR.toFixed(2), pfmt(bt.mc.kupiecP)],
           ]}
         />
+        <Figure
+          caption={`Out-of-sample 99% VaR breaches per method, ${bt.n.toLocaleString()} forecasts — dashed line = expected count`}
+        >
+          <Bar
+            ariaLabel={`Breach counts for the four VaR methods against the expected ${bt.expected}; every bar clears the dashed expected line, the normal by the widest margin and the t-based methods by roughly half as much.`}
+            labels={["Historical", "Normal", `Student-t`, "Monte Carlo"]}
+            series={[{ name: "breaches", values: [bt.hist.breaches, bt.normal.breaches, bt.t.breaches, bt.mc.breaches], color: "teal" }]}
+            hLines={[{ v: bt.expected, label: `expected ${bt.expected}`, color: "rust" }]}
+            yName="99% VaR breaches"
+            height={230}
+          />
+        </Figure>
         <P>
-          Read it honestly: <Term>every</Term> unconditional method breaches too often —{" "}
-          {bt.normal.breaches} times for the normal against {bt.expected} expected, and even the
-          t-based models manage {bt.t.breaches}. The t roughly halves the normal's excess, but
-          Kupiec rejects all four at the 1% level. And Kupiec is the lenient examiner: the POF
+          Read it honestly: <Term>every</Term> bar clears the expected line. The t roughly halves
+          the normal's excess, but Kupiec rejects all four at the 1% level. And Kupiec is the
+          lenient examiner: the POF
           statistic only counts breaches — it is blind to their <Term>timing</Term>. One look at
           the chart shows them arriving in volatility clusters, which is exactly the pattern
           Christoffersen's (1998) independence test is built to punish and the pattern behind
@@ -235,19 +247,18 @@ cvar_mc = -draws[draws <= np.quantile(draws, 0.01)].mean()   # ${pc(v99.mcCvar)}
           work when "one index, fifteen years" becomes "every book in the firm, tick by tick".
         </P>
         <CodeBlock
-          file="polars_var.py"
+          file="same_quantile.py"
           code={`import polars as pl
+import duckdb
 
-q = (pl.scan_csv("dax_returns.csv")
-       .select(pl.col("ret").quantile(0.01, interpolation="linear"))
-       .collect()
-       .item())                                  # ${d.engines.polars.toFixed(15)}`}
-        />
-        <CodeBlock
-          file="duckdb_var.sql"
-          code={`-- duckdb.sql(...) from Python, or the duckdb CLI directly
-SELECT quantile_cont(ret, 0.01) AS q01
-FROM read_csv('dax_returns.csv');                -- ${d.engines.duckdb.toFixed(15)}`}
+q_pl = (pl.scan_csv("dax_returns.csv")
+          .select(pl.col("ret").quantile(0.01, interpolation="linear"))
+          .collect()
+          .item())                               # ${d.engines.polars.toFixed(15)}
+
+q_db = duckdb.sql(
+    "SELECT quantile_cont(ret, 0.01) FROM read_csv('dax_returns.csv')"
+).fetchone()[0]                                  # ${d.engines.duckdb.toFixed(15)}`}
         />
         <DataTable
           head={["Engine", "1% quantile of returns", "|diff| vs pandas"]}

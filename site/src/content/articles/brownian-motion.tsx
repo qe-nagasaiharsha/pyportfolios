@@ -64,9 +64,7 @@ export default function BrownianMotion() {
             ]}
           />
         </div>
-        <div className="mt-6">
-          <ProjectCard slug="brownian-motion" />
-        </div>
+        <ProjectCard slug="brownian-motion" />
       </div>
 
       <CodeBlock code={SETUP_CODE} />

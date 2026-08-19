@@ -51,10 +51,12 @@ export function ProjectCard({ slug }: { slug: string }) {
   /* nothing to show — render nothing rather than a half-empty box */
   if (!assets && !timeframe && !use) return null;
 
+  /* my-8 matches the rhythm Figure and the code cards already use, so the card
+     breathes against the paragraph above it wherever it is dropped in. */
   return (
     <aside
       aria-label="Project card"
-      className="corner-ticks rounded-sm border border-aqua/40 bg-coal/70 p-5"
+      className="corner-ticks my-8 rounded-sm border border-aqua/40 bg-coal/70 p-5"
     >
       {/* Same five labelled rows as the topic card, in its order:
           Category · Libraries · Assets · Timeframe · Use. Category is a plain

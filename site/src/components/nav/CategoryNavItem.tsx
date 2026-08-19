@@ -68,9 +68,6 @@ export function CategoryNavItem({
                       <span className="mt-1 block line-clamp-2 text-[0.72rem] leading-relaxed text-pearl/55">
                         {a.dek}
                       </span>
-                      <span className="mt-1.5 block t-mono text-[0.56rem] uppercase tracking-[0.12em] text-aqua/70">
-                        {a.level} · {a.readMinutes} min read
-                      </span>
                     </span>
                     <span className="relative h-16 w-24 shrink-0 overflow-hidden rounded-md border border-pearl/10">
                       {a.hero ? (

@@ -34,6 +34,46 @@ function Chevron({ open }: { open: boolean }) {
   );
 }
 
+/* ---------------------------------------------------------------- mark -- */
+/* The house treatment for a paper with no journal artwork (Louis, 19 Aug):
+   the journal's name set in Switzer, anthracite on Pale Sisal, in a tile the
+   same size as the logo tiles — so the column never has a hole in it.
+
+   This is faithful rather than a fallback. Risk.net sets its own journal
+   titles as plain text; there is no mark to miss. It also covers the cases no
+   mark can ever exist for: journals that folded (The Journal of Business,
+   2006), journals that were renamed (Bell Journal -> RAND, 1984), and entries
+   that are not journal articles at all (Thorp's handbook chapter).
+
+   Type size steps down with the length of the title so the longest name in
+   the set still fits the tile without clipping. */
+function titleFor(journal: string) {
+  /* "In S. A. Zenios & W. T. Ziemba (Eds.)" is an editor list, not a
+     publication — a book chapter. Name its publisher instead. */
+  if (/\(Eds?\.\)/.test(journal)) return "North-Holland";
+  return journal.replace(/^The\s+/i, "");
+}
+
+function JournalMark({ journal }: { journal: string }) {
+  const label = titleFor(journal);
+  /* Sized to fill the 128x80 tile rather than float in it: the longest title
+     in the set wraps to three lines and still clears the box. */
+  const size =
+    label.length > 34 ? "text-[0.6rem] md:text-[0.72rem]"
+    : label.length > 18 ? "text-[0.7rem] md:text-[0.86rem]"
+    : "text-[0.82rem] md:text-[1rem]";
+
+  return (
+    <div className="flex h-16 w-24 shrink-0 items-center justify-center overflow-hidden rounded-sm border border-pearl/10 bg-sisal px-1.5 py-1 md:h-20 md:w-32">
+      <span
+        className={`text-balance text-center font-sans font-semibold leading-[1.15] tracking-tight text-anthracite ${size}`}
+      >
+        {label}
+      </span>
+    </div>
+  );
+}
+
 function PaperBar({ paper }: { paper: Paper }) {
   const [open, setOpen] = useState(false);
   const hasDetail = (paper.why && paper.why.length > 0) || Boolean(paper.authorNote);
@@ -58,14 +98,7 @@ function PaperBar({ paper }: { paper: Paper }) {
               <img src={`/logos/papers/${paper.logo}`} alt={`${paper.journal} logo`} className="max-h-full max-w-full object-contain" loading="lazy" />
             </div>
           ) : (
-            <div className="flex h-16 w-24 shrink-0 flex-col items-center justify-center gap-0.5 rounded-sm border border-dashed border-aqua/40 bg-navy-sunken/30 text-aqua/60 md:h-20 md:w-32" aria-hidden="true">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <circle cx="8.5" cy="8.5" r="1.5" />
-                <path d="M21 15l-5-5L5 21" />
-              </svg>
-              <span className="t-mono text-[0.42rem] uppercase tracking-[0.12em]">logo</span>
-            </div>
+            <JournalMark journal={paper.journal} />
           )}
 
           <div className="min-w-0 flex-1">

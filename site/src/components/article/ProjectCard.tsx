@@ -24,7 +24,7 @@
    Server Component; no client JS. */
 
 import { getArticle, CATEGORIES } from "@/lib/articles";
-import { TOPIC_CARDS } from "@/lib/topics";
+import { TOPIC_CARDS, CARD_CATEGORY } from "@/lib/topics";
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -61,7 +61,11 @@ export function ProjectCard({ slug }: { slug: string }) {
           grey label like the rest rather than a coloured format badge — the
           format already shows in the article header. */}
       <dl className="space-y-3">
-        <Row label="Category">{a.cardCategory ?? CATEGORIES[a.category].name}</Row>
+        {/* the card quotes TOPIC_CARDS.html's own group heading, which differs
+            from the site's category name for the foundations group */}
+        <Row label="Category">
+          {a.cardCategory ?? CARD_CATEGORY[a.category] ?? CATEGORIES[a.category].name}
+        </Row>
         <Row label="Libraries">{libraries}</Row>
         {assets ? <Row label="Assets">{assets}</Row> : null}
         {timeframe ? <Row label="Timeframe">{timeframe}</Row> : null}

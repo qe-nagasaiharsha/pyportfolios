@@ -28,6 +28,18 @@ export interface TopicCard {
   lane: "quant" | "editorial";
 }
 
+/* The four group headings exactly as TOPIC_CARDS.html prints them (its
+   `cat-label` rows, minus the "01 ·" numbering). Three are word-for-word the
+   site's own category names; the first is not — Louis's card says "Quant
+   Foundations & Derivatives" where the site says "Quant Finance Foundations".
+   The card quotes his wording, the rest of the site keeps its own. */
+export const CARD_CATEGORY: Record<CategorySlug, string> = {
+  "quant-finance-foundations": "Quant Foundations & Derivatives",
+  "portfolio-optimization": "Portfolio Optimization",
+  "risk-management": "Risk Management",
+  "algorithmic-trading": "Algorithmic Trading",
+};
+
 export const TOPIC_CARDS: TopicCard[] = [
   /* ------------------------------ 01 · Quant Foundations & Derivatives -- */
   {

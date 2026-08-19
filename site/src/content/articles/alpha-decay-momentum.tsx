@@ -11,6 +11,7 @@
    3 and 4, alongside the code blocks already there. */
 
 import { Section, P, Bullets, CodeBlock, SubSection, References } from "@/components/article/prose";
+import { ProjectCard } from "@/components/article/ProjectCard";
 import { SETUP_CODE, DATA_CODE, IC_CODE, DECAY_CODE, ERA_CODE, VARIANT_CODE, PLACEBO_CODE } from "./alpha-decay-code";
 
 export default function AlphaDecayMomentum() {
@@ -21,6 +22,10 @@ export default function AlphaDecayMomentum() {
         Using 20 years of daily data on the 11 SPDR sector ETFs, we measure how long a cross-sectional
         momentum signal keeps predicting returns. Two results:
       </P>
+
+      {/* topic-report card — the spec for the piece, in the same place
+          on every article */}
+      <ProjectCard slug="alpha-decay-momentum" />
       <Bullets
         ordered
         items={[

@@ -1,4 +1,5 @@
 import { Section, Lead, P, InlineCode, Formula, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
+import { ProjectCard } from "@/components/article/ProjectCard";
 import d from "./data/var-three-ways";
 import { Line } from "@/components/charts/echarts/Line";
 import { Bar } from "@/components/charts/echarts/Bar";
@@ -30,6 +31,10 @@ export default function VarThreeWays() {
         historical quantile with Polars and DuckDB to show what the modern data stack changes
         (answer: the scaling, never the number).
       </Lead>
+
+      {/* topic-report card — the spec for the piece, in the same place
+          on every article */}
+      <ProjectCard slug="var-three-ways" />
 
       <Pipeline
         steps={[

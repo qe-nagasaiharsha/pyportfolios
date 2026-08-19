@@ -1,4 +1,5 @@
 import { Section, SubSection, Lead, P, Bullets, CodeBlock, DataTable, Figure, Formula } from "@/components/article/prose";
+import { ProjectCard } from "@/components/article/ProjectCard";
 import { BOND_FUNCS, PRICE_YIELD_CODE, LADDER_CODE, ETF_CODE, TAYLOR_CODE } from "./bond-code";
 import d from "./data/bond-pricing-duration-convexity";
 import { Bar } from "@/components/charts/echarts/Bar";
@@ -13,6 +14,10 @@ export default function BondDurationConvexity() {
         lives by: <b>price</b>, <b>duration</b> (first-order rate sensitivity, the bond&apos;s Delta)
         and <b>convexity</b> (second-order, the bond&apos;s Gamma).
       </Lead>
+
+      {/* topic-report card — the spec for the piece, in the same place
+          on every article */}
+      <ProjectCard slug="bond-duration-convexity" />
 
       <Section id="summary" n={1} title="Summary">
         <P>

@@ -10,6 +10,7 @@
    headline, and section 4.2 currently asserts it without showing it. */
 
 import { Section, SubSection, P, Bullets, CodeBlock, DataTable, Formula } from "@/components/article/prose";
+import { ProjectCard } from "@/components/article/ProjectCard";
 import { SETUP_CODE, DATA_CODE, PSEUDO_CODE, FIT_CODE, LAMBDA_CODE, JOINT_CODE, PANELS_CODE } from "./t-copula-code";
 
 export default function GaussianVsTCopula() {
@@ -23,6 +24,10 @@ export default function GaussianVsTCopula() {
         ETFs &mdash; Financials (XLF) and Technology (XLK) &mdash; through the GFC, COVID and 2022, we
         measure which model matches how markets actually behave on the worst days.
       </P>
+
+      {/* topic-report card — the spec for the piece, in the same place
+          on every article */}
+      <ProjectCard slug="gaussian-vs-t-copula" />
 
 
       <CodeBlock code={SETUP_CODE} />

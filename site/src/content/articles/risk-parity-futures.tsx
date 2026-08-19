@@ -1,4 +1,5 @@
 import { Section, SubSection, Lead, P, Bullets, Callout, CodeBlock, DataTable, Figure, Formula } from "@/components/article/prose";
+import { ProjectCard } from "@/components/article/ProjectCard";
 import { LOAD_CODE, RC_CODE, SOLVE_CODE, VALIDATE_CODE, LEVERAGE_CODE } from "./rp-code";
 import { Bar } from "@/components/charts/echarts/Bar";
 import d from "./data/risk-parity-from-scratch";
@@ -14,6 +15,10 @@ export default function RiskParityFutures() {
         the natural vehicle, since risk parity leans on leverage to lift low-vol assets to their
         weight.
       </Lead>
+
+      {/* topic-report card — the spec for the piece, in the same place
+          on every article */}
+      <ProjectCard slug="risk-parity-futures" />
 
       <Section id="summary" n={1} title="Summary">
         <P>

@@ -16,6 +16,7 @@
    the Alpha Decay article. */
 
 import { Section, SubSection, P, Bullets, CodeBlock } from "@/components/article/prose";
+import { ProjectCard } from "@/components/article/ProjectCard";
 import { SETUP_CODE, DATA_CODE, SQUEEZE_CODE, SPILL_CODE, SHORT_CODE } from "./gamestop-momentum-code";
 
 export default function GamestopMomentumModels() {
@@ -29,6 +30,10 @@ export default function GamestopMomentumModels() {
         why quantitative models &mdash; trained on decades in which shorting losers worked &mdash;
         broke.
       </P>
+
+      {/* topic-report card — the spec for the piece, in the same place
+          on every article */}
+      <ProjectCard slug="gamestop-momentum-models" />
 
 
       <CodeBlock code={SETUP_CODE} />

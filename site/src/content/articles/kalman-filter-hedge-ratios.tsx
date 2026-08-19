@@ -1,4 +1,5 @@
 import { Section, Lead, P, InlineCode, Formula, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline } from "@/components/article/prose";
+import { ProjectCard } from "@/components/article/ProjectCard";
 import { Line } from "@/components/charts/echarts/Line";
 import { Bar } from "@/components/charts/echarts/Bar";
 import d from "./data/kalman-filter-hedge-ratios";
@@ -24,6 +25,10 @@ export default function KalmanFilterHedgeRatios() {
         honest experiment: identical trading rules on the Kalman spread and the static spread,
         with costs, and let the data pick the winner.
       </Lead>
+
+      {/* topic-report card — the spec for the piece, in the same place
+          on every article */}
+      <ProjectCard slug="kalman-filter-hedge-ratios" />
 
       <Pipeline
         steps={[

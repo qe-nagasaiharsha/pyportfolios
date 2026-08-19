@@ -10,6 +10,7 @@
    wanted; they would belong in sections 3.1, 3.2 and 4. */
 
 import { Section, SubSection, P, Bullets, CodeBlock, DataTable, Formula } from "@/components/article/prose";
+import { ProjectCard } from "@/components/article/ProjectCard";
 import { SETUP_CODE, SMILE_CODE, HESTON_CODE, RECOVER_CODE, SCORE_CODE } from "./heston-code";
 
 export default function HestonVsBlackScholes() {
@@ -23,6 +24,10 @@ export default function HestonVsBlackScholes() {
         that curve. This piece pits the two against a real SPX-style implied-vol surface and measures
         who fits, by how much, and at what cost.
       </P>
+
+      {/* topic-report card — the spec for the piece, in the same place
+          on every article */}
+      <ProjectCard slug="heston-vs-black-scholes" />
 
 
       <CodeBlock code={SETUP_CODE} />

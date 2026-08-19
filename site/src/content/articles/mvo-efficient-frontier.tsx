@@ -1,4 +1,5 @@
 import { Section, SubSection, Lead, P, Bullets, CodeBlock, DataTable, Figure, Formula } from "@/components/article/prose";
+import { ProjectCard } from "@/components/article/ProjectCard";
 import { LOAD_CODE, CORR_CODE, CLOUD_CODE, OPT_CODE } from "./mvo-code";
 import { Heatmap } from "@/components/charts/echarts/Heatmap";
 import { Scatter } from "@/components/charts/echarts/Scatter";
@@ -13,6 +14,10 @@ export default function MvoEfficientFrontier() {
         build the <b>efficient frontier</b> from real data across six asset classes and find the two
         portfolios everyone quotes — <b>minimum variance</b> and <b>maximum Sharpe</b>.
       </Lead>
+
+      {/* topic-report card — the spec for the piece, in the same place
+          on every article */}
+      <ProjectCard slug="mvo-efficient-frontier" />
 
       <Section id="summary" n={1} title="Summary">
         <P>

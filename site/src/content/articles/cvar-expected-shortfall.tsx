@@ -1,4 +1,5 @@
 import { Section, Lead, P, InlineCode, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline, Bullets } from "@/components/article/prose";
+import { ProjectCard } from "@/components/article/ProjectCard";
 import d from "./data/cvar-expected-shortfall";
 import { Bar } from "@/components/charts/echarts/Bar";
 import { Histogram } from "@/components/charts/echarts/Histogram";
@@ -29,6 +30,10 @@ export default function CvarExpectedShortfall() {
         and with a Student-t, on {d.params.nObs.toLocaleString()} days of HYG and VWO — a sample
         that deliberately includes the crisis these measures were built for.
       </Lead>
+
+      {/* topic-report card — the spec for the piece, in the same place
+          on every article */}
+      <ProjectCard slug="cvar-expected-shortfall" />
 
       <Pipeline
         steps={[

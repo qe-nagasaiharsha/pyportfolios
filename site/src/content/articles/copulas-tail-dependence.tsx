@@ -1,4 +1,5 @@
 import { Section, Lead, P, InlineCode, Formula, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline, Bullets } from "@/components/article/prose";
+import { ProjectCard } from "@/components/article/ProjectCard";
 import { Scatter } from "@/components/charts/echarts/Scatter";
 import d from "./data/copulas-tail-dependence";
 import { Bar } from "@/components/charts/echarts/Bar";
@@ -23,6 +24,10 @@ export default function CopulasTailDependence() {
         vanishingly rare; the data says they cluster; and a Student-t copula with{" "}
         {d.params.dfHat} degrees of freedom repairs most of the damage.
       </Lead>
+
+      {/* topic-report card — the spec for the piece, in the same place
+          on every article */}
+      <ProjectCard slug="copulas-tail-dependence" />
 
       <Pipeline
         steps={[

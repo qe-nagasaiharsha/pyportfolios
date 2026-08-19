@@ -1,4 +1,5 @@
 import { Section, SubSection, Lead, P, Bullets, CodeBlock, DataTable, Figure, Formula } from "@/components/article/prose";
+import { ProjectCard } from "@/components/article/ProjectCard";
 import { LOAD_CODE, PRIOR_CODE, VIEW_CODE, OPT_CODE, NOVIEW_CODE } from "./bl-code";
 import { Bar } from "@/components/charts/echarts/Bar";
 import d from "./data/black-litterman-equilibrium-views";
@@ -14,6 +15,10 @@ export default function BlackLitterman() {
         market is already holding</b>, then tilt it only where you have a genuine view. The result is
         stable, intuitive weights that collapse back to the market when you stay quiet.
       </Lead>
+
+      {/* topic-report card — the spec for the piece, in the same place
+          on every article */}
+      <ProjectCard slug="black-litterman" />
 
       <Section id="summary" n={1} title="Summary">
         <P>

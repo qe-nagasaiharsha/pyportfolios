@@ -1,4 +1,5 @@
 import { Section, SubSection, Lead, P, Bullets, CodeBlock, DataTable, Figure, Formula } from "@/components/article/prose";
+import { ProjectCard } from "@/components/article/ProjectCard";
 import { BSM_CODE, QQQ_CODE, GREEKS_STRIKES_CODE, THETA_CODE, SANITY_CODE } from "./black-scholes-greeks-code";
 import { Line } from "@/components/charts/echarts/Line";
 import d from "./data/black-scholes-and-the-greeks";
@@ -11,6 +12,10 @@ export default function BlackScholesGreeks() {
         volatility — into a fair option price <em>and</em> a full risk report (the Greeks). Fifty years
         on, it remains the language in which options are quoted, hedged, and risk-managed.
       </Lead>
+
+      {/* topic-report card — the spec for the piece, in the same place
+          on every article */}
+      <ProjectCard slug="black-scholes-greeks" />
 
       <Section id="summary" n={1} title="Summary">
         <P>

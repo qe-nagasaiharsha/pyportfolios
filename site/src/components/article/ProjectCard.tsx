@@ -13,13 +13,18 @@
    three exist elsewhere on the page in scattered form; "use" appears nowhere
    else and is the one that earns the card its space.
 
-   Reads straight from the catalogue, so a card cannot drift from the article.
-   Renders nothing at all if the article has no topic-card fields — the ten
-   pre-batch articles predate TOPIC_CARDS.html and have none.
+   TWO SOURCES, ONE CARD. The spec for all sixteen pieces already lives in
+   TOPIC_CARDS (lib/topics.ts) — that is the batch-1 topic-report data. The
+   article catalogue may override any row where the article's own wording
+   differs from the card's. So the article wins if it says something, and the
+   topic card fills in everything else; nothing has to be typed twice.
+
+   Renders nothing if neither source has data.
 
    Server Component; no client JS. */
 
 import { getArticle, CATEGORIES } from "@/lib/articles";
+import { TOPIC_CARDS } from "@/lib/topics";
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -33,8 +38,18 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 export function ProjectCard({ slug }: { slug: string }) {
   const a = getArticle(slug);
   if (!a) return null;
-  /* no topic card for this piece — render nothing rather than a half-empty box */
-  if (!a.assets && !a.timeframe && !a.use) return null;
+
+  const topic = TOPIC_CARDS.find((t) => t.article === slug);
+
+  const libraries = a.cardLibraries ?? topic?.libraries.join(" · ") ?? a.stack.join(" · ");
+  const assets = a.assets ?? topic?.assets;
+  const timeframe = a.timeframe ?? topic?.timeframe;
+  /* the topic card ends its "use" line with a full stop; the article's override
+     does not. Strip it so every card reads the same way. */
+  const use = a.use ?? topic?.use.replace(/\.$/, "");
+
+  /* nothing to show — render nothing rather than a half-empty box */
+  if (!assets && !timeframe && !use) return null;
 
   return (
     <aside
@@ -47,10 +62,10 @@ export function ProjectCard({ slug }: { slug: string }) {
           format already shows in the article header. */}
       <dl className="space-y-3">
         <Row label="Category">{a.cardCategory ?? CATEGORIES[a.category].name}</Row>
-        <Row label="Libraries">{a.cardLibraries ?? a.stack.join(" · ")}</Row>
-        {a.assets ? <Row label="Assets">{a.assets}</Row> : null}
-        {a.timeframe ? <Row label="Timeframe">{a.timeframe}</Row> : null}
-        {a.use ? <Row label="Use">{a.use}</Row> : null}
+        <Row label="Libraries">{libraries}</Row>
+        {assets ? <Row label="Assets">{assets}</Row> : null}
+        {timeframe ? <Row label="Timeframe">{timeframe}</Row> : null}
+        {use ? <Row label="Use">{use}</Row> : null}
       </dl>
     </aside>
   );

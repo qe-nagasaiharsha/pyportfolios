@@ -1,4 +1,5 @@
 import { Section, Lead, P, InlineCode, Term, Callout, CodeBlock, DataTable, Figure, References, Pipeline, Bullets } from "@/components/article/prose";
+import { ProjectCard } from "@/components/article/ProjectCard";
 import d from "./data/sma-crossover-backtest";
 import { Heatmap } from "@/components/charts/echarts/Heatmap";
 import { Line } from "@/components/charts/echarts/Line";
@@ -48,6 +49,10 @@ export default function SmaCrossoverBacktest() {
         10bp per-side costs, then do what most crossover backtests skip: sweep the parameter
         grid, stress the costs, and admit what one in-sample decade can and cannot prove.
       </Lead>
+
+      {/* topic-report card — the spec for the piece, in the same place
+          on every article */}
+      <ProjectCard slug="sma-crossover-backtest" />
 
       <Pipeline
         steps={[

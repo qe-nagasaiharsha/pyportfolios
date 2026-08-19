@@ -10,6 +10,7 @@
    are ever wanted. */
 
 import { Section, SubSection, P, Bullets, CodeBlock } from "@/components/article/prose";
+import { ProjectCard } from "@/components/article/ProjectCard";
 import { SETUP_CODE, DATA_CODE, ANNUAL_CODE, CORR_CODE, DRAWDOWN_CODE, COUNTERFACTUAL_CODE } from "./sixty-forty-code";
 
 export default function SixtyFortyCorrelationFlip() {
@@ -22,6 +23,10 @@ export default function SixtyFortyCorrelationFlip() {
         measures since the 1930s. This case study reconstructs what happened, why the correlation
         flipped, and what it means for every portfolio built on the stock-bond hedge.
       </P>
+
+      {/* topic-report card — the spec for the piece, in the same place
+          on every article */}
+      <ProjectCard slug="sixty-forty-correlation-flip" />
 
 
       <CodeBlock code={SETUP_CODE} />

@@ -37,10 +37,11 @@ import {
 export default function BrownianMotion() {
   return (
     <>
-      {/* Key Highlights and the project card share the top band — Louis asked for
-          the card "next to the intro text" rather than stacked under it. Stacks
-          on narrow screens, where side-by-side would squeeze both. */}
-      <div className="grid gap-6 lg:grid-cols-[1fr_19rem] lg:items-start lg:gap-8">
+      {/* The card sits UNDER the highlights, full width — it was beside them
+          until now, on Louis's earlier "next to the intro text" note. Every
+          article carries one in the same place, so the reader always finds the
+          spec in the same spot. */}
+      <div>
         <div>
           <P>
             <b>Key Highlights:</b>
@@ -63,7 +64,9 @@ export default function BrownianMotion() {
             ]}
           />
         </div>
-        <ProjectCard slug="brownian-motion" />
+        <div className="mt-6">
+          <ProjectCard slug="brownian-motion" />
+        </div>
       </div>
 
       <CodeBlock code={SETUP_CODE} />

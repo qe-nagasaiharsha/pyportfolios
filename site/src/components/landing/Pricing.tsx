@@ -69,7 +69,10 @@ const TIERS: Tier[] = [
       "Deep-dive reports",
       "Priority access",
     ],
-    cta: "Contact Sales",
+    /* was "Contact Sales", which promised a conversation the button never
+       started — it has always gone straight to checkout, and Premium has a
+       listed price rather than being a quote-only tier (Louis, 22 Aug) */
+    cta: "Upgrade to Premium",
     href: "/checkout?plan=premium-monthly",
   },
 ];

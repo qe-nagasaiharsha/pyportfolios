@@ -1432,6 +1432,9 @@ export const PAPER_RECS: Paper[] = [
     title: "The Kelly criterion in blackjack, sports betting, and the stock market",
     journal: "In S. A. Zenios & W. T. Ziemba (Eds.)",
     ref: "Handbook of asset and liability management (Vol. 1, pp. 385–428). North-Holland",
+    /* the only non-journal entry in the list — a handbook chapter, so the mark
+       is the book's own cover rather than a journal wordmark */
+    logo: "handbook-asset-liability-management.png",
     note: "",
     category: "Portfolio Optimization & Asset Allocation",
     why: [

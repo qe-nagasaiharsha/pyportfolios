@@ -54,6 +54,18 @@ function titleFor(journal: string) {
   return journal.replace(/^The\s+/i, "");
 }
 
+/* What the logo is a picture OF. Normally the journal, but a book chapter's
+   `journal` field carries its editors, which would make the alt text read
+   "In S. A. Zenios & W. T. Ziemba (Eds.) logo" — nonsense read aloud. In that
+   case take the book's title off the front of `ref`. */
+function markAltFor(paper: Paper) {
+  if (/\(Eds?\.\)/.test(paper.journal) && paper.ref) {
+    const book = paper.ref.split(/\s*\(Vol|\s*\(pp/)[0].trim().replace(/[.,]$/, "");
+    if (book) return `${book} cover`;
+  }
+  return `${paper.journal} logo`;
+}
+
 function JournalMark({ journal }: { journal: string }) {
   const label = titleFor(journal);
   /* Sized to fill the 128x80 tile rather than float in it: the longest title
@@ -95,7 +107,7 @@ function PaperBar({ paper }: { paper: Paper }) {
           {paper.logo ? (
             <div className="flex h-16 w-24 shrink-0 items-center justify-center overflow-hidden rounded-sm border border-pearl/10 bg-white p-1 md:h-20 md:w-32">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`/logos/papers/${paper.logo}`} alt={`${paper.journal} logo`} className="max-h-full max-w-full object-contain" loading="lazy" />
+              <img src={`/logos/papers/${paper.logo}`} alt={markAltFor(paper)} className="max-h-full max-w-full object-contain" loading="lazy" />
             </div>
           ) : (
             <JournalMark journal={paper.journal} />

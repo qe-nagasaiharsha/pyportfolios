@@ -1,32 +1,49 @@
 "use client";
 
 /* Pricing — three subscription tiers (Basic / Pro / Premium), in the
-   Bhavya-branch treatment: aqua headings and prices, a sub-label per card, no
-   monthly/yearly toggle.
+   Bhavya-branch treatment: aqua headings and prices, a sub-label per card.
 
-   CTAs are live: they carry the plan code through to /checkout, and the prices
-   below mirror platform/app/models.py PLAN_SEED (2900 / 7900 cents). Change one
-   and you must change the other. The grid is plan-aware: once we know the
-   signed-in user's tier, a plan they already have (or a higher plan includes)
-   shows as owned instead of a buy button. */
+   MONTHLY / ANNUAL TOGGLE (Louis, 22 Aug). The annual plans were already
+   seeded, priced and wired to Stripe on the API side — pro-annual and
+   premium-annual — but the cards only advertised "$290 /yr" in grey text while
+   both buttons were pinned to the monthly codes. A reader could see the annual
+   price and had no way to buy it. The toggle switches the price, the cadence
+   line and the checkout code together, so what is shown is what is bought.
 
-import type { CSSProperties } from "react";
+   Every figure here mirrors platform/app/models.py PLAN_SEED (2900 / 29000 /
+   7900 / 79000 cents). Change one and you must change the other.
+
+   The grid is plan-aware: once we know the signed-in user's tier, a plan they
+   already have (or a higher plan includes) shows as owned instead of a buy
+   button. */
+
+import { useState, type CSSProperties } from "react";
 import { ownedRank, useSession } from "@/lib/session";
+
+type Cadence = "monthly" | "annual";
+
+interface Price {
+  /** headline figure, e.g. "$29" */
+  amount: string;
+  /** the small print beside it */
+  note: string;
+  /** checkout target — the plan code the API bills against. */
+  href: string;
+}
 
 interface Tier {
   name: string;
   /** access rank — mirrors the API PLAN_RANK: Basic 0, Pro 1, Premium 2. */
   rank: number;
   sub: string;
-  price: string;
-  cadence: string;
   blurb: string;
   features: string[];
   cta: string;
   featured?: boolean;
   badge?: string;
-  /** checkout target — the plan code the API bills against. */
-  href: string;
+  /** Basic has no cadence — one price, shown whichever way the toggle sits. */
+  monthly: Price;
+  annual?: Price;
 }
 
 const TIERS: Tier[] = [
@@ -34,19 +51,15 @@ const TIERS: Tier[] = [
     name: "Basic",
     rank: 0,
     sub: "Sign-up required",
-    price: "Free",
-    cadence: "no commitment",
     blurb: "",
     features: ["Sample notebooks", "Weekly newsletter", "Community access"],
     cta: "Start for Free",
-    href: "/account",
+    monthly: { amount: "Free", note: "no commitment", href: "/account" },
   },
   {
     name: "Pro",
     rank: 1,
     sub: "Full library · cloud",
-    price: "$29",
-    cadence: "/ mo · $290 /yr",
     blurb: "",
     features: [
       "Run all case studies in the cloud",
@@ -55,14 +68,13 @@ const TIERS: Tier[] = [
     cta: "Upgrade to Pro",
     featured: true,
     badge: "Popular",
-    href: "/checkout?plan=pro-monthly",
+    monthly: { amount: "$29", note: "/ month", href: "/checkout?plan=pro-monthly" },
+    annual: { amount: "$290", note: "/ year · $24.17 a month", href: "/checkout?plan=pro-annual" },
   },
   {
     name: "Premium",
     rank: 2,
     sub: "Research environment",
-    price: "$79",
-    cadence: "/ mo · $790 /yr",
     blurb: "",
     features: [
       "Datasets & downloads",
@@ -73,14 +85,63 @@ const TIERS: Tier[] = [
        started — it has always gone straight to checkout, and Premium has a
        listed price rather than being a quote-only tier (Louis, 22 Aug) */
     cta: "Upgrade to Premium",
-    href: "/checkout?plan=premium-monthly",
+    monthly: { amount: "$79", note: "/ month", href: "/checkout?plan=premium-monthly" },
+    annual: { amount: "$790", note: "/ year · $65.83 a month", href: "/checkout?plan=premium-annual" },
   },
 ];
+
+/* Segmented monthly/annual switch. Two real <button>s inside a role="group"
+   rather than a checkbox styled as a slider: the labels stay readable, and
+   "which one am I on" is carried by aria-pressed instead of by colour alone. */
+function CadenceToggle({
+  value,
+  onChange,
+}: {
+  value: Cadence;
+  onChange: (c: Cadence) => void;
+}) {
+  const opts: { id: Cadence; label: string }[] = [
+    { id: "monthly", label: "Monthly" },
+    { id: "annual", label: "Annual" },
+  ];
+
+  return (
+    <div className="mt-10 flex flex-wrap items-center gap-4">
+      <div
+        role="group"
+        aria-label="Billing period"
+        className="inline-flex rounded-full border border-pearl/15 bg-navy-elevated/50 p-1"
+      >
+        {opts.map((o) => {
+          const on = value === o.id;
+          return (
+            <button
+              key={o.id}
+              type="button"
+              aria-pressed={on}
+              onClick={() => onChange(o.id)}
+              className={`rounded-full px-5 py-2 t-mono text-[0.7rem] uppercase tracking-[0.16em] transition-colors duration-200 ${
+                on ? "bg-pearl text-navy" : "text-mist hover:text-pearl"
+              }`}
+            >
+              {o.label}
+            </button>
+          );
+        })}
+      </div>
+      {/* the reason to click Annual, said once */}
+      <span className="t-mono text-[0.7rem] uppercase tracking-[0.14em] text-aqua">
+        2 months free
+      </span>
+    </div>
+  );
+}
 
 export function Pricing() {
   const session = useSession();
   const owned = ownedRank(session);
   const showOwnership = session.status === "ready" && !!session.me;
+  const [cadence, setCadence] = useState<Cadence>("monthly");
 
   return (
     <section id="pricing" className="relative scroll-mt-20 overflow-hidden border-b border-pearl/10">
@@ -101,9 +162,14 @@ export function Pricing() {
           Flexible pricing for every stage of your quant journey — from your first model to a lifetime of research.
         </p>
 
+        <CadenceToggle value={cadence} onChange={setCadence} />
+
         {/* cards */}
-        <div className="mt-12 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
           {TIERS.map((t, i) => {
+            /* Basic has no annual variant — it falls back to its single price
+               rather than disappearing when the toggle moves. */
+            const price = (cadence === "annual" ? t.annual : t.monthly) ?? t.monthly;
             const ctaState: "action" | "current" | "included" =
               showOwnership && t.rank < owned ? "included"
               : showOwnership && t.rank === owned ? "current"
@@ -148,8 +214,8 @@ export function Pricing() {
 
                 {/* price */}
                 <div className="mt-5 flex items-baseline gap-2">
-                  <span className="text-5xl text-aqua" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>{t.price}</span>
-                  <span className="t-mono text-xs tracking-[0.12em] text-steel">{t.cadence}</span>
+                  <span className="text-5xl text-aqua" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>{price.amount}</span>
+                  <span className="t-mono text-xs tracking-[0.12em] text-steel">{price.note}</span>
                 </div>
 
                 {/* blurb */}
@@ -160,7 +226,7 @@ export function Pricing() {
                 <div className="mt-1 flex h-12 items-center">
                   {ctaState === "action" ? (
                     <a
-                      href={t.href}
+                      href={price.href}
                       className={
                         t.featured
                           ? "inline-flex w-full items-center justify-center rounded-full bg-pearl px-7 py-3 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua"

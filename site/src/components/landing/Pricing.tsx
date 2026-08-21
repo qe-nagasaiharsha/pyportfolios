@@ -186,13 +186,17 @@ export function Pricing() {
               style={{ "--reveal-delay": `${i * 90}ms` } as CSSProperties}
               className="flex"
             >
+              {/* All three cards carry the same aqua outline and the same
+                  hover lift (Louis, 22 Aug) — Pro used to be the only one, with
+                  the others on a grey border. Pro still reads as the featured
+                  tier through its aqua heading, its "Popular" badge and its
+                  solid button, so nothing is lost by levelling the frames.
+                  A plan you already own keeps the brighter border. */}
               <div
                 className={`relative flex flex-1 flex-col rounded-lg border bg-navy-elevated/50 p-7 transition-all duration-300 hover:-translate-y-0.5 ${
                   ctaState === "current"
                     ? "border-aqua/50"
-                    : t.featured
-                      ? "border-aqua/25 hover:border-aqua/50"
-                      : "border-pearl/10 hover:border-pearl/25"
+                    : "border-aqua/25 hover:border-aqua/50"
                 }`}
               >
                 {/* name + badge */}

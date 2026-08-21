@@ -35,7 +35,18 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
   );
 }
 
-export function ProjectCard({ slug }: { slug: string }) {
+export function ProjectCard({
+  slug,
+  /* Louis's headline-bar idea, 21 Aug: a labelled strip across the top so the
+     box announces what it is instead of opening on the word "CATEGORY".
+     Opt-in for now — GBM carries it as the sample to choose from, the other
+     fifteen stay plain, so the two can be compared side by side. Making it
+     the house style later is a one-line change to this default. */
+  headline = false,
+}: {
+  slug: string;
+  headline?: boolean;
+}) {
   const a = getArticle(slug);
   if (!a) return null;
 
@@ -56,13 +67,24 @@ export function ProjectCard({ slug }: { slug: string }) {
   return (
     <aside
       aria-label="Project card"
-      className="corner-ticks my-8 rounded-sm border border-aqua/40 bg-coal/70 p-5"
+      className="corner-ticks my-8 overflow-hidden rounded-sm border border-aqua/40 bg-coal/70"
     >
+      {/* Solid aqua strip, anthracite type — the one place on the card with a
+          filled background, so it reads as a header rather than another row.
+          overflow-hidden on the aside clips the bar to the rounded corners. */}
+      {headline ? (
+        <div className="border-b border-aqua/40 bg-aqua px-5 py-2">
+          <span className="t-mono text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-anthracite">
+            Project Card
+          </span>
+        </div>
+      ) : null}
+
       {/* Same five labelled rows as the topic card, in its order:
           Category · Libraries · Assets · Timeframe · Use. Category is a plain
           grey label like the rest rather than a coloured format badge — the
           format already shows in the article header. */}
-      <dl className="space-y-3">
+      <dl className="space-y-3 p-5">
         {/* the card quotes TOPIC_CARDS.html's own group heading, which differs
             from the site's category name for the foundations group */}
         <Row label="Category">

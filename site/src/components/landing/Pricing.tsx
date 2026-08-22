@@ -111,7 +111,7 @@ function CadenceToggle({
   ];
 
   return (
-    <div className="mt-10 flex flex-wrap items-center gap-4">
+    <div className="mt-10">
       <div
         role="group"
         aria-label="Billing period"
@@ -134,10 +134,6 @@ function CadenceToggle({
           );
         })}
       </div>
-      {/* the reason to click Annual, said once */}
-      <span className="t-mono text-[0.7rem] uppercase tracking-[0.14em] text-aqua">
-        2 months free
-      </span>
     </div>
   );
 }

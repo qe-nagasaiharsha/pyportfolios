@@ -10,6 +10,11 @@
    price and had no way to buy it. The toggle switches the price, the cadence
    line and the checkout code together, so what is shown is what is bought.
 
+   ONE CADENCE AT A TIME. On Annual a card reads "$290 / year" and shows no
+   per-month figure. A per-month equivalent sat there briefly and was removed
+   deliberately — two prices on one card is exactly what made the old
+   "$29 / mo · $290 /yr" line ambiguous to begin with.
+
    Every figure here mirrors platform/app/models.py PLAN_SEED (2900 / 29000 /
    7900 / 79000 cents). Change one and you must change the other.
 
@@ -69,7 +74,7 @@ const TIERS: Tier[] = [
     featured: true,
     badge: "Popular",
     monthly: { amount: "$29", note: "/ month", href: "/checkout?plan=pro-monthly" },
-    annual: { amount: "$290", note: "/ year · $24.17 a month", href: "/checkout?plan=pro-annual" },
+    annual: { amount: "$290", note: "/ year", href: "/checkout?plan=pro-annual" },
   },
   {
     name: "Premium",
@@ -86,7 +91,7 @@ const TIERS: Tier[] = [
        listed price rather than being a quote-only tier (Louis, 22 Aug) */
     cta: "Upgrade to Premium",
     monthly: { amount: "$79", note: "/ month", href: "/checkout?plan=premium-monthly" },
-    annual: { amount: "$790", note: "/ year · $65.83 a month", href: "/checkout?plan=premium-annual" },
+    annual: { amount: "$790", note: "/ year", href: "/checkout?plan=premium-annual" },
   },
 ];
 

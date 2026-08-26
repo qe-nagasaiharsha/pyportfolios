@@ -7,6 +7,12 @@ Computes real dependence results from the three index closes (cached CSV),
 fits Gaussian and Student-t copulas, measures empirical tail dependence and
 conditional crash probabilities, and emits the article data module + the
 runnable notebook. Fully deterministic (seeded subsampling only).
+
+   NOTE — the markdown cells below are NOT what ships. Since 26 Aug the
+   notebook's prose is replaced with the article's own words by
+   quant/sync_notebook_prose.py, so the download reads exactly like the page.
+   Re-running this script rewrites the notebook from the md() cells here and
+   undoes that; run the sync again afterwards.
 """
 
 from __future__ import annotations

@@ -12,6 +12,12 @@ it is transparent and auditable; vectorbt 1.x (Portfolio.from_signals) is used
 as an independent cross-check of the fills — final value, max drawdown and
 trade count must agree. Stats are annualised per asset (252d QQQ, 365d BTC)
 rather than through vectorbt's freq machinery, whose year convention differs.
+
+   NOTE — the markdown cells below are NOT what ships. Since 26 Aug the
+   notebook's prose is replaced with the article's own words by
+   quant/sync_notebook_prose.py, so the download reads exactly like the page.
+   Re-running this script rewrites the notebook from the md() cells here and
+   undoes that; run the sync again afterwards.
 """
 
 from __future__ import annotations

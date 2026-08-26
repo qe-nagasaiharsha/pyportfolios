@@ -7,6 +7,12 @@ Estimates the EWC~EWA hedge ratio three ways (full-sample OLS, rolling 252d
 OLS, a from-scratch NumPy Kalman filter with random-walk states), trades the
 resulting spread with identical z-score rules, and emits the article data
 module + the runnable notebook. Fully deterministic - no RNG anywhere.
+
+   NOTE — the markdown cells below are NOT what ships. Since 26 Aug the
+   notebook's prose is replaced with the article's own words by
+   quant/sync_notebook_prose.py, so the download reads exactly like the page.
+   Re-running this script rewrites the notebook from the md() cells here and
+   undoes that; run the sync again afterwards.
 """
 
 from __future__ import annotations

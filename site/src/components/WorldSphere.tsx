@@ -90,6 +90,10 @@ const DEG = Math.PI / 180;
 const TILT = 0.42; // axial tilt toward viewer — shows the northern centres
 const SPIN = (2 * Math.PI) / 10; // rad/s — one revolution every 10s (lively, clearly moving)
 const SPIN_REDUCED = (2 * Math.PI) / 45; // gentler drift under reduced motion
+/* how close the pointer must get to a city dot to pick it up, in CSS px. The
+   dots draw at 2.4-3.8px, which is far too small to hit reliably, so the
+   target is deliberately much larger than the mark. */
+const HIT_RADIUS = 14;
 
 const FORMATTERS: Record<string, Intl.DateTimeFormat> = {};
 for (const m of MARKETS) {
@@ -182,6 +186,10 @@ export function WorldSphere() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [openCount, setOpenCount] = useState(0);
   const [mounted, setMounted] = useState(false);
+  /* the city under the pointer, and where to put its tooltip. Kept in React
+     state (not the canvas) so the tooltip is real text: selectable, readable by
+     a screen reader, and styled with the same tokens as the rest of the site. */
+  const [tip, setTip] = useState<{ city: string; index: string; x: number; y: number } | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -199,6 +207,16 @@ export function WorldSphere() {
       reduced: mq.matches,
       labelOp: {} as Record<string, number>, // eased per-city label opacity → no popping
       lastTs: performance.now(),
+      /* last frame's projected city positions, in CSS pixels — written by
+         draw(), read by the pointer handlers. Hit-testing has to use what was
+         actually drawn, because theta moves every frame. */
+      hits: [] as { city: string; index: string; sx: number; sy: number; depth: number }[],
+      dragging: false,
+      dragStartX: 0,
+      dragStartTheta: 0,
+      /* set while the pointer is down and has moved: suppresses the tooltip
+         during a drag, and tells us not to treat the release as a click */
+      dragged: false,
     };
     const onMq = () => {
       st.reduced = mq.matches;
@@ -300,6 +318,8 @@ export function WorldSphere() {
         const q = project(v, theta);
         return { m, sx: cx + q.x * R, sy: cy - q.y * R, depth: (q.z + 1) / 2, info: st.times[m.city] ?? { time: "--:--", isOpen: false } };
       });
+      /* publish this frame's positions for hit-testing */
+      st.hits = proj.map((c) => ({ city: c.m.city, index: c.m.index, sx: c.sx, sy: c.sy, depth: c.depth }));
       for (const c of [...proj].sort((a, b) => a.depth - b.depth)) {
         const a = 0.25 + c.depth * 0.75;
         if (c.info.isOpen) {
@@ -408,9 +428,67 @@ export function WorldSphere() {
     };
     const onLeave = () => {
       st.hover = false;
+      st.dragging = false;
+      setTip(null);
     };
+
+    /* Nearest city to the pointer, front face only. A city on the far side
+       projects to the same 2D spot as one on the near side, so without the
+       depth test you would pick up markets hidden behind the globe. */
+    function cityAt(px: number, py: number) {
+      let best: (typeof st.hits)[number] | null = null;
+      let bestD = Infinity;
+      for (const c of st.hits) {
+        if (c.depth < 0.5) continue;
+        const d = Math.hypot(c.sx - px, c.sy - py);
+        if (d < HIT_RADIUS && d < bestD) {
+          bestD = d;
+          best = c;
+        }
+      }
+      return best;
+    }
+
+    const onMove = (e: PointerEvent) => {
+      const rect = wrap!.getBoundingClientRect();
+      const px = e.clientX - rect.left;
+      const py = e.clientY - rect.top;
+
+      if (st.dragging) {
+        /* one full drag across the canvas turns the globe roughly once */
+        const dx = e.clientX - st.dragStartX;
+        if (Math.abs(dx) > 2) st.dragged = true;
+        st.theta = st.dragStartTheta + (dx / Math.max(rect.width, 1)) * Math.PI * 2;
+        setTip(null);
+        return;
+      }
+
+      const hit = cityAt(px, py);
+      wrap!.style.cursor = hit ? "pointer" : "grab";
+      setTip(hit ? { city: hit.city, index: hit.index, x: hit.sx, y: hit.sy } : null);
+    };
+
+    const onDown = (e: PointerEvent) => {
+      st.dragging = true;
+      st.dragged = false;
+      st.dragStartX = e.clientX;
+      st.dragStartTheta = st.theta;
+      wrap!.setPointerCapture?.(e.pointerId);
+      wrap!.style.cursor = "grabbing";
+    };
+
+    const onUp = (e: PointerEvent) => {
+      st.dragging = false;
+      wrap!.releasePointerCapture?.(e.pointerId);
+      wrap!.style.cursor = "grab";
+    };
+
     wrap.addEventListener("pointerenter", onEnter);
     wrap.addEventListener("pointerleave", onLeave);
+    wrap.addEventListener("pointermove", onMove);
+    wrap.addEventListener("pointerdown", onDown);
+    wrap.addEventListener("pointerup", onUp);
+    wrap.addEventListener("pointercancel", onUp);
 
     resize();
     const ro = new ResizeObserver(resize);
@@ -424,7 +502,11 @@ export function WorldSphere() {
       const dt = Math.min(ts - last, 50) / 1000;
       last = ts;
       const base = st.reduced ? SPIN_REDUCED : SPIN;
-      st.theta += dt * base * (st.hover ? 0.25 : 1); // slow on hover, never frozen
+      /* while dragging, theta belongs to the pointer — adding spin on top would
+         make the globe crawl out from under the cursor */
+      if (!st.dragging) {
+        st.theta += dt * base * (st.hover ? 0.25 : 1); // slow on hover, never frozen
+      }
       draw(ts);
       raf = requestAnimationFrame(frame);
     }
@@ -440,18 +522,36 @@ export function WorldSphere() {
       mq.removeEventListener?.("change", onMq);
       wrap.removeEventListener("pointerenter", onEnter);
       wrap.removeEventListener("pointerleave", onLeave);
+      wrap.removeEventListener("pointermove", onMove);
+      wrap.removeEventListener("pointerdown", onDown);
+      wrap.removeEventListener("pointerup", onUp);
+      wrap.removeEventListener("pointercancel", onUp);
     };
   }, []);
 
   return (
     <div className="relative mx-auto w-full max-w-[500px]">
-      <div ref={wrapRef} className="relative aspect-square w-full">
+      <div ref={wrapRef} className="relative aspect-square w-full touch-none">
         <canvas
           ref={canvasRef}
           className="h-full w-full"
           role="img"
           aria-label={`Rotating globe of the world's major stock exchanges with live local times. ${openCount} of ${MARKETS.length} markets trading now.`}
         />
+
+        {/* hover read-out. Sits above the dot, centred on it, and never eats
+            the pointer — otherwise it would cover the very city it describes
+            and flicker as the hit test lost and regained it. */}
+        {tip ? (
+          <div
+            role="status"
+            className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-sm border border-aqua/40 bg-coal/95 px-2.5 py-1.5"
+            style={{ left: tip.x, top: tip.y - 10 }}
+          >
+            <span className="block font-sans text-[0.78rem] font-semibold leading-tight text-pearl">{tip.city}</span>
+            <span className="block t-mono text-[0.62rem] uppercase tracking-[0.14em] text-aqua">{tip.index}</span>
+          </div>
+        ) : null}
       </div>
 
       <div className="mt-2 flex items-center justify-center gap-2">

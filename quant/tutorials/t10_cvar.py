@@ -6,6 +6,12 @@ Computes historical & Student-t VaR/CVaR for two fat-tailed assets and a 50/50
 portfolio, demonstrates VaR's tail blindness and its subadditivity failure,
 zooms into the GFC, and compares CVaR-optimal vs mean-variance weights with
 Riskfolio-Lib. Emits the article data module + the runnable notebook.
+
+   NOTE — the markdown cells below are NOT what ships. Since 26 Aug the
+   notebook's prose is replaced with the article's own words by
+   quant/sync_notebook_prose.py, so the download reads exactly like the page.
+   Re-running this script rewrites the notebook from the md() cells here and
+   undoes that; run the sync again afterwards.
 """
 
 from __future__ import annotations

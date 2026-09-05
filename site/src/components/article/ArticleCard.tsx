@@ -1,7 +1,7 @@
 /* Research-index card — dark, matching the landing's research tiles. Clicking
    through flips to the light reading surface (the dark→light rhythm). */
 
-import { type Article, CATEGORIES, formatDate } from "@/lib/articles";
+import { type Article, CATEGORIES } from "@/lib/articles";
 import { TransitionLink } from "@/components/motion/TransitionLink";
 
 export function ArticleCard({ article }: { article: Article }) {
@@ -36,11 +36,9 @@ export function ArticleCard({ article }: { article: Article }) {
       </div>
       <h3 className="t-h2 mt-4 text-pearl">{article.title}</h3>
       <p className="mt-3 flex-1 leading-relaxed text-mist">{article.excerpt}</p>
+      {/* date and reading time removed (Harsha, 5 Sep) — the footer is just the
+          call to action now */}
       <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-pearl/10 pt-4 t-mono text-xs uppercase tracking-[0.14em] text-steel">
-        <span>{formatDate(article.date)}</span>
-        <span className="text-aqua/50" aria-hidden="true">·</span>
-        <span>{article.readMinutes} min</span>
-        <span className="text-aqua/50" aria-hidden="true">·</span>
         <span className="text-aqua transition-transform duration-300 group-hover:translate-x-0.5">Read ↗</span>
       </div>
       </div>

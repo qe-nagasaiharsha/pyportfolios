@@ -35,7 +35,10 @@ export function ArticleCard({ article }: { article: Article }) {
         <span className="t-mono text-[0.62rem] uppercase tracking-[0.14em] text-steel">{article.level}</span>
       </div>
       <h3 className="t-h2 mt-4 text-pearl">{article.title}</h3>
-      <p className="mt-3 flex-1 leading-relaxed text-mist">{article.excerpt}</p>
+      {/* the article's own subheading, not the longer excerpt (Harsha, 7 Sep)
+          — the card now says exactly what the article page says under its
+          title, so the two read as the same piece */}
+      <p className="mt-3 flex-1 leading-relaxed text-mist">{article.dek}</p>
       {/* date and reading time removed (Harsha, 5 Sep) — the footer is just the
           call to action now */}
       <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-pearl/10 pt-4 t-mono text-xs uppercase tracking-[0.14em] text-steel">

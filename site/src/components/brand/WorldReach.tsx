@@ -44,6 +44,7 @@ const BY_GEO = new Map(MARKETS.map((m) => [m.geo, m]));
 export function WorldReach() {
   const host = useRef<HTMLDivElement>(null);
   const chart = useRef<echarts.ECharts | null>(null);
+  const roRef = useRef<ResizeObserver | null>(null);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
@@ -98,6 +99,12 @@ export function WorldReach() {
             roam: false,                 // fixed set of 15, nothing to explore
             silent: false,
             selectedMode: false,
+            /* ECharts squashes longitude to 0.75 by default, which is a
+               cartographic choice for a globe-ish look but leaves the drawing
+               narrower than its box — the land was filling 59% of the width
+               with empty bands either side. 1 gives plain equirectangular, the
+               projection the original PNG used, and it fills the frame. */
+            aspectScale: 1,
             itemStyle: { areaColor: REST, borderColor: SEA, borderWidth: 0.5 },
             emphasis: {
               /* only the fifteen react; the rest keep their resting colour so
@@ -115,18 +122,33 @@ export function WorldReach() {
         ],
       };
 
-      chart.current = echarts.init(host.current, undefined, { renderer: "canvas" });
-      chart.current.setOption(option);
-      const ro = new ResizeObserver(() => chart.current?.resize());
-      ro.observe(host.current);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (chart.current as any).__ro = ro;
+      /* Never init on a zero-sized box. An ECharts instance born at 0x0 does
+         NOT recover — the observer fires, resize() runs, the canvas stays 0.
+         Measured on this project in August and fixed the same way in
+         charts/echarts/Chart.tsx. It bites here because the container is sized
+         by aspect-ratio, which resolves after the effect runs, so the first
+         look at it is 0 tall. */
+      const target = host.current;
+      const start = () => {
+        if (chart.current) {
+          chart.current.resize();
+          return;
+        }
+        if (target.clientWidth === 0 || target.clientHeight === 0) return;
+        chart.current = echarts.init(target, undefined, { renderer: "canvas" });
+        chart.current.setOption(option);
+      };
+
+      const ro = new ResizeObserver(start);
+      ro.observe(target);
+      start();
+      roRef.current = ro;
     })();
 
     return () => {
       dead = true;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (chart.current as any)?.__ro?.disconnect?.();
+      roRef.current?.disconnect();
+      roRef.current = null;
       chart.current?.dispose();
       chart.current = null;
     };
@@ -138,7 +160,11 @@ export function WorldReach() {
         ref={host}
         role="img"
         aria-label="World map of the top 15 economies the research covers, shaded by developed and emerging market, each showing its nominal GDP on hover."
-        className="h-[46vw] max-h-[520px] min-h-[240px] w-full"
+        /* Without Antarctica the drawn world spans 360 x 139 degrees, so the
+           box is given the same 2.6:1 shape. A taller box does not make the
+           map bigger — ECharts preserves aspect — it just adds empty bands
+           above and below it. */
+        className="aspect-[26/10] max-h-[420px] w-full"
       />
       {failed ? (
         <p className="mt-3 t-mono text-[0.62rem] uppercase tracking-[0.14em] text-anthracite/50">

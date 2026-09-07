@@ -55,10 +55,22 @@ def ring(arcs: list, idx_list: list) -> list:
     return pts
 
 
+# dropped from the output, deliberately
+SKIP = {
+    # The brand map (deck §14) has no Antarctica, and with it the latitude
+    # range runs -85.6 to 83.7 instead of -55.6 to 83.7: every populated
+    # country is squashed by about 18% so a grey band with nothing to say can
+    # own the bottom of the frame.
+    "Antarctica",
+}
+
+
 def to_geojson(topo: dict, layer: str = "countries") -> dict:
     arcs = decode_arcs(topo)
     feats = []
     for geom in topo["objects"][layer]["geometries"]:
+        if (geom.get("properties") or {}).get("name") in SKIP:
+            continue
         t = geom.get("type")
         if t == "Polygon":
             coords = [ring(arcs, r) for r in geom["arcs"]]

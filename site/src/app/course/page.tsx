@@ -37,25 +37,8 @@ export default function CoursePage() {
               Coming soon<span className="text-aqua">.</span>
             </h1>
 
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-mist">
-              The structured course is in preparation. In the meantime the full
-              research library is live — every piece runnable, with its notebook.
-            </p>
-
-            <div className="mt-10 flex flex-wrap items-center gap-6">
-              <Link
-                href="/research"
-                className="rounded-sm bg-pearl px-8 py-3.5 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua"
-              >
-                Browse the research
-              </Link>
-              <Link
-                href="/#early-access"
-                className="link-fine t-mono text-sm uppercase tracking-[0.16em] text-pearl/90 transition-colors duration-300 hover:text-pearl"
-              >
-                Get early access →
-              </Link>
-            </div>
+            {/* the explanatory line and the two onward links were removed
+                (Harsha, 7 Sep) — the page is the eyebrow and the two words */}
           </div>
         </section>
       </main>

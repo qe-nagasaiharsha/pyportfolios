@@ -45,7 +45,6 @@ interface Tier {
   features: string[];
   cta: string;
   featured?: boolean;
-  badge?: string;
   /** Basic has no cadence — one price, shown whichever way the toggle sits. */
   monthly: Price;
   annual?: Price;
@@ -72,7 +71,6 @@ const TIERS: Tier[] = [
     ],
     cta: "Upgrade to Pro",
     featured: true,
-    badge: "Popular",
     monthly: { amount: "$29", note: "/ month", href: "/checkout?plan=pro-monthly" },
     annual: { amount: "$290", note: "/ year", href: "/checkout?plan=pro-annual" },
   },
@@ -101,9 +99,13 @@ const TIERS: Tier[] = [
 function CadenceToggle({
   value,
   onChange,
+  tier,
 }: {
   value: Cadence;
   onChange: (c: Cadence) => void;
+  /* each card owns its own switch, so the group needs a name of its own —
+     two controls both labelled "Billing period" is ambiguous read aloud */
+  tier: string;
 }) {
   const opts: { id: Cadence; label: string }[] = [
     { id: "monthly", label: "Monthly" },
@@ -111,29 +113,137 @@ function CadenceToggle({
   ];
 
   return (
-    <div className="mt-10">
-      <div
-        role="group"
-        aria-label="Billing period"
-        className="inline-flex rounded-full border border-pearl/15 bg-navy-elevated/50 p-1"
-      >
-        {opts.map((o) => {
-          const on = value === o.id;
-          return (
-            <button
-              key={o.id}
-              type="button"
-              aria-pressed={on}
-              onClick={() => onChange(o.id)}
-              className={`rounded-full px-5 py-2 t-mono text-[0.7rem] uppercase tracking-[0.16em] transition-colors duration-200 ${
-                on ? "bg-pearl text-navy" : "text-mist hover:text-pearl"
-              }`}
-            >
-              {o.label}
-            </button>
-          );
-        })}
+    <div
+      role="group"
+      aria-label={`${tier} billing period`}
+      className="inline-flex shrink-0 rounded-full border border-pearl/15 bg-navy/40 p-0.5"
+    >
+      {opts.map((o) => {
+        const on = value === o.id;
+        return (
+          <button
+            key={o.id}
+            type="button"
+            aria-pressed={on}
+            onClick={() => onChange(o.id)}
+            className={`rounded-full px-2.5 py-1 t-mono text-[0.55rem] uppercase tracking-[0.12em] transition-colors duration-200 ${
+              on ? "bg-pearl text-navy" : "text-mist hover:text-pearl"
+            }`}
+          >
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/* One card. It holds its own monthly/annual state (Harsha, 7 Sep: "dont link
+   them"), so Pro and Premium switch independently — hence a component rather
+   than one cadence lifted into Pricing. */
+function TierCard({
+  t,
+  ctaState,
+  ctaLabel,
+}: {
+  t: Tier;
+  ctaState: "action" | "current" | "included";
+  ctaLabel: string;
+}) {
+  const [cadence, setCadence] = useState<Cadence>("monthly");
+  /* Basic has no annual variant — it falls back to its single price rather
+     than disappearing when a toggle moves. */
+  const price = (cadence === "annual" ? t.annual : t.monthly) ?? t.monthly;
+
+  return (
+    <div
+      className={`relative flex flex-1 flex-col rounded-lg border bg-navy-elevated/50 p-7 transition-all duration-300 hover:-translate-y-0.5 ${
+        ctaState === "current"
+          ? "border-aqua/50"
+          : "border-aqua/25 hover:border-aqua/50"
+      }`}
+    >
+      {/* name, then the billing switch in the top-right corner. The "Popular"
+          badge that used to sit here is gone (Harsha, 7 Sep) — the corner is
+          the switch's now. "Your plan" still appears, beside the name, since a
+          signed-in owner needs to see it. */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <h4
+            className={`text-2xl ${t.featured ? "text-aqua" : "text-pearl"}`}
+            style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}
+          >
+            {t.name}
+          </h4>
+          {ctaState === "current" ? (
+            <span className="inline-flex items-center rounded-full border border-aqua/50 px-2.5 py-1 t-mono text-[0.55rem] uppercase tracking-[0.16em] text-aqua">
+              Your plan
+            </span>
+          ) : null}
+        </div>
+        {t.annual ? (
+          <CadenceToggle value={cadence} onChange={setCadence} tier={t.name} />
+        ) : null}
       </div>
+
+      {/* sub-label */}
+      <p className="mt-1.5 t-mono text-[0.72rem] tracking-[0.04em] text-steel">{t.sub}</p>
+
+      {/* price */}
+      <div className="mt-5 flex items-baseline gap-2">
+        <span className="text-5xl text-aqua" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>{price.amount}</span>
+        <span className="t-mono text-xs tracking-[0.12em] text-steel">{price.note}</span>
+      </div>
+
+      {/* blurb */}
+      <p className="mt-4 min-h-[4.5rem] leading-relaxed text-mist">{t.blurb}</p>
+
+      {/* cta — every tier gets a real button; featured is solid, the rest
+          outlined, owned tiers are a muted non-link. */}
+      <div className="mt-1 flex h-12 items-center">
+        {ctaState === "action" ? (
+          <a
+            href={price.href}
+            className={
+              t.featured
+                ? "inline-flex w-full items-center justify-center rounded-full bg-pearl px-7 py-3 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua"
+                : "inline-flex w-full items-center justify-center rounded-full border border-pearl/30 px-7 py-3 text-sm font-semibold text-pearl transition-colors duration-300 hover:border-aqua hover:text-aqua"
+            }
+          >
+            {ctaLabel}
+          </a>
+        ) : (
+          <span
+            aria-disabled="true"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-pearl/15 px-7 py-3 text-sm font-semibold text-steel"
+          >
+            {ctaState === "current" ? (
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-aqua" aria-hidden="true">
+                <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            ) : null}
+            {ctaLabel}
+          </span>
+        )}
+      </div>
+
+      {/* features */}
+      <div className="mt-7 flex items-center gap-3">
+        <span className="h-px flex-1 bg-pearl/10" />
+        <span className="t-mono text-[0.6rem] uppercase tracking-[0.22em] text-steel">Features</span>
+        <span className="h-px flex-1 bg-pearl/10" />
+      </div>
+      <ul className="mt-5 space-y-3">
+        {t.features.map((f) => (
+          <li key={f} className="flex items-start gap-2.5 t-mono text-[0.76rem] leading-relaxed text-mist">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="mt-px shrink-0 text-steel" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M8.5 12.4l2.4 2.4 4.6-5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span>{f}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -142,7 +252,6 @@ export function Pricing() {
   const session = useSession();
   const owned = ownedRank(session);
   const showOwnership = session.status === "ready" && !!session.me;
-  const [cadence, setCadence] = useState<Cadence>("monthly");
 
   return (
     <section id="pricing" className="relative scroll-mt-20 overflow-hidden border-b border-pearl/10">
@@ -163,14 +272,9 @@ export function Pricing() {
           Flexible pricing for every stage of your quant journey — from your first model to a lifetime of research.
         </p>
 
-        <CadenceToggle value={cadence} onChange={setCadence} />
-
-        {/* cards */}
+        {/* cards — each carries its own billing switch, top right */}
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {TIERS.map((t, i) => {
-            /* Basic has no annual variant — it falls back to its single price
-               rather than disappearing when the toggle moves. */
-            const price = (cadence === "annual" ? t.annual : t.monthly) ?? t.monthly;
             const ctaState: "action" | "current" | "included" =
               showOwnership && t.rank < owned ? "included"
               : showOwnership && t.rank === owned ? "current"
@@ -181,99 +285,14 @@ export function Pricing() {
               : t.cta;
 
             return (
-            <div
-              key={t.name}
-              data-reveal
-              style={{ "--reveal-delay": `${i * 90}ms` } as CSSProperties}
-              className="flex"
-            >
-              {/* All three cards carry the same aqua outline and the same
-                  hover lift (Louis, 22 Aug) — Pro used to be the only one, with
-                  the others on a grey border. Pro still reads as the featured
-                  tier through its aqua heading, its "Popular" badge and its
-                  solid button, so nothing is lost by levelling the frames.
-                  A plan you already own keeps the brighter border. */}
               <div
-                className={`relative flex flex-1 flex-col rounded-lg border bg-navy-elevated/50 p-7 transition-all duration-300 hover:-translate-y-0.5 ${
-                  ctaState === "current"
-                    ? "border-aqua/50"
-                    : "border-aqua/25 hover:border-aqua/50"
-                }`}
+                key={t.name}
+                data-reveal
+                style={{ "--reveal-delay": `${i * 90}ms` } as CSSProperties}
+                className="flex"
               >
-                {/* name + badge */}
-                <div className="flex items-center justify-between gap-3">
-                  <h4 className={`text-2xl ${t.featured ? "text-aqua" : "text-pearl"}`} style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>{t.name}</h4>
-                  {ctaState === "current" ? (
-                    <span className="inline-flex items-center rounded-full border border-aqua/50 px-2.5 py-1 t-mono text-[0.55rem] uppercase tracking-[0.16em] text-aqua">
-                      Your plan
-                    </span>
-                  ) : t.badge ? (
-                    <span className="inline-flex items-center rounded-full border border-pearl/40 px-2.5 py-1 t-mono text-[0.55rem] uppercase tracking-[0.16em] text-pearl">
-                      {t.badge}
-                    </span>
-                  ) : null}
-                </div>
-
-                {/* sub-label */}
-                <p className="mt-1.5 t-mono text-[0.72rem] tracking-[0.04em] text-steel">{t.sub}</p>
-
-                {/* price */}
-                <div className="mt-5 flex items-baseline gap-2">
-                  <span className="text-5xl text-aqua" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>{price.amount}</span>
-                  <span className="t-mono text-xs tracking-[0.12em] text-steel">{price.note}</span>
-                </div>
-
-                {/* blurb */}
-                <p className="mt-4 min-h-[4.5rem] leading-relaxed text-mist">{t.blurb}</p>
-
-                {/* cta — every tier gets a real button; featured is solid, the
-                    rest outlined, owned tiers are a muted non-link. */}
-                <div className="mt-1 flex h-12 items-center">
-                  {ctaState === "action" ? (
-                    <a
-                      href={price.href}
-                      className={
-                        t.featured
-                          ? "inline-flex w-full items-center justify-center rounded-full bg-pearl px-7 py-3 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua"
-                          : "inline-flex w-full items-center justify-center rounded-full border border-pearl/30 px-7 py-3 text-sm font-semibold text-pearl transition-colors duration-300 hover:border-aqua hover:text-aqua"
-                      }
-                    >
-                      {ctaLabel}
-                    </a>
-                  ) : (
-                    <span
-                      aria-disabled="true"
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-pearl/15 px-7 py-3 text-sm font-semibold text-steel"
-                    >
-                      {ctaState === "current" ? (
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-aqua" aria-hidden="true">
-                          <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      ) : null}
-                      {ctaLabel}
-                    </span>
-                  )}
-                </div>
-
-                {/* features */}
-                <div className="mt-7 flex items-center gap-3">
-                  <span className="h-px flex-1 bg-pearl/10" />
-                  <span className="t-mono text-[0.6rem] uppercase tracking-[0.22em] text-steel">Features</span>
-                  <span className="h-px flex-1 bg-pearl/10" />
-                </div>
-                <ul className="mt-5 space-y-3">
-                  {t.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2.5 t-mono text-[0.76rem] leading-relaxed text-mist">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="mt-px shrink-0 text-steel" aria-hidden="true">
-                        <circle cx="12" cy="12" r="9" />
-                        <path d="M8.5 12.4l2.4 2.4 4.6-5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
+                <TierCard t={t} ctaState={ctaState} ctaLabel={ctaLabel} />
               </div>
-            </div>
             );
           })}
         </div>

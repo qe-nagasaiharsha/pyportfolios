@@ -1,0 +1,80 @@
+% Smoke test — exercises every macro in pyportfolios-note.cls once.
+% Not a deliverable; used to catch class errors before building a real note.
+\documentclass{pyportfolios-note}
+
+\noteshorttitle{Risk parity vs. inverse volatility}
+
+\begin{document}
+\thispagestyle{notecover}
+
+\notemasthead{Quantitative Insights}{Research note}{Q2 2026}{Out-of-sample period: 2017–2023}
+
+\notetitle{Risk parity, or just\\inverse volatility?}
+
+\notedeck{When seven correlated mega-cap names sit at the heart of every passive
+equity book, two parameter-light allocators land within a hundredth of a Sharpe
+of each other — but only one of them is actually doing what it claims.}
+
+\begin{multicols}{2}
+\notelede{Risk parity has acquired the status of a portfolio-construction default.
+The pitch is straightforward: weight assets so that each contributes equally to
+total portfolio variance.}
+
+This note compares the two methods on a deliberately narrow universe: seven US
+mega-cap technology stocks (AAPL, MSFT, GOOG, AMZN, META, TSLA, NVDA).
+
+\notesection{The two methods}
+\notesubsection{Inverse volatility}
+The simplest of the parameter-light allocators. Each asset's weight is set
+proportional to the reciprocal of its standalone volatility.
+
+\bottomline{On out-of-sample tech, the two allocators land within hundredths of a
+Sharpe. The performance gap is economically negligible, but the
+variance-attribution profile is meaningfully different.}
+\end{multicols}
+
+\newpage
+\notesection{Out-of-sample results}
+
+\begin{kpirow}
+\pqkpi{RISK PARITY}{1.12}{Annualised Sharpe}\hfill
+\pqkpi{INVERSE VOL}{1.10}{Annualised Sharpe}\hfill
+\pqkpi{SHARPE GAP}{0.02}{Risk parity advantage}\hfill
+\pqkpi{MAX DRAWDOWN}{56.6\%}{vs. 55.7\% for IV}
+\end{kpirow}
+
+\begin{metrictable}{Metric}{Risk parity}{Inverse volatility}{Difference}
+\bandrow{RETURN}
+Annualised mean return & 33.66\% & 32.53\% & +1.13 pp \\
+Annualised volatility & 30.17\% & 29.68\% & +0.49 pp \\
+\bandrow{RISK-ADJUSTED}
+Annualised Sharpe ratio & 1.12 & 1.10 & +0.02 \\
+\end{metrictable}
+
+\notesource{Source: skfolio Population summary, applied to out-of-sample returns.}
+
+\notesection{Reproducibility}
+\begin{notecode}
+from skfolio import Population, RiskMeasure
+from skfolio.optimization import InverseVolatility, RiskBudgeting
+iv = InverseVolatility().fit(X_tr)
+\end{notecode}
+
+\notedivider
+
+\begin{multicols}{2}
+\glossaryitem{Drawdown.}{The percentage decline of cumulative wealth from a
+previous high-water mark.}
+\glossaryitem{Sharpe ratio.}{Annualised mean excess return divided by annualised
+volatility.}
+\end{multicols}
+
+\begin{disclosures}
+\textbf{Important disclosures.} The information contained in this communication
+is not a research recommendation or ``investment research'' and is classified as
+a Marketing Communication.
+
+© 2026. All rights reserved. Document classification: General.
+\end{disclosures}
+
+\end{document}

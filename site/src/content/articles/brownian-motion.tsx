@@ -64,9 +64,7 @@ export default function BrownianMotion() {
             ]}
           />
         </div>
-        {/* headline bar shown here only — the sample for Louis to compare
-            against the plain card on the other fifteen articles */}
-        <ProjectCard slug="brownian-motion" headline />
+        <ProjectCard slug="brownian-motion" />
       </div>
 
       <CodeBlock code={SETUP_CODE} />

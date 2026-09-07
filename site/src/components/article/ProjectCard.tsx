@@ -38,11 +38,11 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 export function ProjectCard({
   slug,
   /* Louis's headline-bar idea, 21 Aug: a labelled strip across the top so the
-     box announces what it is instead of opening on the word "CATEGORY".
-     Opt-in for now — GBM carries it as the sample to choose from, the other
-     fifteen stay plain, so the two can be compared side by side. Making it
-     the house style later is a one-line change to this default. */
-  headline = false,
+     box announces what it is instead of opening on the word "CATEGORY". It
+     shipped on GBM alone as a sample to choose from; chosen, and the house
+     style since 7 Sep — hence the default. The prop stays so a single article
+     can opt out without touching the component. */
+  headline = true,
 }: {
   slug: string;
   headline?: boolean;

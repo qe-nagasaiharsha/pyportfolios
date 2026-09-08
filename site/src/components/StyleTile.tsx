@@ -35,6 +35,8 @@ import { SectorsIndices } from "@/components/brand/SectorsIndices";
 import { EtfProviders } from "@/components/brand/EtfProviders";
 import { WorldClockBand } from "@/components/brand/WorldClockBand";
 import { WorldSphere } from "@/components/WorldSphere";
+import { WorldReach } from "@/components/brand/WorldReach";
+import { WORLD_REACH_MARKETS } from "@/lib/worldReach";
 import { PhotoBackdrop } from "@/components/brand/PhotoBackdrop";
 import { Pricing } from "@/components/landing/Pricing";
 import { FAQ } from "@/components/landing/FAQ";
@@ -399,18 +401,35 @@ export default function StyleTile({
               Top 15 Economies<br />
               <span className="text-pearl/35">Assets &amp; securities from key developed<br />and emerging markets</span>
             </h3>
-            {/* the brand map (slide 14) on a soft light card — matches the iconography rule */}
+            {/* the brand map (slide 14) on a soft light card — matches the
+                iconography rule. Was an 807 KB PNG until 7 Sep; now a real map
+                that answers on hover with category and GDP. */}
             <figure className="mt-12 overflow-hidden rounded-sm border border-pearl/10 bg-sisal p-4 sm:p-8">
-              <img
-                src="/world-reach.png"
-                alt=""
-                className="mx-auto w-full max-w-4xl cursor-zoom-in transition-opacity duration-200 hover:opacity-90"
-                decoding="async"
-                data-zoom
-                role="button"
-                tabIndex={0}
-                aria-label="Enlarge map"
-              />
+              <div className="mx-auto w-full max-w-4xl">
+                <WorldReach />
+                {/* the legend the PNG baked in, kept as text: it still names all
+                    fifteen for anyone not hovering, and for a screen reader */}
+                <div className="mt-5 border-t border-anthracite/10 pt-4">
+                  {(["Developed", "Emerging"] as const).map((g) => {
+                    const list = WORLD_REACH_MARKETS.filter((m) => m.group === g);
+                    return (
+                      <p key={g} className="mt-1.5 text-[0.78rem] leading-relaxed text-anthracite/75">
+                        <span
+                          aria-hidden="true"
+                          className={`mr-2 inline-block h-2.5 w-2.5 translate-y-px rounded-[2px] ${
+                            g === "Developed" ? "bg-anthracite" : "bg-anthracite/55"
+                          }`}
+                        />
+                        <b className="text-anthracite">{g} ({list.length}):</b>{" "}
+                        {list.map((m) => m.label).sort().join(", ")}
+                      </p>
+                    );
+                  })}
+                  <p className="mt-3 t-mono text-[0.6rem] uppercase tracking-[0.14em] text-anthracite/45">
+                    Boundaries: Natural Earth 1:110m · GDP: IMF WEO 2026 est.
+                  </p>
+                </div>
+              </div>
             </figure>
           </div>
         </section>

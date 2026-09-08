@@ -25,6 +25,7 @@ function focusSrc(slug: string): string | null {
   return null;
 }
 import { Crest, CrestLockup } from "@/components/brand/Crest";
+import { GeographiesMap } from "@/components/brand/GeographiesMap";
 import { PhotoPlate } from "@/components/brand/PhotoPlate";
 import { StackCards } from "@/components/brand/StackCards";
 import { ExchangeRow } from "@/components/brand/ExchangeRow";
@@ -399,19 +400,7 @@ export default function StyleTile({
               Top 15 Economies<br />
               <span className="text-pearl/35">Assets &amp; securities from key developed<br />and emerging markets</span>
             </h3>
-            {/* the brand map (slide 14) on a soft light card — matches the iconography rule */}
-            <figure className="mt-12 overflow-hidden rounded-sm border border-pearl/10 bg-sisal p-4 sm:p-8">
-              <img
-                src="/world-reach.png"
-                alt=""
-                className="mx-auto w-full max-w-4xl cursor-zoom-in transition-opacity duration-200 hover:opacity-90"
-                decoding="async"
-                data-zoom
-                role="button"
-                tabIndex={0}
-                aria-label="Enlarge map"
-              />
-            </figure>
+            <GeographiesMap />
           </div>
         </section>
 

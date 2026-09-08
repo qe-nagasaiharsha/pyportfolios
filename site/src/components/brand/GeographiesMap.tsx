@@ -8,15 +8,15 @@
 
    Regenerate with:  python quant/make_world_svg.py
 
-   This replaced site/public/world-reach.png. The picture was Louis's artwork
-   and looked right, but its legend was painted into the pixels — unselectable,
-   uncopyable, invisible to Ctrl+F and to screen readers. Harsha asked for the
-   map to be embedded such that its text is real text (8 Sep 2026).
+   This replaced site/public/world-reach.png — 176 country outlines as
+   <path> rather than a flat picture.
 
-   So: 176 country outlines as <path>, and the legend as ordinary HTML
-   beside them. Deliberately there is NO <text> anywhere in the SVG — dragging a
-   selection across SVG text nodes is unreliable across browsers, while HTML
-   selection is not. The SVG is aria-hidden and the legend carries the meaning.
+   It carried a legend in HTML underneath ("Developed (10): Australia, ...")
+   which was the original point: in the PNG that text was painted into the
+   pixels and could not be selected, copied or found. Harsha had it removed on
+   8 Sep 2026, so the map now shows solid and hatched fills with nothing naming
+   them, and the section heading above is the only wording. The legend markup is
+   in this file's history if it is ever wanted back.
 
    The projection and palette were fitted to the original artwork rather than
    chosen, so this lands on top of the PNG it replaces. See the generator.
@@ -237,36 +237,6 @@ export function GeographiesMap() {
         </g>
       </svg>
       </div>
-
-      {/* Real text. This is the whole point of the exercise — it selects,
-          copies, finds and reads aloud. */}
-      <figcaption className="mx-auto mt-8 max-w-4xl text-anthracite">
-        <ul className="space-y-2 t-mono text-[0.72rem] leading-relaxed sm:text-[0.8rem]">
-          <li className="flex gap-3">
-            <span
-              className="mt-[0.28em] h-3 w-6 shrink-0 border border-anthracite/15"
-              style={{ background: "#151515" }}
-              aria-hidden="true"
-            />
-            <span>
-              <strong className="font-semibold">Developed (10):</strong> Australia, Canada, France, Germany, Italy, Japan, South Korea, Spain, United Kingdom, United States
-            </span>
-          </li>
-          <li className="flex gap-3">
-            <span
-              className="mt-[0.28em] h-3 w-6 shrink-0 border border-anthracite/15"
-              style={{ background: "repeating-linear-gradient(-45deg, #0a0f1e 0 3px, #f4f2e8 3px 4px)" }}
-              aria-hidden="true"
-            />
-            <span>
-              <strong className="font-semibold">Emerging (5):</strong> Brazil, China, India, Mexico, Russia
-            </span>
-          </li>
-        </ul>
-        <p className="mt-6 t-mono text-[0.62rem] tracking-[0.08em] text-anthracite/45">
-          Map: Natural Earth (1:110m admin boundaries)
-        </p>
-      </figcaption>
     </figure>
   );
 }

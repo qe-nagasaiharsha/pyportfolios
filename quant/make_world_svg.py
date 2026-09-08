@@ -230,10 +230,6 @@ def main():
     paths = "\n".join(lines)
 
     dark = HATCH_PERIOD * HATCH_DARK
-    # Alphabetical, matching the artwork's legend word for word. The lists above
-    # are kept in GDP order because that is how the deck ranks them.
-    dev_names = ", ".join(sorted(label for _, label in DEVELOPED))
-    emg_names = ", ".join(sorted(label for _, label in EMERGING))
 
     tsx = TEMPLATE % {
         "view_w": VIEW_W,
@@ -245,17 +241,6 @@ def main():
         "half": num(HATCH_PERIOD / 2.0),
         "dark": num(dark),
         "paths": paths,
-        "border_dev": C_DEVELOPED,
-        # the legend swatch repeats the map's hatch in CSS, at a size that suits
-        # a 24px-wide chip rather than the map's own scale
-        "hatch_css": (
-            "repeating-linear-gradient(-45deg, %s 0 3px, %s 3px 4px)"
-            % (C_HATCH, C_GROUND)
-        ),
-        "n_dev": len(DEVELOPED),
-        "n_emg": len(EMERGING),
-        "dev_names": dev_names,
-        "emg_names": emg_names,
         "count": len(plain) + len(marked),
     }
     with io.open(OUT, "w", encoding="utf-8", newline="\n") as fh:
@@ -275,15 +260,15 @@ TEMPLATE = '''/* ===============================================================
 
    Regenerate with:  python quant/make_world_svg.py
 
-   This replaced site/public/world-reach.png. The picture was Louis's artwork
-   and looked right, but its legend was painted into the pixels — unselectable,
-   uncopyable, invisible to Ctrl+F and to screen readers. Harsha asked for the
-   map to be embedded such that its text is real text (8 Sep 2026).
+   This replaced site/public/world-reach.png — %(count)d country outlines as
+   <path> rather than a flat picture.
 
-   So: %(count)d country outlines as <path>, and the legend as ordinary HTML
-   beside them. Deliberately there is NO <text> anywhere in the SVG — dragging a
-   selection across SVG text nodes is unreliable across browsers, while HTML
-   selection is not. The SVG is aria-hidden and the legend carries the meaning.
+   It carried a legend in HTML underneath ("Developed (10): Australia, ...")
+   which was the original point: in the PNG that text was painted into the
+   pixels and could not be selected, copied or found. Harsha had it removed on
+   8 Sep 2026, so the map now shows solid and hatched fills with nothing naming
+   them, and the section heading above is the only wording. The legend markup is
+   in this file's history if it is ever wanted back.
 
    The projection and palette were fitted to the original artwork rather than
    chosen, so this lands on top of the PNG it replaces. See the generator.
@@ -329,36 +314,6 @@ export function GeographiesMap() {
         </g>
       </svg>
       </div>
-
-      {/* Real text. This is the whole point of the exercise — it selects,
-          copies, finds and reads aloud. */}
-      <figcaption className="mx-auto mt-8 max-w-4xl text-anthracite">
-        <ul className="space-y-2 t-mono text-[0.72rem] leading-relaxed sm:text-[0.8rem]">
-          <li className="flex gap-3">
-            <span
-              className="mt-[0.28em] h-3 w-6 shrink-0 border border-anthracite/15"
-              style={{ background: "%(border_dev)s" }}
-              aria-hidden="true"
-            />
-            <span>
-              <strong className="font-semibold">Developed (%(n_dev)d):</strong> %(dev_names)s
-            </span>
-          </li>
-          <li className="flex gap-3">
-            <span
-              className="mt-[0.28em] h-3 w-6 shrink-0 border border-anthracite/15"
-              style={{ background: "%(hatch_css)s" }}
-              aria-hidden="true"
-            />
-            <span>
-              <strong className="font-semibold">Emerging (%(n_emg)d):</strong> %(emg_names)s
-            </span>
-          </li>
-        </ul>
-        <p className="mt-6 t-mono text-[0.62rem] tracking-[0.08em] text-anthracite/45">
-          Map: Natural Earth (1:110m admin boundaries)
-        </p>
-      </figcaption>
     </figure>
   );
 }

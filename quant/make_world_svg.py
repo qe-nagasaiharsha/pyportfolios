@@ -63,26 +63,33 @@ C_BORDER = "#ffffff"
 HATCH_PERIOD = 12.4                 # perpendicular to the stripes
 HATCH_DARK = 0.75                   # duty cycle measured across Russia
 
-# The fifteen. `geo` must match the GeoJSON feature name, which is not always
-# the display name — "United States of America".
+# The fifteen: (GeoJSON name, display name, nominal GDP in USD trillions).
+#
+# The first entry must match the GeoJSON feature name, which is not always the
+# display name — "United States of America". GDP is IMF World Economic Outlook
+# 2026, which is a projection rather than an outturn; that is why every surface
+# showing these says "IMF WEO 2026 est." rather than stating them as settled.
+#
+# These ride onto the shaded paths as data attributes, so the hover tooltip
+# reads them straight off the DOM and needs no data module of its own.
 DEVELOPED = [
-    ("United States of America", "United States"),
-    ("Germany", "Germany"),
-    ("Japan", "Japan"),
-    ("United Kingdom", "United Kingdom"),
-    ("France", "France"),
-    ("Italy", "Italy"),
-    ("Canada", "Canada"),
-    ("Australia", "Australia"),
-    ("Spain", "Spain"),
-    ("South Korea", "South Korea"),
+    ("United States of America", "United States", 32.38),
+    ("Germany", "Germany", 5.45),
+    ("Japan", "Japan", 4.38),
+    ("United Kingdom", "United Kingdom", 4.26),
+    ("France", "France", 3.60),
+    ("Italy", "Italy", 2.74),
+    ("Canada", "Canada", 2.51),
+    ("Australia", "Australia", 2.12),
+    ("Spain", "Spain", 2.09),
+    ("South Korea", "South Korea", 1.93),
 ]
 EMERGING = [
-    ("China", "China"),
-    ("India", "India"),
-    ("Russia", "Russia"),
-    ("Brazil", "Brazil"),
-    ("Mexico", "Mexico"),
+    ("China", "China", 20.85),
+    ("India", "India", 4.15),
+    ("Russia", "Russia", 2.66),
+    ("Brazil", "Brazil", 2.64),
+    ("Mexico", "Mexico", 2.12),
 ]
 
 
@@ -200,11 +207,12 @@ def main():
     with io.open(GEOJSON, encoding="utf-8") as fh:
         geo = json.load(fh)
 
+    # geo name -> (fill, display name, group, gdp)
     fills = {}
-    for name, _ in DEVELOPED:
-        fills[name] = C_DEVELOPED
-    for name, _ in EMERGING:
-        fills[name] = "url(#wm-hatch)"
+    for name, label, gdp in DEVELOPED:
+        fills[name] = (C_DEVELOPED, label, "Developed", gdp)
+    for name, label, gdp in EMERGING:
+        fills[name] = ("url(#wm-hatch)", label, "Emerging", gdp)
 
     # Every one of the fifteen must actually be found in the boundaries, or a
     # market would silently render unshaded and nobody would notice.
@@ -222,11 +230,23 @@ def main():
         if not d:
             continue
         # Shaded countries are emitted last so their borders sit on top.
-        (marked if name in fills else plain).append((name, d, fills.get(name, C_PLAIN)))
+        if name in fills:
+            marked.append((name, d, fills[name]))
+        else:
+            plain.append((name, d, None))
 
     lines = []
-    for name, d, fill in plain + marked:
-        lines.append('        <path d="%s" fill="%s" />' % (d, fill))
+    for name, d, info in plain:
+        lines.append('        <path d="%s" fill="%s" />' % (d, C_PLAIN))
+    for name, d, info in marked:
+        fill, label, group, gdp = info
+        # The tooltip reads these off the hovered node, so no data module is
+        # needed on the client and the 131 KB of path data stays server-rendered.
+        lines.append(
+            '        <path d="%s" fill="%s"\n'
+            '          data-market="%s" data-group="%s" data-gdp="%.2f" />'
+            % (d, fill, label, group, gdp)
+        )
     paths = "\n".join(lines)
 
     dark = HATCH_PERIOD * HATCH_DARK
@@ -272,17 +292,24 @@ TEMPLATE = '''/* ===============================================================
 
    The projection and palette were fitted to the original artwork rather than
    chosen, so this lands on top of the PNG it replaces. See the generator.
+
+   The fifteen shaded paths carry data-market/data-group/data-gdp. MapHover, the
+   client wrapper, reads them off the hovered node to build its tooltip — which
+   is how this file stays a server component and keeps its path data out of the
+   JavaScript bundle.
    ========================================================================== */
+
+import { MapHover } from "@/components/brand/MapHover";
 
 export function GeographiesMap() {
   return (
     <figure className="mt-12 overflow-hidden rounded-sm border border-pearl/10 bg-sisal p-4 sm:p-8">
+      <MapHover>
       {/* The zoom trigger is this wrapper, not the SVG: the SVG stays
-          aria-hidden (the legend below carries the meaning), while the wrapper
-          is what gets the button role and the accessible name. Lightbox clones
-          this node's markup, which is why the SVG paints its own sisal ground —
-          cloned onto the lightbox's dark panel it would otherwise be dark
-          countries on a dark background. */}
+          aria-hidden, while the wrapper is what gets the button role and the
+          accessible name. Lightbox clones this node's markup, which is why the
+          SVG paints its own sisal ground — cloned onto the lightbox's dark
+          panel it would otherwise be dark countries on a dark background. */}
       <div
         className="mx-auto block w-full max-w-4xl cursor-zoom-in transition-opacity duration-200 hover:opacity-90"
         data-zoom
@@ -314,6 +341,7 @@ export function GeographiesMap() {
         </g>
       </svg>
       </div>
+      </MapHover>
     </figure>
   );
 }

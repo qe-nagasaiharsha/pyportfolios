@@ -15,6 +15,7 @@ import { ArticleNav } from "@/components/article/ArticleNav";
 import { ArticleToc } from "@/components/article/ArticleToc";
 import { ScrollReveal } from "@/components/motion/ScrollReveal";
 import { GatedBadge, GatedCta } from "@/components/article/GatedDownload";
+import { PdfDownload } from "@/components/article/PdfDownload";
 
 export function ArticleLayout({ article, children }: { article: Article; children: ReactNode }) {
   const category = CATEGORIES[article.category];
@@ -24,7 +25,7 @@ export function ArticleLayout({ article, children }: { article: Article; childre
   const { prev, next } = articleNeighbours(article.slug);
 
   return (
-    <div className="min-h-screen bg-anthracite">
+    <div className="min-h-dvh bg-anthracite">
       <ScrollReveal />
       <ArticleNav />
 
@@ -67,8 +68,9 @@ export function ArticleLayout({ article, children }: { article: Article; childre
               </p>
               {/* The stack line used to sit here. The badge stays: the sidebar
                   copy is lg-only, so this is the only one on a phone. */}
-              <div className="mt-6 lg:hidden">
+              <div className="mt-6 flex flex-col items-start gap-2.5 lg:hidden">
                 <GatedBadge slug={article.slug} />
+                <PdfDownload slug={article.slug} />
               </div>
             </div>
           </div>
@@ -89,8 +91,10 @@ export function ArticleLayout({ article, children }: { article: Article; childre
               <div className="mt-8">
                 <ArticleToc sections={article.sections} />
               </div>
-              <div className="mt-10 border-t border-pearl/10 pt-6">
+              {/* notebook, then the typeset PDF directly beneath it */}
+              <div className="mt-10 flex flex-col items-start gap-2.5 border-t border-pearl/10 pt-6">
                 <GatedBadge slug={article.slug} />
+                <PdfDownload slug={article.slug} />
               </div>
             </div>
           </aside>
@@ -117,8 +121,9 @@ export function ArticleLayout({ article, children }: { article: Article; childre
                 </p>
 
                 {/* stack line removed; badge kept for the same reason as above */}
-                <div className="mt-7 lg:hidden">
+                <div className="mt-7 flex flex-col items-start gap-2.5 lg:hidden">
                   <GatedBadge slug={article.slug} />
+                  <PdfDownload slug={article.slug} />
                 </div>
               </header>
             ) : null}

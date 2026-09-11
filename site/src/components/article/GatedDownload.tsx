@@ -44,7 +44,9 @@ export function GatedBadge({ slug }: { slug: string }) {
         await resolveAndDownload(slug, "bundle", router);
         setBusy(false);
       }}
-      className="group inline-flex items-center gap-1.5 rounded-sm border border-aqua/40 px-2.5 py-1 t-mono text-[0.66rem] uppercase tracking-[0.12em] text-aqua transition-colors hover:bg-aqua hover:text-anthracite disabled:opacity-60"
+      /* 44px touch target on phones; sm: restores the original desktop pill.
+         Kept in step with PdfDownload, which sits directly beneath it. */
+      className="group inline-flex min-h-11 items-center gap-1.5 rounded-sm border border-aqua/40 px-3 py-2 t-mono text-[0.66rem] uppercase tracking-[0.12em] text-aqua transition-colors hover:bg-aqua hover:text-anthracite disabled:opacity-60 sm:min-h-0 sm:px-2.5 sm:py-1"
     >
       <span className="h-1.5 w-1.5 rounded-full bg-aqua group-hover:bg-anthracite" aria-hidden="true" />
       {busy ? "…" : "Notebook"}

@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function CoursePage() {
   return (
-    <div className="min-h-screen bg-navy text-pearl">
+    <div className="min-h-dvh bg-navy text-pearl">
       <ArticleNav />
 
       <main>

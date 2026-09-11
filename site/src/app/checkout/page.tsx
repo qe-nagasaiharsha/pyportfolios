@@ -288,7 +288,7 @@ function CheckoutInner() {
 
 export default function CheckoutPage() {
   return (
-    <div className="min-h-screen bg-navy text-pearl">
+    <div className="min-h-dvh bg-navy text-pearl">
       <ArticleNav />
       <main>
         <section className="relative overflow-hidden border-b border-pearl/10">

@@ -41,6 +41,32 @@ echarts.use([
 
 let themeRegistered = false;
 
+/* Every chart component sets its grid margins in fixed pixels, sized for the
+   desktop measure — the heatmap alone spends 94px on axis gutters. On a 375px
+   phone that is a quarter of the screen gone before a single cell is drawn.
+
+   ECharts evaluates `media` itself on every resize, so one rule here fixes all
+   five chart types without touching their option builders. containLabel is the
+   point: instead of guessing a left margin wide enough for the labels, ECharts
+   measures them and reserves exactly that much.
+
+   Only the grid is overridden. Merging axis or series overrides would break on
+   the components that pass axis arrays, and the gutters are the actual
+   mobile problem. */
+const NARROW = 520;
+
+const withResponsiveGrid = (option: EChartsOption) => ({
+  baseOption: option,
+  media: [
+    {
+      query: { maxWidth: NARROW },
+      option: {
+        grid: { left: 6, right: 10, top: 14, bottom: 6, containLabel: true },
+      },
+    },
+  ],
+});
+
 export function Chart({
   option,
   height = 280,
@@ -81,7 +107,7 @@ export function Chart({
       }
       if (el.clientWidth === 0) return;
       chart.current = echarts.init(el, "pyportfolios", { renderer: "canvas" });
-      chart.current.setOption(latest.current);
+      chart.current.setOption(withResponsiveGrid(latest.current));
     };
 
     /* ResizeObserver rather than a window listener: the figure can change width
@@ -100,7 +126,7 @@ export function Chart({
   /* option is rebuilt by each chart component's useMemo; push it through
      without tearing the instance down */
   useEffect(() => {
-    chart.current?.setOption(option, true);
+    chart.current?.setOption(withResponsiveGrid(option), true);
   }, [option]);
 
   return (

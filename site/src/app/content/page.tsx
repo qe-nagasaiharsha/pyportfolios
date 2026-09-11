@@ -74,7 +74,7 @@ const FORMATS: Fmt[] = [
 
 export default function ContentPage() {
   return (
-    <div className="min-h-screen bg-navy text-pearl">
+    <div className="min-h-dvh bg-navy text-pearl">
       <ArticleNav />
 
       <main>

@@ -15,7 +15,7 @@ const span = PAPERS.length ? new Date().getFullYear() - PAPERS[0].year : 75;
 
 export default function LiteraturePage() {
   return (
-    <div className="min-h-screen bg-navy text-pearl">
+    <div className="min-h-dvh bg-navy text-pearl">
       <ArticleNav />
 
       <main>

@@ -116,7 +116,7 @@ export default function StyleTile({
   const heroSub = heroAlign === "center" ? "mx-auto" : heroAlign === "right" ? "ml-auto" : "";
 
   return (
-    <div className="min-h-screen bg-navy text-pearl">
+    <div className="min-h-dvh bg-navy text-pearl">
       <ScrollReveal />
       <Lightbox />
       {/* ============ STICKY TOP: version toggle row + site nav ========= */}
@@ -173,7 +173,7 @@ export default function StyleTile({
             + valley in view. Content is bottom-anchored so the button stays above
             the ticker. min-h floor for very short screens. */}
         <section className="relative h-[calc(100svh-67px)] min-h-[440px] w-full overflow-hidden border-b border-pearl/10">
-          <PhotoBackdrop src="/hero-framed.png" overlay={false} position="center top" />
+          <PhotoBackdrop src="/hero-framed.png" overlay="center" position="center top" />
           {f.globe ? <HeroCurve /> : null}
           <div className="absolute inset-x-0 top-[63%] z-10 mx-auto w-full max-w-6xl -translate-y-1/2 px-6">
             <div className={f.globe ? "grid items-center gap-x-12 gap-y-14 lg:grid-cols-[1.04fr_minmax(0,0.96fr)]" : ""}>

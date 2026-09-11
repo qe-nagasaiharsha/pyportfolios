@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function ResearchIndex() {
   return (
-    <div className="min-h-screen bg-navy text-pearl">
+    <div className="min-h-dvh bg-navy text-pearl">
       <ScrollReveal />
       <ArticleNav />
 

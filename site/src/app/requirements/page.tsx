@@ -34,7 +34,7 @@ export default function RequirementsPage() {
   const tutorials = TOPIC_CARDS.filter((t) => t.article);
 
   return (
-    <div className="min-h-screen bg-navy text-pearl">
+    <div className="min-h-dvh bg-navy text-pearl">
       <ArticleNav />
 
       <main>

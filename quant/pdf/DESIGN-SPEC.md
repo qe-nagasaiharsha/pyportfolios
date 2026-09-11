@@ -81,10 +81,16 @@ rule** (69.8 → 71.3) — no fill, no other borders — above:
 | Value | 18 pt Bold, `navy`, baseline y = 91.1 |
 | Caption | 8 pt Regular, `ink-muted`, baseline y = 112.8 |
 
-**Metrics table** (p. 4) — header cells on `cream` with a 0.75 pt navy rule beneath;
-body rows zebra-striped `cream-light`, separated by 0.75 pt `#e5e5e5` hairlines.
-Column widths as measured: 207.3 / 96.6 / 135.5 / 93.4 pt. Section bands
-(RETURN, RISK-ADJUSTED, DRAWDOWN, TAIL RISK, DISTRIBUTIONAL) are 9 pt bold ink rows.
+**Metrics table** (p. 4) — column widths 207.3 / 96.6 / 135.5 / 93.4 pt (= 532.8),
+cell text inset 6 pt from the column edge. Header cells on `cream` with a 0.75 pt navy
+rule beneath. Data rows are **unfilled**, separated by 0.75 pt `#e5e5e5` hairlines, on a
+~17.75 pt pitch.
+
+There is **no zebra striping** — the `cream-light` fills land on the section band rows
+(fill 308.2 → 326.8 contains the `RETURN` baseline at 314.3). Bands are 7.5 pt bold navy:
+RETURN, RISK-ADJUSTED, DRAWDOWN, TAIL RISK (DAILY), DISTRIBUTIONAL & DIVERSIFICATION.
+Headline metrics within a band are set **bold** (`Annualised Sharpe ratio`,
+`Effective number of assets`); the rest are regular.
 
 **Code block** (p. 5) — full measure, `cream-light` ground, DejaVu Sans Mono 7.5 pt.
 
@@ -92,8 +98,17 @@ Column widths as measured: 207.3 / 96.6 / 135.5 / 93.4 pt. Section bands
 2.96 – 5.31, i.e. wide and short. Each is followed by a 7.5 pt `ink-secondary` source line.
 Source PNGs in the reference are ~1480 px wide (≈ 2.8× for print density).
 
-**Running footer** — navy tab, then `RESEARCH · QUANTITATIVE INSIGHTS`, the short title,
-and the page number.
+**Running footer** — the mark at x = 39.6 is a **border, not a solid tab**: the nested rects
+share their x bounds, so only the horizontal edges paint — a 1.5 pt rule at y = 753.4 and a
+0.7 pt rule at y = 768.7. Then `RESEARCH · QUANTITATIVE INSIGHTS`, the short title (absent
+on the cover), and the page number. The footer baseline sits at y = 765.5.
+
+## Text setting
+
+The body is **ragged-right, not justified** — WeasyPrint's default `text-align: left`.
+This is the single most visible property of the page: justifying produces stretched word
+spaces and far heavier hyphenation than the original. Single sentence spacing throughout,
+and the reference hyphenates only rarely.
 
 ## Page architecture
 

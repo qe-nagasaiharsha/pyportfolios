@@ -1,0 +1,261 @@
+% The GameStop Squeeze: When Momentum Models Broke — research-note PDF.
+%
+% PROSE AND CODE ARE VERBATIM from the website article:
+%   site/src/content/articles/gamestop-momentum-models.tsx
+%   site/src/content/articles/gamestop-momentum-code.ts
+% Metadata from lib/articles.ts; project-card fallbacks from lib/topics.ts.
+%
+% NO CHARTS. The article's header records it as deliberately unexecuted: no
+% data module, no computed numbers, prose and code only. The figures quoted in
+% the prose are the author's own, written into his markdown.
+\documentclass{pyportfolios-note}
+
+\noteshorttitle{The GameStop Squeeze}
+
+\begin{document}
+\thispagestyle{notecover}
+
+\notemasthead{Quantitative Insights}{Case Study}{Q3 2026}{}
+
+\notetitle{The GameStop Squeeze:\\When Momentum\\Models Broke}
+
+\notedeck{During January 2021, short-momentum strategies failed because the most
+crowded trade in the market became the most dangerous one.}
+
+In January 2021 a dying mall retailer became, briefly, the most traded stock on
+Earth. GameStop rose \textasciitilde2,700\% in three weeks, a hedge fund with a
+decade of strong returns needed a bailout, and every systematic strategy holding
+``short the weak stocks'' learned that its risk model had a blind spot. This
+case study reconstructs the squeeze from market data and examines why
+quantitative models — trained on decades in which shorting losers worked —
+broke.
+
+\notecard
+  {Algorithmic Trading}
+  {Pandas · Matplotlib · yfinance}
+  {GME + XRT + \^{}VIX}
+  {Oct 2020 – Mar 2021 (event window)}
+  {Understanding crowding and short-squeeze risk before your systematic strategy
+   meets one}
+
+\begin{notecode}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+plt.rcParams["figure.dpi"] = 110
+\end{notecode}
+
+% ========================================================== 1 The setting ====
+\noteneedroom{170bp}
+\notesection{1.\notenumsep The setting}
+
+\begin{multicols}{2}
+By late 2020, GameStop (GME) was a consensus short: a brick-and-mortar game
+retailer in a download world. Reported \textbf{short interest exceeded 100\% of
+the float} — more shares sold short than were available to trade — via
+rehypothecation. For a momentum or quality model, GME scored terribly on every
+factor; being short was the ``safe,'' crowded, model-approved position.
+
+The vulnerability hiding in that consensus: a short position has \textbf{unlimited
+loss} and, when everyone must exit at once, exiting \textit{is} buying. The crowd
+was the risk.
+\end{multicols}
+
+% ============================================================ 2 The event ====
+\noteneedroom{200bp}
+\notesection{2.\notenumsep The event}
+
+\begin{multicols}{2}
+\begin{notebullets}
+\item \textbf{Jan 11–13:} GME adds board members from Chewy's founder Ryan
+      Cohen; the stock jumps \textasciitilde60\%. Retail buying accelerates,
+      coordinated openly on r/wallstreetbets.
+\item \textbf{Jan 19–22:} Short-seller reports trigger not selling but
+      \textit{more} buying. Heavy call-option volume forces market makers to
+      hedge by buying stock.
+\item \textbf{Jan 25–27:} The vertical phase — GME goes from
+      \textasciitilde\$65 to \textasciitilde\$347. Melvin Capital takes a
+      \$2.75B injection. Short interest starts collapsing as funds capitulate.
+\item \textbf{Jan 28:} Peak intraday \textasciitilde\$483. Several brokers
+      \textbf{restrict buying} (position-close-only), citing clearinghouse
+      margin. The squeeze breaks.
+\item \textbf{Feb–Mar:} Collapse to \textasciitilde\$40, then a second, smaller
+      squeeze in late February.
+\end{notebullets}
+\end{multicols}
+
+% ==================== 3 The mechanism: two squeezes feeding each other =======
+\noteneedroom{170bp}
+\notesection{3.\notenumsep The mechanism: two squeezes feeding each other}
+
+\begin{multicols}{2}
+\textbf{Short squeeze:} rising price $\rightarrow$ shorts face margin calls
+$\rightarrow$ they buy to cover $\rightarrow$ price rises further. The exit
+\textit{is} fuel.
+
+\textbf{Gamma squeeze:} retail buys short-dated calls $\rightarrow$ dealers who
+sold the calls are short gamma and must buy stock as it rises to stay hedged
+$\rightarrow$ price rises $\rightarrow$ deltas rise $\rightarrow$ dealers buy
+more. A mechanical accelerant layered on the behavioral one.
+
+Neither loop cares about fundamentals. Once ignited, price becomes a function of
+\textit{positioning}, not value — precisely the variable most quant models
+didn't include.
+\end{multicols}
+
+% ========================================================= 4 The evidence ====
+\noteneedroom{150bp}
+\notesection{4.\notenumsep The evidence}
+
+\notesubsection{4.1\notenumsep The data: GME, its ETF host, and the market's fear gauge}
+
+\begin{notecode}
+TICKERS = ["GME", "XRT", "^VIX"]
+START, END = "2020-10-01", "2021-03-31"
+
+def load_prices(tickers, start, end):
+    """Adjusted-close prices via yfinance."""
+    import yfinance as yf
+    df = yf.download(tickers, start=start, end=end, auto_adjust=True, progress=False)["Close"]
+    return df[tickers].dropna()
+
+px = load_prices(TICKERS, START, END)
+rets = px.pct_change().dropna()
+print(f"{len(px)} trading days, {px.index[0].date()} → {px.index[-1].date()}")
+print(f"\nGME: start {px['GME'].iloc[0]:.2f}, peak {px['GME'].max():.2f} "
+      f"({px['GME'].idxmax().date()}), end {px['GME'].iloc[-1]:.2f}")
+\end{notecode}
+
+\notesubsection{4.2\notenumsep The squeeze in one chart}
+
+Log scale — the only way to see both the base and the spike. Annotations mark
+the phase transitions.
+
+\begin{notecode}
+fig, ax = plt.subplots(figsize=(11, 5.5))
+ax.plot(px.index, px["GME"], color="crimson", lw=1.5)
+ax.set_yscale("log")
+events = {
+    "2021-01-13": "Cohen board news",
+    "2021-01-22": "gamma squeeze ignites",
+    "2021-01-28": "peak / buying restricted",
+    "2021-02-24": "second squeeze",
+}
+for d, label in events.items():
+    d = pd.Timestamp(d)
+    if d in px.index or True:
+        ax.axvline(d, color="gray", ls=":", lw=1)
+        ax.annotate(label, (d, px["GME"].max()*0.7), rotation=90,
+                    fontsize=8, ha="right", va="top")
+ax.set_title("GME adjusted close (log scale)")
+ax.set_ylabel("Price ($, log)")
+plt.tight_layout(); plt.show()
+
+jan = rets.loc["2021-01", "GME"]
+print(f"January 2021: {(1+jan).prod()-1:+.0%} in one month")
+print(f"Biggest single days: {jan.nlargest(3).apply('{:+.0%}'.format).to_dict()}")
+print(f"Worst single day:    {jan.min():+.0%}")
+\end{notecode}
+
+\notesubsection{4.3\notenumsep Collateral damage: the ETF that couldn't help itself}
+
+GME sat inside XRT (SPDR Retail ETF). As GME went vertical, its weight in the
+``diversified'' ETF exploded — briefly approaching \textasciitilde20\% —
+dragging a passive vehicle into the squeeze.
+
+\begin{notecode}
+fig, ax1 = plt.subplots(figsize=(11, 4.5))
+ax1.plot(px.index, px["XRT"] / px["XRT"].iloc[0] * 100, color="steelblue", label="XRT (indexed)")
+ax1.set_ylabel("XRT (indexed to 100)", color="steelblue")
+ax2 = ax1.twinx()
+ax2.plot(px.index, px["^VIX"], color="gray", alpha=0.7, label="VIX")
+ax2.set_ylabel("VIX", color="gray")
+ax1.axvspan(pd.Timestamp("2021-01-22"), pd.Timestamp("2021-02-02"), color="crimson", alpha=0.10)
+ax1.set_title("The spillover: XRT surges with its runaway holding; VIX wakes up")
+plt.tight_layout(); plt.show()
+
+print(f"XRT move, Jan 22–27: {px.loc['2021-01-27','XRT']/px.loc['2021-01-22','XRT']-1:+.1%}")
+print(f"VIX, Jan 25–27: {px.loc['2021-01-25':'2021-01-27','^VIX'].round(1).to_list()}"
+      f" — a single stock moving the market's fear gauge")
+\end{notecode}
+
+\notesubsection{4.4\notenumsep What it did to a systematic short}
+
+Simulate the naive quant position: short GME with monthly rebalancing (the
+classic momentum/quality short book, isolated to one name). Sizing at just 2\% of
+a book, the January move alone is catastrophic — and daily mark-to-market shows
+why margin forced covering \textit{before} any month-end rebalance.
+
+\begin{notecode}
+# short position P&L, daily compounding (mark-to-market of a static short entered Jan 4)
+short_ret = -rets.loc["2021-01", "GME"]
+pnl_path = (1 + short_ret).cumprod() - 1
+
+fig, ax = plt.subplots(figsize=(10, 4))
+ax.plot(pnl_path.index, pnl_path * 100, color="crimson")
+ax.axhline(-100, color="black", ls="--", lw=1, label="-100% = position wiped out")
+ax.set_title("P&L of a short position in GME entered Jan 4, 2021 (mark-to-market)")
+ax.set_ylabel("Cumulative P&L (%)"); ax.legend()
+plt.tight_layout(); plt.show()
+
+print(f"Short P&L by Jan 27: {pnl_path.loc['2021-01-27']:+.0%}")
+print("A 2% book position: ~-40% portfolio hit before risk systems could rebalance.")
+print("This asymmetry — shorts grow as they lose — is the structural lesson.")
+\end{notecode}
+
+% ========================================================= 5 Post-mortem =====
+\noteneedroom{360bp}
+\notesection{5.\notenumsep Post-mortem}
+
+\begin{multicols}{2}
+\notesubsection{What failed in the models}
+\begin{notebullets}
+\item \textbf{Factor models scored GME correctly and were destroyed anyway} —
+      the signal wasn't wrong about value; it was blind to \textit{positioning}.
+      Short interest and borrow cost weren't inputs.
+\item \textbf{Risk models assumed exits exist} — liquidation models presume you
+      can cover near current prices. In a squeeze, covering moves the price
+      against you; the crowd exits through one door.
+\item \textbf{Normal-market position sizing} — a 100\%+ short-interest name has
+      a fat right tail \textit{by construction}. Sizing it like any other short
+      ignored that the loss distribution was not remotely log-normal (see our
+      fat-tails work).
+\end{notebullets}
+
+\notesubsection{What survived}
+\begin{notebullets}
+\item \textbf{Strategies with short-interest / crowding filters} side-stepped
+      the worst names.
+\item \textbf{Hard per-name loss limits} — the dumb, old-fashioned stop — beat
+      sophisticated covariance-based risk for this event.
+\item \textbf{The squeeze faded} — by April GME was back below \$200 and
+      momentum factors normalised; the \textit{event} was survivable, the
+      \textit{sizing} often wasn't.
+\end{notebullets}
+
+\notesubsection{The lessons}
+\begin{notebulletsnum}
+\item \textbf{Crowding is a risk factor.} Short interest, days-to-cover and
+      borrow cost belong in the model, not the footnotes.
+\item \textbf{Shorts need asymmetric sizing} — the position grows as it hurts
+      you; the equivalent long shrinks.
+\item \textbf{Reflexivity is real:} when positioning drives price, historical
+      covariances describe a market that no longer exists.
+\item \textbf{Market structure matters} — gamma hedging turned option flow into
+      a price accelerant; ignoring the options market meant missing half the
+      mechanism.
+\end{notebulletsnum}
+
+\notesubsection{Related content}
+\begin{notebullets}
+\item \textbf{Alpha Decay} (next) — crowding's slower cousin: everyone finding
+      the same signal
+\item \textbf{Fat tails / GBM tutorial} — the distributional assumption squeezes
+      violate
+\item \textbf{SMA Crossover Backtest} — where systematic discipline helps rather
+      than hurts
+\end{notebullets}
+\end{multicols}
+
+\end{document}

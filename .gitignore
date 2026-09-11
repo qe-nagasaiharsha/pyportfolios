@@ -32,3 +32,12 @@ Thumbs.db
 # Python bytecode
 __pycache__/
 *.pyc
+
+# LaTeX build outputs — the notes are built to a temp dir and the finished
+# PDFs are staged in site/public/pdfs/. Anything left beside the .tex sources
+# is a stale in-place build.
+/quant/pdf/notes/*.pdf
+/quant/pdf/notes/*.aux
+/quant/pdf/notes/*.log
+/quant/pdf/_repro.*
+/quant/pdf/_smoke.*

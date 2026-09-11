@@ -1,0 +1,288 @@
+% Gaussian vs t-Copula: Capturing Joint Crashes — research-note PDF.
+%
+% PROSE AND CODE ARE VERBATIM from the website article:
+%   site/src/content/articles/gaussian-vs-t-copula.tsx
+%   site/src/content/articles/t-copula-code.ts
+% Metadata from lib/articles.ts; project-card fallbacks from lib/topics.ts.
+%
+% NO CHARTS, deliberately. The article's header records it as unexecuted: no
+% data module, no computed numbers, prose and code only. Section 4.2 asserts
+% the headline comparison without showing it, and that is the article's own
+% choice — plotting it here would mean inventing results.
+\documentclass{pyportfolios-note}
+
+\noteshorttitle{Gaussian vs t-Copula}
+
+\begin{document}
+\thispagestyle{notecover}
+
+\notemasthead{Quantitative Insights}{Quant Insights}{Q3 2026}{}
+
+\notetitle{Gaussian vs t-Copula:\\Capturing Joint Crashes}
+
+\notedeck{Two models of ``moving together.'' Only one believes in contagion.}
+
+\textbf{The claim we test:} a correlation number tells you how two assets
+co-move \textit{on average} — it says nothing about whether they crash
+\textit{together}. The Gaussian copula assumes joint extremes are vanishingly
+rare (zero tail dependence); the t-copula assumes crashes cluster. Using two
+sector ETFs — Financials (XLF) and Technology (XLK) — through the GFC, COVID
+and 2022, we measure which model matches how markets actually behave on the
+worst days.
+
+\notecard
+  {Risk Management}
+  {SciPy · NumPy · seaborn}
+  {XLF vs XLK (SPDR sectors)}
+  {Jan 2007 – Dec 2024}
+  {Choosing a dependence model that doesn't underestimate crash correlation
+   (2008's lesson)}
+
+\begin{notecode}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+
+np.random.seed(42)
+plt.rcParams["figure.dpi"] = 110
+sns.set_style("whitegrid")
+\end{notecode}
+
+% ==================================================== 1 The disagreement =====
+\noteneedroom{160bp}
+\notesection{1.\notenumsep The disagreement}
+
+A copula separates \textit{how assets co-move} from \textit{how each behaves
+alone}. Two copulas can share the same correlation $\rho$ yet disagree
+completely about the tails:
+
+\begin{multicols}{2}
+\begin{notebullets}
+\item \textbf{Gaussian copula:} as moves get more extreme, the dependence
+      \textit{fades}. Joint crashes are essentially coincidences. Lower-tail
+      dependence $\lambda$ = \textbf{0}, always.
+\item \textbf{t-copula:} dependence \textit{persists} into the extremes —
+      crashes arrive together. $\lambda > 0$, controlled by the degrees of
+      freedom $\nu$ (smaller $\nu$ = fatter joint tails).
+\end{notebullets}
+
+This isn't academic. The Gaussian copula priced the CDOs of 2008 — and its
+zero-tail-dependence assumption is precisely what failed when housing defaults
+arrived together.
+\end{multicols}
+
+% ====================================================== 2 The contenders =====
+\noteneedroom{190bp}
+\notesection{2.\notenumsep The contenders}
+
+% The t-copula column carries a formula that cannot line-break, so it gets the
+% width; 115 + 60 + 330 + 24bp of column separation = 529bp of the 532.8 measure.
+\begin{notetable}{@{}p{115bp}p{60bp}p{330bp}@{}}
+\thcell{} & \thcell{Gaussian copula} & \thcell{t-copula} \\
+\theadrule
+Parameters & $\rho$ & $\rho, \nu$ (degrees of freedom) \\ \rowrule
+Lower-tail dependence $\lambda$ & 0 — always &
+  $2\,t_{\nu+1}\!\big(-\sqrt{\tfrac{(\nu+1)(1-\rho)}{1+\rho}}\big) > 0$ \\ \rowrule
+Joint crashes & Coincidences & Expected \\ \rowrule
+As $\nu \to \infty$ & — & Converges to Gaussian \\
+\end{notetable}
+
+The t-copula \textit{contains} the Gaussian as a limit — so if the data prefers
+small $\nu$, that's the data voting for tail dependence.
+
+% ============================================================= 3 The test ====
+\noteneedroom{150bp}
+\notesection{3.\notenumsep The test}
+
+\notesubsection{3.1\notenumsep Data: XLF vs XLK through three crises}
+
+\begin{notecode}
+TICKERS = ["XLF", "XLK"]
+START, END = "2007-01-01", "2024-12-31"
+
+def load_prices(tickers, start, end):
+    """Adjusted-close prices: yfinance first, Stooq as fallback."""
+    try:
+        import yfinance as yf
+        df = yf.download(tickers, start=start, end=end, auto_adjust=True, progress=False)["Close"]
+        if not df.empty:
+            return df[tickers].dropna()
+    except Exception as exc:
+        print(f"yfinance failed ({exc}); trying Stooq…")
+    cols = {}
+    for t in tickers:
+        url = f"https://stooq.com/q/d/l/?s={t.lower()}.us&i=d"
+        cols[t] = pd.read_csv(url, parse_dates=["Date"], index_col="Date")["Close"].rename(t)
+    return pd.concat(cols, axis=1).loc[start:end].dropna()
+
+px = load_prices(TICKERS, START, END)
+rets = px.pct_change().dropna()
+n = len(rets)
+print(f"{n} trading days, {px.index[0].date()} → {px.index[-1].date()}")
+print(f"Linear correlation: {rets['XLF'].corr(rets['XLK']):.2f}")
+\end{notecode}
+
+\notesubsection{3.2\notenumsep Strip the marginals: pseudo-observations}
+
+Copulas work on ranks. Converting each series to its empirical percentile
+removes the marginal distributions and leaves only the dependence structure.
+
+\begin{notecode}
+u = rets.rank() / (n + 1)          # pseudo-observations in (0,1)
+
+fig, axes = plt.subplots(1, 2, figsize=(11, 4.6))
+axes[0].scatter(rets["XLF"], rets["XLK"], s=4, alpha=0.4, color="steelblue")
+axes[0].set_title("Raw daily returns"); axes[0].set_xlabel("XLF"); axes[0].set_ylabel("XLK")
+axes[1].scatter(u["XLF"], u["XLK"], s=4, alpha=0.4, color="darkorange")
+axes[1].set_title("Pseudo-observations (the copula's view)")
+axes[1].set_xlabel("XLF percentile"); axes[1].set_ylabel("XLK percentile")
+plt.tight_layout(); plt.show()
+
+print("Note the crowding in the corners of the right plot — especially bottom-left (joint crashes).")
+\end{notecode}
+
+\notesubsection{3.3\notenumsep Fit both copulas}
+
+Gaussian: correlation of normal scores. t-copula: same $\rho$ (via Kendall's
+$\tau$), with $\nu$ chosen by maximum likelihood.
+
+\begin{notecode}
+# --- Gaussian copula fit ---
+z = stats.norm.ppf(u.values)
+rho_g = np.corrcoef(z.T)[0, 1]
+
+# --- t-copula fit: rho from Kendall's tau, nu by profile likelihood ---
+tau = stats.kendalltau(u["XLF"], u["XLK"]).statistic
+rho_t = np.sin(np.pi * tau / 2)
+
+def t_copula_loglik(nu, u, rho):
+    x = stats.t.ppf(u, df=nu)
+    cov = np.array([[1, rho], [rho, 1]])
+    num = stats.multivariate_t(loc=[0, 0], shape=cov, df=nu).logpdf(x)
+    den = stats.t.logpdf(x, df=nu).sum(axis=1)
+    return np.sum(num - den)
+
+nus = np.arange(2, 31)
+lls = [t_copula_loglik(v, u.values, rho_t) for v in nus]
+nu_hat = nus[int(np.argmax(lls))]
+
+fig, ax = plt.subplots(figsize=(9, 3.8))
+ax.plot(nus, lls, "o-", color="steelblue")
+ax.axvline(nu_hat, color="crimson", ls="--", label=f"MLE: ν = {nu_hat}")
+ax.set_xlabel("Degrees of freedom ν"); ax.set_ylabel("Copula log-likelihood")
+ax.set_title("The data votes: profile likelihood over ν"); ax.legend()
+plt.tight_layout(); plt.show()
+
+print(f"Gaussian copula: rho = {rho_g:.3f}")
+print(f"t-copula:        rho = {rho_t:.3f}, nu = {nu_hat}")
+print("\nSmall ν = strong tail dependence. ν above ~30 would mean 'basically Gaussian'.")
+\end{notecode}
+
+% ======================================================= 4 The scoreboard ====
+\noteneedroom{150bp}
+\notesection{4.\notenumsep The scoreboard}
+
+\notesubsection{4.1\notenumsep Tail dependence: the headline number}
+
+Probability that one ETF is in its worst q\% \textit{given} the other is — as
+q $\rightarrow$ 0.
+
+\begin{notecode}
+# closed-form lower-tail dependence of the t-copula
+lam_t = 2 * stats.t.cdf(-np.sqrt((nu_hat + 1) * (1 - rho_t) / (1 + rho_t)), df=nu_hat + 1)
+print(f"Lower-tail dependence λ — Gaussian: 0.000 (by construction)")
+print(f"Lower-tail dependence λ — t-copula: {lam_t:.3f}")
+\end{notecode}
+
+\notesubsection{4.2\notenumsep Empirical test: joint crash frequency}
+
+Count the days both ETFs landed in their worst 5\% (and 1\%) simultaneously —
+then ask each fitted copula how many such days it \textit{predicts} over the
+same sample size.
+
+\begin{notecode}
+def simulate_gaussian(rho, size):
+    cov = np.array([[1, rho], [rho, 1]])
+    z = np.random.multivariate_normal([0, 0], cov, size)
+    return stats.norm.cdf(z)
+
+def simulate_t(rho, nu, size):
+    cov = np.array([[1, rho], [rho, 1]])
+    g = np.random.multivariate_normal([0, 0], cov, size)
+    chi = np.random.chisquare(nu, size) / nu
+    x = g / np.sqrt(chi)[:, None]
+    return stats.t.cdf(x, df=nu)
+
+N_SIM = 2_000_000
+u_g = simulate_gaussian(rho_g, N_SIM)
+u_t = simulate_t(rho_t, nu_hat, N_SIM)
+
+print(f"{'q':>4} {'empirical':>10} {'Gaussian':>10} {'t-copula':>10}   (joint-crash days per sample of {n})")
+for q in [0.05, 0.01]:
+    emp = float(((u['XLF'] < q) & (u['XLK'] < q)).mean())
+    pg  = float(((u_g[:,0] < q) & (u_g[:,1] < q)).mean())
+    pt  = float(((u_t[:,0] < q) & (u_t[:,1] < q)).mean())
+    print(f"{q:>4.0%} {emp*n:>10.1f} {pg*n:>10.1f} {pt*n:>10.1f}")
+\end{notecode}
+
+\begin{notecode}
+# visual: simulated pseudo-observations vs reality, tails highlighted
+fig, axes = plt.subplots(1, 3, figsize=(13.5, 4.4))
+sets = [(u.values, "Real data (XLF/XLK)", "black"),
+        (u_g[:len(u)], f"Gaussian (ρ={rho_g:.2f})", "steelblue"),
+        (u_t[:len(u)], f"t-copula (ρ={rho_t:.2f}, ν={nu_hat})", "crimson")]
+for ax, (dat, title, c) in zip(axes, sets):
+    ax.scatter(dat[:, 0], dat[:, 1], s=3, alpha=0.35, color=c)
+    ax.axvline(0.05, color="gray", ls=":", lw=0.8); ax.axhline(0.05, color="gray", ls=":", lw=0.8)
+    joint = ((dat[:, 0] < 0.05) & (dat[:, 1] < 0.05)).sum()
+    ax.set_title(f"{title}\njoint 5% tail: {joint} days")
+    ax.set_xlabel("XLF percentile")
+axes[0].set_ylabel("XLK percentile")
+plt.tight_layout(); plt.show()
+\end{notecode}
+
+% ============================================================= 5 Verdict =====
+\noteneedroom{280bp}
+\notesection{5.\notenumsep Verdict}
+
+\textbf{The t-copula wins where it counts — the corner where portfolios die.}
+Typical result on this pair: the Gaussian copula \textit{underpredicts} joint
+1\%-tail days by a large factor, while the t-copula lands close to the observed
+count. The likelihood agrees: the fitted $\nu$ is small, which is the data
+explicitly rejecting the Gaussian limit.
+
+\begin{multicols}{2}
+\textbf{Why it matters:}
+
+\begin{notebullets}
+\item \textbf{Risk models built on Gaussian dependence} understate exactly the
+      events that cause maximum damage — simultaneous crashes across holdings.
+      Your 99\% ``diversified'' VaR is too optimistic in the only scenario you
+      bought diversification for.
+\item \textbf{The 2008 lesson, quantified} — the Gaussian copula's
+      $\lambda = 0$ is the mathematical form of ``national housing markets
+      can't all fall together.'' They did. Any dependence model with zero tail
+      dependence repeats that mistake in new clothing.
+\end{notebullets}
+
+\textbf{The honest caveats:}
+
+\begin{notebullets}
+\item The t-copula is \textit{symmetric} — it implies joint booms are as likely
+      as joint crashes. Equity data usually shows \textit{asymmetric}
+      dependence (crashes cluster more than rallies). A skewed-t or Clayton
+      copula captures that; the t is the pragmatic middle ground.
+\item One $\nu$ for all seasons — dependence itself shifts with regimes (see
+      our 60/40 case study). Time-varying copulas exist but multiply
+      complexity.
+\end{notebullets}
+\end{multicols}
+
+\textbf{Where to go next:} the \textbf{Copulas \& Tail Dependence} tutorial for
+foundations; \textbf{CVaR / Expected Shortfall} for the risk measure that
+consumes these joint-tail probabilities; and the CDO story in our curriculum's
+credit module for the trillion-dollar version of this comparison.
+
+\end{document}

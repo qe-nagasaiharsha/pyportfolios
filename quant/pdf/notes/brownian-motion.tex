@@ -1,0 +1,428 @@
+% Geometric Brownian Motion — research-note PDF.
+%
+% PROSE AND CODE ARE VERBATIM from the website article:
+%   site/src/content/articles/brownian-motion.tsx   (prose, bullets, captions)
+%   site/src/content/articles/gbm-spy-code.ts       (all code cells + stdout)
+% Nothing is paraphrased, condensed or added.
+%
+% Metadata (title, dek, project card) from site/src/lib/articles.ts.
+% Figures are Louis's, carried over from site/public/figures/.
+%
+% LAYOUT follows the reference note's own convention, measured from it:
+% section heads sit full width at the left margin (x=39.6 in every case) and
+% usually open a page; the body runs in two 255.4bp columns beneath. Code,
+% display equations and figures break out to the full measure because they do
+% not fit a column — the longest code line needs 452bp against 231bp of column.
+%
+% Each section is its own two-column block, so a head can never strand at the
+% foot of a column belonging to the previous section, and \noteneedroom keeps a
+% head from landing without room for real content under it.
+%
+% NOTE: the article has no disclosures section, so this note carries none.
+\documentclass{pyportfolios-note}
+
+\noteshorttitle{Geometric Brownian Motion}
+
+\begin{document}
+\thispagestyle{notecover}
+
+% ============================================================ cover ==========
+% Kicker is the registry's format field verbatim. An earlier draft read
+% "Tutorial · Quant Foundations", abbreviating cardCategory ("Quant Foundations
+% & Derivatives") into a form that appears nowhere in the source.
+% Q3 2026 is derived from the registry date, 2026-08-12.
+%
+% The second right-hand line is deliberately empty. The reference carries the
+% data period there, but it has no project card; ours does, and its ASSETS and
+% TIMEFRAME rows already state "SPY (S&P 500 ETF, State Street)" and
+% "Jan 2018 – Dec 2024" on this same page. Repeating them in the masthead said
+% the same thing twice, 450bp apart.
+\notemasthead{Quantitative Insights}{Tutorial}{Q3 2026}{}
+
+\notetitle{Geometric\\Brownian Motion}
+
+\notedeck{Simulating price paths with the continuous-time workhorse behind
+Black–Scholes and Monte-Carlo risk engines.}
+
+\textbf{Key Highlights:}
+
+\begin{multicols}{2}
+\begin{notebullets}
+\item \textbf{Geometric Brownian Motion (GBM)} is the canonical continuous-time
+      model for asset prices.
+\item GBM powers the \textbf{Black–Scholes} framework and \textbf{Monte-Carlo}
+      risk engines.
+\item It entails most of the \textbf{intuition practitioners} carry about
+      ``what could the price do?''.
+\item The framework serves as fundamental bedrock of mathematical finance —
+      advanced applications layer additional features on top of it.
+\end{notebullets}
+\end{multicols}
+
+% <ProjectCard slug="brownian-motion" /> — sits under the highlights, full
+% width, as the article places it. Five rows, no format row, per the component.
+\notecard
+  {Quant Foundations \& Derivatives}
+  {NumPy · Pandas · Matplotlib · yfinance · SciPy}
+  {SPY (S\&P 500 ETF, State Street)}
+  {Jan 2018 – Dec 2024}
+  {Scenario cones for wealth projections; the engine inside Monte-Carlo pricing
+   \& risk systems}
+
+% The cover ends here by design: opening a 26-line setup listing on it would
+% leave a four-line stub under the card and split the cell across two pages.
+\newpage
+
+% ============================================================ setup ==========
+\begin{notecode}
+# Setup
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+np.random.seed(42)  # reproducibility (standard arbitrary number)
+plt.rcParams["figure.dpi"] = 110
+
+# ---- house style ---------------------------------------------------------
+BG    = "#F4F2E8"   # Pale Sisal
+INK   = "#151515"   # Anthracite
+AQUA  = "#1FFFFF"   # accent
+GREY  = "#7A7A7A"
+
+HEAD  = {"fontname": "Switzer", "fontsize": 11, "fontweight": "bold", "color": INK}
+
+plt.rcParams.update({
+    "font.family": "monospace",
+    "font.monospace": ["Courier Prime", "Courier New", "DejaVu Sans Mono"],
+    "font.size": 8,
+    "axes.titlesize": 11, "axes.labelsize": 8,
+    "xtick.labelsize": 7.5, "ytick.labelsize": 7.5, "legend.fontsize": 7.5,
+    "figure.facecolor": BG, "axes.facecolor": BG, "savefig.facecolor": BG,
+    "axes.edgecolor": GREY, "axes.labelcolor": GREY,
+    "xtick.color": GREY, "ytick.color": GREY,
+    "axes.spines.top": False, "axes.spines.right": False,
+    "axes.grid": True, "grid.alpha": 0.3, "grid.color": "#CCCCCC", "grid.linewidth": 0.5,
+    "legend.frameon": False,
+    "lines.linewidth": 2.0, "lines.markersize": 0,
+})
+\end{notecode}
+
+% ======================================================== 1 Introduction =====
+\noteneedroom{150bp}
+\notesection{1.\notenumsep Introduction}
+
+A few simple facts to get up to speed:
+
+\begin{multicols}{2}
+\begin{notebullets}
+\item GBM assumes that \textbf{percentage returns} — not price changes — are
+      random, normally distributed, and independent over time.
+\item Prices therefore stay positive and their terminal distribution is
+      \textbf{log-normal}.
+\item \textbf{2 parameters} fully describe the model — both estimable directly
+      from historical data:
+      \begin{notesubbullets}
+      \item the drift $\mu$ (expected annual log-growth plus half-variance)
+      \item the volatility $\sigma$ (annualised standard deviation of log returns)
+      \end{notesubbullets}
+\end{notebullets}
+\end{multicols}
+
+% ========================================================== 2 Intuition ======
+% Room for the head, its lead line and first bullet group — not the whole
+% section. Demanding the whole section (260bp) forces it to the next page and
+% costs a 190bp hole here, a 280bp hole later and a 38%-full final page; the
+% section instead runs across the page break, which is ordinary in two columns.
+\noteneedroom{140bp}
+\notesection{2.\notenumsep Intuition}
+
+The logic before diving into equations:
+
+\begin{multicols}{2}
+\begin{notebullets}
+\item \textbf{Returns compound, prices don't add}
+      \begin{notesubbullets}
+      \item A \$10 move means something very different at SPY = 100 than at
+            SPY = 600.
+      \item What is comparable across price levels is the \textbf{relative} move.
+      \item GBM makes randomness proportional to the current price:
+            $dS = \mu S\,dt + \sigma S\,dW$.
+      \end{notesubbullets}
+\item \textbf{Why log-normal}
+      \begin{notesubbullets}
+      \item If each day multiplies the price by a small random gross return, the
+            log-price is a \textbf{sum} of many small independent shocks.
+      \item Sums of independent shocks are (approximately) normal.
+      \item Normal log-price $\Rightarrow$ log-normal price: skewed right,
+            floored at zero.
+      \end{notesubbullets}
+\item \textbf{Drift vs. noise}
+      \begin{notesubbullets}
+      \item Over short horizons the noise term dominates: $\sigma\sqrt{t}$
+            shrinks slower than $\mu t$ as $t \to 0$.
+      \item Over long horizons drift wins.
+      \item This is the same $\sqrt{t}$ rule that governs plain Brownian
+            motion — GBM simply wraps it in an exponential.
+      \end{notesubbullets}
+\end{notebullets}
+\end{multicols}
+
+% ============================================================= 3 Theory ======
+% Full measure throughout: the display equations run to ~320bp and would not
+% set in a 231bp column.
+\noteneedroom{200bp}
+\notesection{3.\notenumsep Theory}
+
+Below the theoretical foundation and respective equations:
+
+\begin{notebullets}
+\item \textbf{The Stochastic Differential Equation (SDE) and its solution}
+      \begin{notesubbullets}
+      \item A differential equation with a random term — so it yields a
+            \textit{distribution} of paths, not only one.
+      \item $\mu S_t\,dt$ is the \textbf{drift} (deterministic trend);
+            $\sigma S_t\,dW_t$ is the \textbf{diffusion} (the noise).
+      \end{notesubbullets}
+      \[ dS_t = \mu S_t\,dt + \sigma S_t\,dW_t \]
+\item \textbf{Applying Itô's lemma to $\ln S_t$}
+      \begin{notesubbullets}
+      \item The $-\tfrac{1}{2}\sigma^2$ correction comes from $(dW)^2 = dt$.
+      \end{notesubbullets}
+      \[ S_t = S_0 \exp\!\Big[\big(\mu - \tfrac{1}{2}\sigma^2\big)t + \sigma W_t\Big] \]
+\item \textbf{Exact discretisation}
+      \begin{notesubbullets}
+      \item Because the solution is closed-form, we can simulate
+            \textbf{without discretisation error} at any step size $\Delta t$.
+      \end{notesubbullets}
+      \[ S_{t+\Delta t} = S_t \cdot
+         \exp\!\Big[\big(\mu - \tfrac{1}{2}\sigma^2\big)\Delta t
+         + \sigma \sqrt{\Delta t}\, Z\Big], \qquad Z \sim \mathcal{N}(0,1) \]
+\end{notebullets}
+
+The key implementations of those small functions: one draws per-step
+\textbf{gross returns}, the other \textbf{compounds} them into price paths.
+
+\begin{notecode}
+# Implementation
+
+def gbm_returns(mu, sigma, dt, n_steps, n_paths):
+    """One-step gross returns under GBM (shape: n_steps x n_paths)."""
+    z = np.random.normal(size=(n_steps, n_paths))
+    return np.exp((mu - 0.5 * sigma**2) * dt + sigma * np.sqrt(dt) * z)
+
+def gbm_paths(s0, mu, sigma, dt, n_steps, n_paths):
+    """Price paths of shape (n_steps + 1, n_paths), starting at s0."""
+    rets = gbm_returns(mu, sigma, dt, n_steps, n_paths)
+    return s0 * np.vstack([np.ones(rets.shape[1]), rets]).cumprod(axis=0)
+\end{notecode}
+
+% ======================================================== 4 Application ======
+% Full measure: alternating listings, printed output and full-width figures.
+\noteneedroom{150bp}
+\notesection{4.\notenumsep Application}
+
+\begin{notebullets}
+\item \textbf{Calibrate $\mu$ and $\sigma$ from real data}
+      \begin{notesubbullets}
+      \item We pull daily SPY prices, estimate annualised drift and volatility
+            from \textbf{log returns}, and let the data drive the simulation.
+      \end{notesubbullets}
+\end{notebullets}
+
+\begin{notecode}
+TICKER = "SPY"
+START, END = "2018-01-01", "2024-12-31"
+
+import yfinance as yf
+
+px = (yf.download(TICKER, start=START, end=END, auto_adjust=True, progress=False)["Close"]
+        .squeeze().rename(TICKER).dropna())
+
+log_ret = np.log(px / px.shift(1)).dropna()
+
+s0        = float(px.iloc[-1])
+sigma_hat = float(log_ret.std() * np.sqrt(252))
+mu_hat    = float(log_ret.mean() * 252 + 0.5 * sigma_hat**2)  # drift of the SDE, not of log returns
+
+print(f"{TICKER}: {len(px)} daily observations, last close = {s0:,.2f}")
+print(f"mu_hat    = {mu_hat:.2%}  (annualised drift)")
+print(f"sigma_hat = {sigma_hat:.2%}  (annualised volatility)")
+\end{notecode}
+
+\begin{notecodeout}
+SPY: 1760 daily observations, last close = 578.32
+mu_hat    = 14.75%  (annualised drift)
+sigma_hat = 19.54%  (annualised volatility)
+\end{notecodeout}
+
+\noteneedroom{120bp}
+\begin{notebullets}
+\item \textbf{Simulate 1,000 5-year paths}
+      \begin{notesubbullets}
+      \item Grey lines are individual paths, the dashed line is the mean of the
+            simulated distribution, and the band spans the 5th–95th percentile.
+      \end{notesubbullets}
+\end{notebullets}
+
+\begin{notecode}
+DT      = 1 / 252
+HORIZON = 252 * 5          # 5 years
+N_PATHS = 1_000
+
+paths = gbm_paths(s0, mu_hat, sigma_hat, DT, HORIZON, N_PATHS)
+t_ax  = np.arange(paths.shape[0]) / 252
+
+p5, p95 = np.percentile(paths, [5, 95], axis=1)
+
+fig, ax = plt.subplots(figsize=(10, 5))
+ax.fill_between(t_ax, p5, p95, color=AQUA, alpha=0.35, lw=0, zorder=1,
+                label="5\u201395% band")
+ax.plot(t_ax, paths[:, :200], color="#BBBBBB", lw=0.35, alpha=0.45, zorder=2)
+ax.plot(t_ax, paths.mean(axis=1), color=INK, lw=2.2, ls="--", zorder=3,
+        label="Mean path")
+ax.set_title(f"{TICKER}: {N_PATHS:,} GBM paths, 5 years  "
+             f"(mu={mu_hat:.1%}, sigma={sigma_hat:.1%})", **HEAD)
+ax.set_xlabel("Years"); ax.set_ylabel("Simulated price"); ax.legend()
+plt.tight_layout(); plt.show()
+\end{notecode}
+
+% Chart generated by figures/make_brownian_motion.py — the article's own
+% gbm_paths() under its seed and printed parameters, styled to the reference
+% note's chart palette. Caption text is the article's, with the figure number
+% and the source line added per the reference's figure convention.
+\notefigure{figures/brownian-motion/fig1-paths.png}
+  {Figure 1. SPY: 1,000 GBM paths, 5 years (mu=14.7\%, sigma=19.5\%)}
+  {Simulated price under geometric Brownian motion, daily steps; the band spans
+   the 5th–95th percentile of 1,000 paths}
+  {Source: Author calculations; simulated, not actual, results. 1,000 paths from
+   the article's calibrated parameters ($S_0$ = 578.32, $\mu$ = 14.75\%,
+   $\sigma$ = 19.54\%), estimated on SPY daily closes, January 2018 – December 2024.}
+
+\noteneedroom{170bp}
+\begin{notebullets}
+\item \textbf{Terminal distribution} — is it log-normal?
+      \begin{notesubbullets}
+      \item \textbf{Verifies the code:} the simulated histogram should match the
+            closed-form density
+            $\ln\!\big(S_T/S_0\big) \sim \mathcal{N}\big((\mu - \tfrac{1}{2}\sigma^2)T,\; \sigma^2 T\big)$
+            — if it doesn't, the ½σ² term is usually the culprit.
+      \item \textbf{Proves the claim:} section 2 asserts prices end up
+            log-normal; this is where you see the right skew rather than take it
+            on faith.
+      \item \textbf{The practical lesson:} the \textbf{mean sits above the
+            median}, so the ``average'' projected outcome is not the
+            \textit{typical} one — most paths land below it.
+      \end{notesubbullets}
+\end{notebullets}
+
+\begin{notecode}
+from scipy import stats
+
+T   = HORIZON / 252
+s_T = paths[-1]
+
+x   = np.linspace(s_T.min(), s_T.max(), 400)
+pdf = stats.lognorm.pdf(x, s=sigma_hat*np.sqrt(T),
+                        scale=s0*np.exp((mu_hat - 0.5*sigma_hat**2)*T))
+
+fig, ax = plt.subplots(figsize=(10, 4))
+ax.hist(s_T, bins=60, density=True, color=AQUA, alpha=0.55,
+        edgecolor=INK, linewidth=0.25, label="Simulated $S_T$")
+ax.plot(x, pdf, color=INK, lw=2.2, label="Theoretical log-normal")
+ax.axvline(s_T.mean(),     color=INK, lw=1.8, ls="--", label=f"Mean   {s_T.mean():,.0f}")
+ax.axvline(np.median(s_T), color=INK, lw=1.8,          label=f"Median {np.median(s_T):,.0f}")
+ax.set_title(f"{TICKER}: terminal price distribution after {T:.0f} years", **HEAD)
+ax.set_xlabel("Price"); ax.legend()
+plt.tight_layout(); plt.show()
+\end{notecode}
+
+\notefigure{figures/brownian-motion/fig2-terminal.png}
+  {Figure 2. SPY: terminal price distribution after 5 years}
+  {Simulated terminal prices against the closed-form log-normal density; the
+   mean sits above the median, the signature of the right skew}
+  {Source: Author calculations; simulated, not actual, results. Distribution of
+   $S_T$ across the same 1,000 paths, with the closed-form log-normal density
+   overlaid.}
+
+\noteneedroom{190bp}
+\begin{notebullets}
+\item \textbf{Sanity check:} switch the drift off
+      \begin{notesubbullets}
+      \item With $\mu = 0$ the process becomes a \textbf{martingale} — no
+            expected gain — so the mean terminal price must land back at $S_0$.
+      \item Zeroing one parameter isolates the rest: this catches a missing
+            $-\tfrac{1}{2}\sigma^2$ correction that a full simulation might hide.
+      \item \textbf{How to read the result:} the sample mean wobbles around
+            $S_0$ with standard error
+            $\approx S_0\sqrt{e^{\sigma^2T}-1}\big/\sqrt{N}$. Within \textasciitilde2 SE
+            is noise; a persistent gap in one direction that \textit{doesn't}
+            shrink as $N$ grows is a bug.
+      \end{notesubbullets}
+\end{notebullets}
+
+\begin{notecode}
+paths_nd = gbm_paths(s0, 0.0, sigma_hat, DT, HORIZON, N_PATHS)
+print(f"Mean terminal price (no drift): {paths_nd[-1].mean():,.2f}   vs   S0 = {s0:,.2f}")
+\end{notecode}
+
+\begin{notecodeout}
+Mean terminal price (no drift): 588.06   vs   S0 = 578.32
+\end{notecodeout}
+
+% ========================================================= 5 Conclusion ======
+% The four groups read as one unit (~290bp); move them together rather than
+% tailing a single group onto a page of its own.
+% This one genuinely must not split: at 140bp the block began on the previous
+% page and stranded "Alternatives & Extensions" — head on one page, its three
+% bullets on the next at 4% fill. ~270bp moves all four groups together.
+\noteneedroom{270bp}
+\notesection{5.\notenumsep Conclusion}
+
+\begingroup
+% Four short labelled groups; at the document's 7bp \parskip the paragraph
+% gaps alone cost ~30bp and push the block onto a page of its own at 40% fill.
+% 3bp still reads as spacious in a 255bp column.
+\setlength{\parskip}{3bp}
+\begin{multicols}{2}
+\textbf{Strengths}
+
+\begin{notebullets}
+\item \textbf{Analytically tractable} — closed-form solutions (Black–Scholes)
+      make it the natural baseline
+\item \textbf{Positive prices, log-normal terminal distribution} — matches the
+      basic stylised fact that prices can't go negative
+\item \textbf{Only two parameters} — both estimable directly from historical log
+      returns
+\item \textbf{Cheap to simulate} — vectorised NumPy generates millions of paths
+      in seconds
+\end{notebullets}
+
+\textbf{Weaknesses \& Limitations}
+
+\begin{notebullets}
+\item \textbf{Constant volatility} — realilty has vol clusters and spikes
+\item \textbf{No jumps} — crashes like March 2020 are far outside its reach
+\item \textbf{Normal log-returns} — real returns have fat tails
+\item \textbf{Independent increments} — momentum and mean-reversion exist
+\end{notebullets}
+
+\textbf{Applications in Practice}
+
+\begin{notebullets}
+\item Baseline for option pricing and Monte-Carlo risk engines
+\item Scenario cones for wealth projections
+\item Base model against which fancier models must justify their complexity
+\end{notebullets}
+
+\textbf{Alternatives \& Extensions}
+
+\begin{notebullets}
+\item \textbf{Stochastic volatility} — Heston
+\item \textbf{Jump-diffusion} — Merton
+\item \textbf{GARCH-family models} — for clustered volatility
+\end{notebullets}
+\end{multicols}
+\endgroup
+
+\end{document}

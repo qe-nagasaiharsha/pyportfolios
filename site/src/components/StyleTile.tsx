@@ -116,7 +116,7 @@ export default function StyleTile({
   const heroSub = heroAlign === "center" ? "mx-auto" : heroAlign === "right" ? "ml-auto" : "";
 
   return (
-    <div className="min-h-dvh bg-navy text-pearl">
+    <div className="min-h-screen bg-navy text-pearl">
       <ScrollReveal />
       <Lightbox />
       {/* ============ STICKY TOP: version toggle row + site nav ========= */}

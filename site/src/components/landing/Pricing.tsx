@@ -1,26 +1,42 @@
 "use client";
 
-/* Pricing — three subscription tiers (Basic / Pro / Premium), in the
-   Bhavya-branch treatment: aqua headings and prices, a sub-label per card.
+/* Pricing — three tiers, Basic / Plus / Pro (Harsha, 12 Sep, to a supplied
+   design).
 
-   MONTHLY / ANNUAL TOGGLE (Louis, 22 Aug). The annual plans were already
-   seeded, priced and wired to Stripe on the API side — pro-annual and
-   premium-annual — but the cards only advertised "$290 /yr" in grey text while
-   both buttons were pinned to the monthly codes. A reader could see the annual
-   price and had no way to buy it. The toggle switches the price, the cadence
-   line and the checkout code together, so what is shown is what is bought.
+   ⚠ THE NAMES AND THE BILLING CODES DO NOT MATCH. READ THIS BEFORE EDITING.
 
-   ONE CADENCE AT A TIME. On Annual a card reads "$290 / year" and shows no
-   per-month figure. A per-month equivalent sat there briefly and was removed
-   deliberately — two prices on one card is exactly what made the old
+   The tiers were Basic / Pro / Premium. This design renames them Basic / Plus /
+   Pro while the prices stay $29 and $79, so every tier shifted down a name:
+
+       shown as      price   bills against        rank
+       Basic         free    starter              0
+       Plus          $29     pro-monthly/annual   1     <- was called "Pro"
+       Pro           $79     premium-*            2     <- was called "Premium"
+
+   So the button reading "Upgrade to Pro" charges the PREMIUM plan codes, and
+   that is correct. platform/app/models.py PLAN_SEED still calls them pro and
+   premium, as do planRank() in lib/session.ts and every subscription already
+   sold. Renaming the codes to follow the labels would orphan live subscriptions
+   through the plans.code foreign key, so the labels move and the codes stay.
+
+   The practical cost: in Stripe and in the API logs, a customer on the tier the
+   site calls "Pro" appears as "Premium". Anyone reconciling revenue needs the
+   table above. If that becomes too confusing to live with, the fix is a
+   migration on the API side, not a re-point here.
+
+   MONTHLY / ANNUAL (Louis, 22 Aug). Each paid card carries its own switch and
+   they are deliberately not linked (Harsha, 7 Sep: "dont link them"). Switching
+   moves the price, the period and the checkout code together, so what is shown
+   is what is bought. On Annual a card reads "$290 / year" and shows no
+   per-month equivalent — two prices on one card is what made the old
    "$29 / mo · $290 /yr" line ambiguous to begin with.
 
-   Every figure here mirrors platform/app/models.py PLAN_SEED (2900 / 29000 /
-   7900 / 79000 cents). Change one and you must change the other.
+   Every figure mirrors PLAN_SEED (0 / 2900 / 29000 / 7900 / 79000 cents).
+   Change one and you must change the other.
 
-   The grid is plan-aware: once we know the signed-in user's tier, a plan they
-   already have (or a higher plan includes) shows as owned instead of a buy
-   button. */
+   The grid stays plan-aware: once the signed-in user's tier is known, a plan
+   they already hold — or that a higher plan includes — shows as owned rather
+   than as a buy button. */
 
 import { useState, type CSSProperties } from "react";
 import { ownedRank, useSession } from "@/lib/session";
@@ -28,24 +44,42 @@ import { ownedRank, useSession } from "@/lib/session";
 type Cadence = "monthly" | "annual";
 
 interface Price {
-  /** headline figure, e.g. "$29" */
+  /** headline figure, e.g. "$29" or "Free" */
   amount: string;
-  /** the small print beside it */
-  note: string;
-  /** checkout target — the plan code the API bills against. */
+  /** the period beside the figure — Basic has none */
+  period?: string;
+  /** the small line under the price */
+  foot: string;
+  /** checkout target — see the code/label table above before changing */
   href: string;
+}
+
+interface Feature {
+  /** the bold run at the start of the line, if any */
+  lead?: string;
+  text: string;
+  /** greyed back — either a limitation or something not shipped yet */
+  muted?: boolean;
+  /** "dash" marks a limitation rather than an included feature */
+  marker?: "check" | "dash";
+  /** e.g. "Soon" */
+  badge?: string;
 }
 
 interface Tier {
   name: string;
-  /** access rank — mirrors the API PLAN_RANK: Basic 0, Pro 1, Premium 2. */
+  /** access rank — mirrors the API PLAN_RANK: Basic 0, Plus 1, Pro 2 */
   rank: number;
   sub: string;
-  blurb: string;
-  features: string[];
+  /** heading over the feature list */
+  featuresLabel: string;
+  features: Feature[];
   cta: string;
+  /** the aqua "Recommended" flag and the aqua tier name */
   featured?: boolean;
-  /** Basic has no cadence — one price, shown whichever way the toggle sits. */
+  /** button treatment, which differs on all three cards in this design */
+  ctaStyle: "outline" | "solid-pearl" | "solid-aqua";
+  /** Basic has no cadence — one price, shown whichever way a toggle sits */
   monthly: Price;
   annual?: Price;
 }
@@ -55,47 +89,60 @@ const TIERS: Tier[] = [
     name: "Basic",
     rank: 0,
     sub: "Sign-up required",
-    blurb: "",
-    features: ["Sample notebooks", "Weekly newsletter", "Community access"],
+    featuresLabel: "Features",
+    features: [
+      { lead: "4 sample tutorials", text: "— one per category, full text and code" },
+      { lead: "Notebook and PDF download", text: "for those 4" },
+      { text: "New release alerts" },
+      { text: "Community access" },
+      { text: "Remaining library shown as preview only", muted: true, marker: "dash" },
+    ],
     cta: "Start for Free",
-    monthly: { amount: "Free", note: "no commitment", href: "/account" },
+    ctaStyle: "outline",
+    monthly: { amount: "Free", foot: "no commitment", href: "/account" },
+  },
+  {
+    name: "Plus",
+    rank: 1,
+    sub: "Full library",
+    featuresLabel: "Everything in Basic, plus",
+    features: [
+      { lead: "All 16 notebooks", text: "— full text, code and explanations" },
+      { lead: "12 notebook downloads", text: "(.ipynb)" },
+      { text: "New releases included" },
+      { text: "Community access" },
+    ],
+    cta: "Upgrade to Plus",
+    featured: true,
+    ctaStyle: "solid-pearl",
+    // pro-* is the $29 plan; it is this card despite the code saying "pro"
+    monthly: { amount: "$29", period: "/ month", foot: "cancel anytime", href: "/checkout?plan=pro-monthly" },
+    annual: { amount: "$290", period: "/ year", foot: "cancel anytime", href: "/checkout?plan=pro-annual" },
   },
   {
     name: "Pro",
-    rank: 1,
-    sub: "Full library · cloud",
-    blurb: "",
-    features: [
-      "Run all case studies in the cloud",
-      "Interactive notebooks, code, explanations",
-    ],
-    cta: "Upgrade to Pro",
-    featured: true,
-    monthly: { amount: "$29", note: "/ month", href: "/checkout?plan=pro-monthly" },
-    annual: { amount: "$290", note: "/ year", href: "/checkout?plan=pro-annual" },
-  },
-  {
-    name: "Premium",
     rank: 2,
     sub: "Research environment",
-    blurb: "",
+    featuresLabel: "Everything in Plus, plus",
     features: [
-      "Datasets & downloads",
-      "Deep-dive reports",
-      "Priority access",
+      { lead: "PDF research notes", text: "— all 16, print and share ready" },
+      { lead: "Pro-only notebooks", text: "— the advanced and scholarly set" },
+      { lead: "Instrument universe", text: "— the full curated ticker set" },
+      { lead: "Priority access", text: "— new releases one week early" },
+      { text: "Cloud execution", muted: true, badge: "Soon" },
+      { text: "Quant finance course", muted: true, badge: "Soon" },
     ],
-    /* was "Contact Sales", which promised a conversation the button never
-       started — it has always gone straight to checkout, and Premium has a
-       listed price rather than being a quote-only tier (Louis, 22 Aug) */
-    cta: "Upgrade to Premium",
-    monthly: { amount: "$79", note: "/ month", href: "/checkout?plan=premium-monthly" },
-    annual: { amount: "$790", note: "/ year", href: "/checkout?plan=premium-annual" },
+    cta: "Upgrade to Pro",
+    ctaStyle: "solid-aqua",
+    // premium-* is the $79 plan — the card now called "Pro". See the header.
+    monthly: { amount: "$79", period: "/ month", foot: "cancel anytime", href: "/checkout?plan=premium-monthly" },
+    annual: { amount: "$790", period: "/ year", foot: "cancel anytime", href: "/checkout?plan=premium-annual" },
   },
 ];
 
 /* Segmented monthly/annual switch. Two real <button>s inside a role="group"
    rather than a checkbox styled as a slider: the labels stay readable, and
-   "which one am I on" is carried by aria-pressed instead of by colour alone. */
+   "which one am I on" is carried by aria-pressed rather than by colour alone. */
 function CadenceToggle({
   value,
   onChange,
@@ -138,9 +185,33 @@ function CadenceToggle({
   );
 }
 
-/* One card. It holds its own monthly/annual state (Harsha, 7 Sep: "dont link
-   them"), so Pro and Premium switch independently — hence a component rather
-   than one cadence lifted into Pricing. */
+function CheckMark({ dim }: { dim?: boolean }) {
+  return (
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      className={`mt-px shrink-0 ${dim ? "text-steel/50" : "text-aqua"}`}
+      aria-hidden="true"
+    >
+      <path d="M4 12.5l5 5L20 6.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+const CTA_CLASS: Record<Tier["ctaStyle"], string> = {
+  outline:
+    "border border-pearl/30 text-pearl hover:border-aqua hover:text-aqua",
+  "solid-pearl": "bg-pearl text-navy hover:bg-aqua",
+  "solid-aqua": "bg-aqua text-navy hover:bg-pearl",
+};
+
+/* One card. It holds its own monthly/annual state, so Plus and Pro switch
+   independently — hence a component rather than one cadence lifted into
+   Pricing. */
 function TierCard({
   t,
   ctaState,
@@ -158,15 +229,23 @@ function TierCard({
   return (
     <div
       className={`relative flex flex-1 flex-col rounded-lg border bg-navy-elevated/50 p-7 transition-all duration-300 hover:-translate-y-0.5 ${
-        ctaState === "current"
-          ? "border-aqua/50"
-          : "border-aqua/25 hover:border-aqua/50"
+        t.featured
+          ? "border-aqua/70"
+          : ctaState === "current"
+            ? "border-aqua/50"
+            : "border-aqua/25 hover:border-aqua/50"
       }`}
     >
-      {/* name, then the billing switch in the top-right corner. The "Popular"
-          badge that used to sit here is gone (Harsha, 7 Sep) — the corner is
-          the switch's now. "Your plan" still appears, beside the name, since a
-          signed-in owner needs to see it. */}
+      {/* Straddles the top border, so it reads as a flag on the card rather
+          than as the first line of its content. */}
+      {t.featured ? (
+        <span className="absolute -top-2.5 left-6 inline-flex items-center rounded-full bg-aqua px-2.5 py-1 t-mono text-[0.55rem] font-semibold uppercase tracking-[0.16em] text-navy">
+          Recommended
+        </span>
+      ) : null}
+
+      {/* name, then the billing switch in the top-right corner. "Your plan"
+          sits beside the name, since a signed-in owner needs to see it. */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2.5">
           <h4
@@ -186,29 +265,28 @@ function TierCard({
         ) : null}
       </div>
 
-      {/* sub-label */}
       <p className="mt-1.5 t-mono text-[0.72rem] tracking-[0.04em] text-steel">{t.sub}</p>
 
-      {/* price */}
-      <div className="mt-5 flex items-baseline gap-2">
-        <span className="text-5xl text-aqua" style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}>{price.amount}</span>
-        <span className="t-mono text-xs tracking-[0.12em] text-steel">{price.note}</span>
+      {/* price, then its footnote on a line of its own */}
+      <div className="mt-7 flex items-baseline gap-2">
+        <span
+          className={`text-5xl ${t.rank === 0 ? "text-aqua" : "text-pearl"}`}
+          style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}
+        >
+          {price.amount}
+        </span>
+        {price.period ? (
+          <span className="t-mono text-xs tracking-[0.12em] text-steel">{price.period}</span>
+        ) : null}
       </div>
+      <p className="mt-2 t-mono text-[0.62rem] tracking-[0.1em] text-steel">{price.foot}</p>
 
-      {/* blurb */}
-      <p className="mt-4 min-h-[4.5rem] leading-relaxed text-mist">{t.blurb}</p>
-
-      {/* cta — every tier gets a real button; featured is solid, the rest
-          outlined, owned tiers are a muted non-link. */}
-      <div className="mt-1 flex h-12 items-center">
+      {/* cta — owned tiers become a muted non-link */}
+      <div className="mt-6 flex h-12 items-center">
         {ctaState === "action" ? (
           <a
             href={price.href}
-            className={
-              t.featured
-                ? "inline-flex w-full items-center justify-center rounded-full bg-pearl px-7 py-3 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua"
-                : "inline-flex w-full items-center justify-center rounded-full border border-pearl/30 px-7 py-3 text-sm font-semibold text-pearl transition-colors duration-300 hover:border-aqua hover:text-aqua"
-            }
+            className={`inline-flex w-full items-center justify-center rounded-full px-7 py-3 text-sm font-semibold transition-colors duration-300 ${CTA_CLASS[t.ctaStyle]}`}
           >
             {ctaLabel}
           </a>
@@ -230,17 +308,34 @@ function TierCard({
       {/* features */}
       <div className="mt-7 flex items-center gap-3">
         <span className="h-px flex-1 bg-pearl/10" />
-        <span className="t-mono text-[0.6rem] uppercase tracking-[0.22em] text-steel">Features</span>
+        <span className="t-mono whitespace-nowrap text-[0.6rem] uppercase tracking-[0.22em] text-steel">
+          {t.featuresLabel}
+        </span>
         <span className="h-px flex-1 bg-pearl/10" />
       </div>
       <ul className="mt-5 space-y-3">
         {t.features.map((f) => (
-          <li key={f} className="flex items-start gap-2.5 t-mono text-[0.76rem] leading-relaxed text-mist">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="mt-px shrink-0 text-steel" aria-hidden="true">
-              <circle cx="12" cy="12" r="9" />
-              <path d="M8.5 12.4l2.4 2.4 4.6-5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <span>{f}</span>
+          <li
+            key={f.lead ? `${f.lead} ${f.text}` : f.text}
+            className={`flex items-start gap-2.5 t-mono text-[0.76rem] leading-relaxed ${
+              f.muted ? "text-steel/70" : "text-mist"
+            }`}
+          >
+            {f.marker === "dash" ? (
+              <span className="mt-[0.55em] h-px w-3 shrink-0 bg-steel/60" aria-hidden="true" />
+            ) : (
+              <CheckMark dim={f.muted} />
+            )}
+            <span>
+              {f.lead ? <strong className="font-semibold text-pearl">{f.lead}</strong> : null}
+              {f.lead ? " " : null}
+              {f.text}
+              {f.badge ? (
+                <span className="ml-2 inline-flex items-center rounded-sm border border-steel/40 px-1.5 py-px t-mono text-[0.5rem] uppercase tracking-[0.14em] text-steel">
+                  {f.badge}
+                </span>
+              ) : null}
+            </span>
           </li>
         ))}
       </ul>
@@ -264,16 +359,28 @@ export function Pricing() {
           <span className="h-px flex-1 bg-pearl/10" />
         </div>
 
-        {/* headline + subtext */}
-        <h3 data-reveal className="t-h1 max-w-3xl text-pearl" style={{ fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: "clamp(1.5rem, 3.2vw, 2.2rem)" }}>
-          Choose the plan <span className="text-pearl/35">that matches</span> your ambition
+        {/* headline + what each tier is, in one line each */}
+        <h3
+          data-reveal
+          className="t-h1 max-w-3xl text-pearl"
+          style={{ fontFamily: "var(--font-sans)", fontWeight: 900, fontSize: "clamp(1.5rem, 3.2vw, 2.2rem)" }}
+        >
+          Choose your <span className="text-aqua">access.</span>
         </h3>
-        <p data-reveal className="mt-5 max-w-2xl text-lg leading-relaxed text-mist">
-          Flexible pricing for every stage of your quant journey — from your first model to a lifetime of research.
-        </p>
+        <div data-reveal className="mt-5 max-w-2xl space-y-1 t-mono text-[0.78rem] leading-relaxed text-mist">
+          <p>
+            <strong className="font-semibold text-pearl">Basic</strong> features 4 tutorials for free — one from each category.
+          </p>
+          <p>
+            <strong className="font-semibold text-pearl">Plus</strong> opens the full library of notebooks.
+          </p>
+          <p>
+            <strong className="font-semibold text-pearl">Pro</strong> adds advanced contents, formatted PDFs, the instrument universe and early access.
+          </p>
+        </div>
 
-        {/* cards — each carries its own billing switch, top right */}
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
+        {/* cards — each paid one carries its own billing switch, top right */}
+        <div className="mt-12 grid items-start gap-6 md:grid-cols-3">
           {TIERS.map((t, i) => {
             const ctaState: "action" | "current" | "included" =
               showOwnership && t.rank < owned ? "included"
@@ -295,6 +402,15 @@ export function Pricing() {
               </div>
             );
           })}
+        </div>
+
+        {/* closing row */}
+        <div
+          data-reveal
+          className="mt-12 flex flex-col justify-between gap-3 border-t border-pearl/10 pt-8 t-mono text-[0.66rem] tracking-[0.08em] text-steel sm:flex-row"
+        >
+          <span>All tiers include the 4 free sample tutorials</span>
+          <span>Annual billing saves two months</span>
         </div>
       </div>
     </section>

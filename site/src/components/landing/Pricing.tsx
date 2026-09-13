@@ -185,20 +185,18 @@ function CadenceToggle({
   );
 }
 
-function CheckMark({ dim }: { dim?: boolean }) {
+/* The marker is a real glyph, not an icon: U+2713 CHECK MARK for an included
+   feature, U+2013 EN DASH for one that is not. The list is already t-mono, so
+   both are drawn by Courier Prime at the row's own size and sit on its
+   baseline — an SVG had to be nudged to fake that.
+
+   A dimmed row tints its marker to match its text rather than staying aqua,
+   so the whole line reads as one muted unit. */
+function Marker({ dash, dim }: { dash?: boolean; dim?: boolean }) {
   return (
-    <svg
-      width="15"
-      height="15"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      className={`mt-px shrink-0 ${dim ? "text-steel/50" : "text-aqua"}`}
-      aria-hidden="true"
-    >
-      <path d="M4 12.5l5 5L20 6.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <span className={`mt-px shrink-0 ${dim ? "" : "text-aqua"}`} aria-hidden="true">
+      {dash ? "–" : "✓"}
+    </span>
   );
 }
 
@@ -321,11 +319,7 @@ function TierCard({
               f.muted ? "text-steel/70" : "text-mist"
             }`}
           >
-            {f.marker === "dash" ? (
-              <span className="mt-[0.55em] h-px w-3 shrink-0 bg-steel/60" aria-hidden="true" />
-            ) : (
-              <CheckMark dim={f.muted} />
-            )}
+            <Marker dash={f.marker === "dash"} dim={f.muted} />
             <span>
               {f.lead ? <strong className="font-semibold text-pearl">{f.lead}</strong> : null}
               {f.lead ? " " : null}

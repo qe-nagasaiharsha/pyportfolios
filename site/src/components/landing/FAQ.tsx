@@ -3,30 +3,83 @@
 
 import type { CSSProperties } from "react";
 
-const FAQS = [
+/* An answer is paragraphs, each a run of segments. Bold is `{ b: "..." }`
+   rather than inline JSX so the copy stays plain data — no JSX text nodes to
+   escape, and the plan names can be restyled in one place below. */
+type Segment = string | { b: string };
+
+const FAQS: { q: string; a: Segment[][] }[] = [
   {
-    q: "What is this platform designed for?",
-    a: "It helps you start, hone, and elevate your quant finance and AI skillset — get ready for the Future of Finance.",
+    q: "What is pyportfolios for?",
+    a: [
+      [
+        "It's a working library of quantitative finance, taught in code. Each notebook pairs the theory behind a model with a runnable Python implementation you can read, change, and build on — so you learn the method and walk away with the tool. It's for anyone who wants to understand how modern finance is actually built, not just described.",
+      ],
+    ],
   },
   {
-    q: "Do I need technical knowledge or coding expertise to use the Python notebooks?",
-    a: "Not at all. The platform is built for everyone — from beginners exploring quant finance and coding to professionals building complex models. Every notebook runs out-of-the-box.",
+    q: "Do I need to know how to code?",
+    a: [
+      [
+        "No — but you'll be running real code from the first notebook, and that's the point. Beginners get fully worked examples with every step explained; experienced quants and developers can skip the scaffolding and go straight to the models. Nothing is a black box — everything on the page is code you can open and edit.",
+      ],
+    ],
   },
   {
-    q: "Which concepts and models are used, and how are the contents presented?",
-    a: "We introduce you to a wide range of concepts and models from the world of quantitative finance — from fundamentals such as option pricing, to portfolio optimization, risk management and algorithmic trading. Case studies include the explanation, the intuition, the relevance, and the strengths and shortcomings, and are tightly connected to the executable code.",
+    q: "Which concepts and models are covered, and how?",
+    a: [
+      [
+        "The library spans the core of quantitative finance — option pricing, portfolio construction and optimization, risk management, and algorithmic trading — from first principles through to research-grade methods. Every case study covers what the model does, the intuition behind it, where it's genuinely useful, and, just as importantly, where it breaks down. The explanation sits right next to the executable code, so you can move between theory and implementation without leaving the notebook.",
+      ],
+    ],
   },
   {
-    q: "Is there a free plan available?",
-    a: "Yes. You can start for free with introductory notebooks and limited previews, and upgrade later if you want to learn more.",
+    q: "Is there a free plan?",
+    a: [
+      [
+        "Yes. ",
+        { b: "Basic" },
+        " gives you four complete tutorials — one from each category — free to read, run and download, as both notebook and PDF. Nothing is cut short: they're the full pieces, not teasers, and the rest of the library is previewed so you can see exactly what's there.",
+      ],
+      [
+        "That's enough to learn the fundamentals and decide whether this is for you. If you want to go further — to actually work at the intersection of finance and code — ",
+        { b: "Plus" },
+        " opens the full library and ",
+        { b: "Pro" },
+        " adds the research notes, the advanced material and the data.",
+      ],
+    ],
   },
   {
-    q: "Can I use the content for professional and private purposes?",
-    a: "Absolutely. Our case studies and notebooks are designed for both finance professionals and private individuals — such as retail investors and traders, scholars, or students upgrading or polishing their repertoire.",
+    q: "What's the difference between Plus and Pro?",
+    a: [
+      [
+        { b: "Plus" },
+        " opens the full library: every notebook, in full, with the code and the explanation, and the notebook files to download.",
+      ],
+      [
+        { b: "Pro" },
+        " adds the formatted PDF research notes for the whole library, the advanced Pro-only notebooks, the curated instrument universe, and new releases a week before everyone else. Plus is built for learning; Pro is built for working.",
+      ],
+    ],
   },
   {
-    q: "How can I get support if I have issues?",
-    a: "You will have access to community help on the free plan, and Pro/Premium users receive priority or dedicated support.",
+    q: "Can I use this professionally and privately?",
+    a: [
+      [
+        "Yes — the notebooks are built for both. Whether you're a practitioner sharpening a specific technique, a researcher or student learning the field properly, or a private investor who wants to understand the models behind your own decisions, the material is yours to study and apply.",
+      ],
+    ],
+  },
+  {
+    q: "How do I get help?",
+    a: [
+      [
+        "Every member can ask questions through the community. ",
+        { b: "Pro" },
+        " members get priority support. On any plan, questions about the finance and the code are both fair game — this is a place to learn, not just download.",
+      ],
+    ],
   },
 ];
 
@@ -52,7 +105,22 @@ export function FAQ() {
                 <span className="font-serif text-lg text-pearl md:text-xl">{f.q}</span>
                 <span className="faq-mark relative h-4 w-4 shrink-0 text-aqua" aria-hidden="true" />
               </summary>
-              <p className="pb-6 pr-10 leading-relaxed text-mist">{f.a}</p>
+              {f.a.map((para, p) => (
+                <p
+                  key={p}
+                  className={`pr-10 leading-relaxed text-mist ${p === f.a.length - 1 ? "pb-6" : "pb-4"}`}
+                >
+                  {para.map((seg, s) =>
+                    typeof seg === "string" ? (
+                      seg
+                    ) : (
+                      <strong key={s} className="font-semibold text-pearl">
+                        {seg.b}
+                      </strong>
+                    ),
+                  )}
+                </p>
+              ))}
             </details>
           ))}
         </div>

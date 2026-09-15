@@ -226,6 +226,7 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
   const [cat, setCat] = useState<{ free_samples: string[]; pro_only: string[] } | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   const refresh = useCallback(async () => {
     const [s, e, c] = await Promise.all([
@@ -236,6 +237,7 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
     setSub(s);
     setEnt(e);
     setCat(c);
+    setLoaded(true);
   }, []);
 
   useEffect(() => { void refresh(); }, [refresh]);
@@ -291,7 +293,9 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
       <div className="mt-10">
         <h2 className="font-serif text-xl text-pearl md:text-2xl">Subscription</h2>
         <div className="mt-4 rounded-lg border border-pearl/10 bg-navy-elevated/50 p-6">
-          {sub && sub.status === "active" ? (
+          {!loaded ? (
+            <p className="t-mono text-[0.7rem] uppercase tracking-[0.14em] text-steel/70">Loading…</p>
+          ) : sub && sub.status === "active" ? (
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="space-y-1.5">
                 <p className="text-pearl">
@@ -336,20 +340,24 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
         <div className="flex items-baseline justify-between gap-4">
           <h2 className="font-serif text-xl text-pearl md:text-2xl">Notebook library</h2>
           <span className="t-mono text-[0.64rem] uppercase tracking-[0.14em] text-steel">
-            {ent?.tier === "premium"
-              ? `${ARTICLES.length} notebooks · full access`
-              : ent?.tier === "pro"
-                ? `Plus · 12 of ${ARTICLES.length}`
-                : "Plus & Pro"}
+            {!loaded
+              ? ""
+              : ent?.tier === "premium"
+                ? `${ARTICLES.length} notebooks · full access`
+                : ent?.tier === "pro"
+                  ? `Plus · 12 of ${ARTICLES.length}`
+                  : "Plus & Pro"}
           </span>
         </div>
         <p className="mt-2 text-sm leading-relaxed text-mist">
           Every article&apos;s runnable companion notebook, served from your account.
-          {ent?.tier === "premium"
+          {!loaded
             ? ""
-            : ent?.tier === "pro"
-              ? " The 4 advanced (Pro-only) notebooks need Pro."
-              : " Upgrade to download."}
+            : ent?.tier === "premium"
+              ? ""
+              : ent?.tier === "pro"
+                ? " The 4 advanced (Pro-only) notebooks need Pro."
+                : " Upgrade to download."}
         </p>
         <ul className="mt-5 divide-y divide-pearl/10 rounded-lg border border-pearl/10 bg-navy-elevated/50">
           {ARTICLES.map((a) => (

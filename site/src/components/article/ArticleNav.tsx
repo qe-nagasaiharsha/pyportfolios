@@ -49,7 +49,7 @@ export function ArticleNav() {
             <li key={item.label}>
               <Link
                 href={item.href}
-                className="block text-center font-sans font-black text-[0.68rem] leading-[1.05] tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl"
+                className="block text-left font-sans font-black text-[0.68rem] leading-[1.05] tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl"
               >
                 {item.label.split(" ").map((word) => (
                   <span key={word} className="block">{word}</span>

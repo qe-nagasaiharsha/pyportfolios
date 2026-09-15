@@ -224,9 +224,13 @@ function TierCard({
      than disappearing when a toggle moves. */
   const price = (cadence === "annual" ? t.annual : t.monthly) ?? t.monthly;
 
+  /* min-w-0: a flex item's default min-width is its content's min-content, so
+     a card whose header row (name, "Your plan" badge, billing switch) could not
+     shrink would grow past its grid cell and sit wider than its siblings. The
+     header wraps instead, dropping the switch beneath the name when needed. */
   return (
     <div
-      className={`relative flex flex-1 flex-col rounded-lg border bg-navy-elevated/50 p-7 transition-all duration-300 hover:-translate-y-0.5 ${
+      className={`relative flex min-w-0 flex-1 flex-col rounded-lg border bg-navy-elevated/50 p-7 transition-all duration-300 hover:-translate-y-0.5 ${
         t.featured
           ? "border-aqua/70"
           : ctaState === "current"
@@ -244,8 +248,8 @@ function TierCard({
 
       {/* name, then the billing switch in the top-right corner. "Your plan"
           sits beside the name, since a signed-in owner needs to see it. */}
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2.5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
           <h4
             className={`text-2xl ${t.featured ? "text-aqua" : "text-pearl"}`}
             style={{ fontFamily: "var(--font-sans)", fontWeight: 900 }}
@@ -253,7 +257,7 @@ function TierCard({
             {t.name}
           </h4>
           {ctaState === "current" ? (
-            <span className="inline-flex items-center rounded-full border border-aqua/50 px-2.5 py-1 t-mono text-[0.55rem] uppercase tracking-[0.16em] text-aqua">
+            <span className="inline-flex items-center whitespace-nowrap rounded-full border border-aqua/50 px-2.5 py-1 t-mono text-[0.55rem] uppercase tracking-[0.16em] text-aqua">
               Your plan
             </span>
           ) : null}

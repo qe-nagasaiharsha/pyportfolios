@@ -300,7 +300,7 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
               <p className="text-mist">
                 {sub && sub.status === "expired"
                   ? "Your subscription has expired. Renew for the full library and notebook downloads."
-                  : "Free tier — the Starter plan. Upgrade for the full library and notebook downloads."}
+                  : "You're on Basic (free). Upgrade for the full library and notebook downloads."}
               </p>
               <Link href="/#pricing" className={btn}>See plans</Link>
             </div>

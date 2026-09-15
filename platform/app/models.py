@@ -149,11 +149,14 @@ class WebhookEvent(Base):
 # subscription; nothing had been sold on it. Premium carries what Lifetime used
 # to (mentorship, private community, certificate) but renews like Pro.
 PLAN_SEED = [
+    # Display names use the site's tier scheme (Basic / Plus / Pro); the plan
+    # CODES keep their original words (pro-* = Plus tier, premium-* = Pro tier)
+    # because Stripe prices, subscriptions and payments are all keyed on them.
     {"code": "starter", "name": "Basic", "amount_cents": 0, "interval": None},
-    {"code": "pro-monthly", "name": "Pro (Monthly)", "amount_cents": 2900, "interval": "month"},
-    {"code": "pro-annual", "name": "Pro (Annual)", "amount_cents": 29000, "interval": "year"},
-    {"code": "premium-monthly", "name": "Premium (Monthly)", "amount_cents": 7900, "interval": "month"},
-    {"code": "premium-annual", "name": "Premium (Annual)", "amount_cents": 79000, "interval": "year"},
+    {"code": "pro-monthly", "name": "Plus (Monthly)", "amount_cents": 2900, "interval": "month"},
+    {"code": "pro-annual", "name": "Plus (Annual)", "amount_cents": 29000, "interval": "year"},
+    {"code": "premium-monthly", "name": "Pro (Monthly)", "amount_cents": 7900, "interval": "month"},
+    {"code": "premium-annual", "name": "Pro (Annual)", "amount_cents": 79000, "interval": "year"},
 ]
 
 

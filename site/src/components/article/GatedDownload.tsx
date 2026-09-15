@@ -89,7 +89,7 @@ export function GatedCta({ slug }: { slug: string }) {
         {busy === "notebook" ? "…" : "or just the .ipynb ↓"}
       </button>
       <p className="t-mono text-[0.62rem] uppercase tracking-[0.1em] text-steel/70">
-        Members · Pro &amp; Premium
+        Members · Plus &amp; Pro
       </p>
       {err ? <p className="text-xs text-red-400">{err}</p> : null}
     </div>

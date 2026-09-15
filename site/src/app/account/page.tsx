@@ -24,6 +24,20 @@ function fmtDate(iso: string | null): string {
   return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
+/* Plan CODES keep their original words (pro-* = Plus tier, premium-* = Pro
+   tier); this is the one place the member area translates a code into the
+   site's tier name (Basic / Plus / Pro). */
+const PLAN_LABEL: Record<string, string> = {
+  starter: "Basic",
+  "pro-monthly": "Plus (Monthly)",
+  "pro-annual": "Plus (Annual)",
+  "premium-monthly": "Pro (Monthly)",
+  "premium-annual": "Pro (Annual)",
+};
+function planLabel(code: string): string {
+  return PLAN_LABEL[code] ?? code;
+}
+
 function AuthForms({ onAuthed }: { onAuthed: (me: Me) => void }) {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -204,8 +218,6 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
 
   useEffect(() => { void refresh(); }, [refresh]);
 
-  const isPro = ent?.tier === "pro" || ent?.tier === "premium";
-
   const cancel = async () => {
     setBusy(true);
     setMsg(null);
@@ -226,6 +238,12 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
       const blob = kind === "bundle" ? await api.bundle(slug) : await api.notebook(slug);
       saveBlob(blob, kind === "bundle" ? `${slug}.zip` : `${slug}.ipynb`);
     } catch (ex) {
+      // Locked for this tier (e.g. a Plus member on a Pro-only notebook) —
+      // send them to the plan the server names rather than a bare message.
+      if (ex instanceof ApiError && ex.status === 402) {
+        window.location.href = `/checkout?plan=${ex.requiredPlan ?? "premium-monthly"}`;
+        return;
+      }
       setMsg(ex instanceof ApiError ? ex.message : "Download failed.");
     }
   };
@@ -255,7 +273,7 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="space-y-1.5">
                 <p className="text-pearl">
-                  <span className="t-mono text-[0.7rem] uppercase tracking-[0.14em] text-aqua">{sub.plan_code}</span>
+                  <span className="t-mono text-[0.7rem] uppercase tracking-[0.14em] text-aqua">{planLabel(sub.plan_code)}</span>
                   <span className="ml-3 t-mono text-[0.7rem] uppercase tracking-[0.14em] text-emerald-300/90">● {sub.status}</span>
                 </p>
                 <p className="text-sm text-mist">
@@ -269,7 +287,7 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
               <span className="flex items-center gap-4">
                 {!sub.plan_code.startsWith("premium") ? (
                   <Link href="/checkout?plan=premium-monthly" className="t-mono text-[0.66rem] uppercase tracking-[0.14em] text-aqua hover:underline">
-                    Upgrade to Premium
+                    Upgrade to Pro
                   </Link>
                 ) : null}
                 {!sub.cancel_at_period_end && sub.current_period_end ? (
@@ -284,7 +302,7 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
                   ? "Your subscription has expired. Renew for the full library and notebook downloads."
                   : "Free tier — the Starter plan. Upgrade for the full library and notebook downloads."}
               </p>
-              <Link href="/checkout?plan=pro-monthly" className={btn}>Upgrade to Pro</Link>
+              <Link href="/#pricing" className={btn}>See plans</Link>
             </div>
           )}
         </div>
@@ -296,12 +314,20 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
         <div className="flex items-baseline justify-between gap-4">
           <h2 className="font-serif text-xl text-pearl md:text-2xl">Notebook library</h2>
           <span className="t-mono text-[0.64rem] uppercase tracking-[0.14em] text-steel">
-            {isPro ? `${ARTICLES.length} notebooks · full access` : "Pro & Premium"}
+            {ent?.tier === "premium"
+              ? `${ARTICLES.length} notebooks · full access`
+              : ent?.tier === "pro"
+                ? `Plus · 12 of ${ARTICLES.length}`
+                : "Plus & Pro"}
           </span>
         </div>
         <p className="mt-2 text-sm leading-relaxed text-mist">
           Every article&apos;s runnable companion notebook, served from your account.
-          {isPro ? "" : " Upgrade to download."}
+          {ent?.tier === "premium"
+            ? ""
+            : ent?.tier === "pro"
+              ? " The 4 advanced (Pro-only) notebooks need Pro."
+              : " Upgrade to download."}
         </p>
         <ul className="mt-5 divide-y divide-pearl/10 rounded-lg border border-pearl/10 bg-navy-elevated/50">
           {ARTICLES.map((a) => (
@@ -310,24 +336,24 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
                 <p className="truncate text-[0.95rem] text-pearl">{a.title}</p>
                 <p className="t-mono text-[0.66rem] text-steel">{a.notebook}</p>
               </div>
-              {isPro ? (
-                <span className="flex shrink-0 items-center gap-4">
-                  <button
-                    onClick={() => download(a.slug, "bundle")}
-                    className="t-mono text-[0.66rem] uppercase tracking-[0.14em] text-aqua transition-transform hover:translate-x-0.5"
-                  >
-                    Bundle ↓
-                  </button>
-                  <button
-                    onClick={() => download(a.slug, "notebook")}
-                    className="t-mono text-[0.66rem] uppercase tracking-[0.14em] text-steel hover:text-aqua"
-                  >
-                    .ipynb ↓
-                  </button>
-                </span>
-              ) : (
-                <span className="shrink-0 t-mono text-[0.66rem] uppercase tracking-[0.14em] text-steel/60">Locked</span>
-              )}
+              {/* Buttons always render; the backend gate resolves at click —
+                  entitled → download, otherwise → the right plan's checkout.
+                  Keeps this list consistent with the article-page downloads and
+                  lets free members grab the 4 samples. */}
+              <span className="flex shrink-0 items-center gap-4">
+                <button
+                  onClick={() => download(a.slug, "bundle")}
+                  className="t-mono text-[0.66rem] uppercase tracking-[0.14em] text-aqua transition-transform hover:translate-x-0.5"
+                >
+                  Bundle ↓
+                </button>
+                <button
+                  onClick={() => download(a.slug, "notebook")}
+                  className="t-mono text-[0.66rem] uppercase tracking-[0.14em] text-steel hover:text-aqua"
+                >
+                  .ipynb ↓
+                </button>
+              </span>
             </li>
           ))}
         </ul>

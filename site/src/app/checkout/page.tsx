@@ -21,10 +21,10 @@ const btn =
   "inline-flex w-full items-center justify-center rounded-full bg-pearl px-7 py-3.5 text-sm font-semibold text-navy transition-colors duration-300 hover:bg-aqua disabled:cursor-not-allowed disabled:opacity-50";
 
 const PLAN_BLURB: Record<string, string> = {
-  "pro-monthly": "Full curriculum, unlimited notebooks, cancel any time.",
-  "pro-annual": "Everything in Pro, two months free.",
-  "premium-monthly": "Everything in Pro, plus datasets, deep-dive reports and priority access.",
-  "premium-annual": "Everything in Premium, two months free.",
+  "pro-monthly": "The full 16-notebook library — 12 downloads, code and explanations. Cancel any time.",
+  "pro-annual": "Everything in Plus, two months free.",
+  "premium-monthly": "Everything in Plus, plus the advanced Pro-only notebooks, all 16 PDF research notes, the instrument universe and early access.",
+  "premium-annual": "Everything in Pro, two months free.",
 };
 
 function money(cents: number): string {
@@ -192,12 +192,12 @@ function CheckoutInner() {
           {phase === "owned" ? (
             <div className="rounded-lg border border-aqua/30 bg-aqua/5 p-7">
               <h3 className="font-serif text-xl text-pearl">
-                You&apos;re already on {ownedTier === "premium" ? "Premium" : "Pro"}
+                You&apos;re already on {ownedTier === "premium" ? "Pro" : "Plus"}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-mist">
                 {ownedTier === "premium"
-                  ? "Premium already includes everything here — there's nothing to buy."
-                  : "Your Pro plan already covers this. Manage it or download notebooks from your account."}
+                  ? "Pro already includes everything here — there's nothing to buy."
+                  : "Your Plus plan already covers this. Manage it or download notebooks from your account."}
               </p>
               <Link href="/account" className={`${btn} mt-6`}>Go to your account</Link>
             </div>

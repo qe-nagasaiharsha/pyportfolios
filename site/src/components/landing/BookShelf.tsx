@@ -14,6 +14,7 @@
    ========================================================================== */
 
 import { useEffect, useRef, useState } from "react";
+import { CategoryChips } from "@/components/landing/CategoryChips";
 import type { BookGroup, Book } from "@/lib/literature";
 
 type FlatBook = Book & { theme: string; catNo: string; index: number; mainTitle: string; subTitle: string };
@@ -201,29 +202,15 @@ export function BookShelf({ groups }: { groups: BookGroup[] }) {
 
   return (
     <div>
-      {/* category tabs — select a single bucket, or All */}
-      <div className="mb-9 flex flex-wrap gap-1.5">
-        {tabs.map((t) => {
-          const on = active === t;
-          const count = t === "All" ? total : grouped.find((g) => g.theme === t)?.books.length ?? 0;
-          return (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setActive(t)}
-              aria-pressed={on}
-              className={`shrink-0 whitespace-nowrap rounded-full border px-4 py-2 t-mono text-[0.62rem] uppercase tracking-[0.14em] transition-colors duration-200 ${
-                on
-                  ? "border-aqua/60 bg-aqua/10 text-aqua"
-                  : "border-pearl/12 text-steel hover:border-pearl/30 hover:text-pearl"
-              }`}
-            >
-              {t}
-              <span className={`ml-2 tabular-nums ${on ? "text-aqua/70" : "text-steel/60"}`}>{count}</span>
-            </button>
-          );
-        })}
-      </div>
+      {/* category tabs — select a single bucket, or All (same row as the Papers tab) */}
+      <CategoryChips
+        tabs={tabs.map((t) => ({
+          label: t,
+          count: t === "All" ? total : grouped.find((g) => g.theme === t)?.books.length ?? 0,
+        }))}
+        active={active}
+        onChange={setActive}
+      />
 
       {/* sections — re-keyed by active tab so the view re-staggers in */}
       <div key={active} className="space-y-16 md:space-y-20">

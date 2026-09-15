@@ -9,6 +9,7 @@
 import { useState } from "react";
 import type { Paper } from "@/lib/literature";
 import { TransitionLink } from "@/components/motion/TransitionLink";
+import { CategoryChips } from "@/components/landing/CategoryChips";
 
 /* canonical category order — mirrors BOOK_GROUPS (used to group papers) */
 const CATEGORY_ORDER = [
@@ -172,16 +173,33 @@ function PaperBar({ paper }: { paper: Paper }) {
 
 export function PaperShelf({ papers }: { papers: Paper[] }) {
   // Show every category as a header (the template), even when it has no papers
-  // yet — papers drop into the matching bucket once added.
-  const groups = CATEGORY_ORDER.map((cat) => ({ cat, items: papers.filter((p) => p.category === cat) }));
+  // yet — papers drop into the matching bucket once added. Each keeps its
+  // canonical number even when the filter hides its neighbours.
+  const groups = CATEGORY_ORDER.map((cat, i) => ({
+    cat,
+    no: String(i + 1).padStart(2, "0"),
+    items: papers.filter((p) => p.category === cat),
+  }));
   const uncategorized = papers.filter((p) => !p.category || !CATEGORY_ORDER.includes(p.category));
 
+  /* category pills — the same row the Books tab has: All, or a single bucket */
+  const [active, setActive] = useState<string>("All");
+  const tabs = [
+    { label: "All", count: papers.length },
+    ...groups.map((g) => ({ label: g.cat, count: g.items.length })),
+  ];
+  const visibleGroups = active === "All" ? groups : groups.filter((g) => g.cat === active);
+
   return (
-    <div className="space-y-16 md:space-y-20">
-      {groups.map((g, i) => (
+    <div>
+      <CategoryChips tabs={tabs} active={active} onChange={setActive} />
+
+      {/* sections — re-keyed by the active pill so the view re-renders in */}
+      <div key={active} className="space-y-16 md:space-y-20">
+      {visibleGroups.map((g) => (
         <section key={g.cat} className="scroll-mt-24">
           <div className="mb-5 flex items-baseline gap-4 border-b border-pearl/10 pb-3">
-            <span className="t-mono text-sm tabular-nums text-aqua/80">{String(i + 1).padStart(2, "0")}</span>
+            <span className="t-mono text-sm tabular-nums text-aqua/80">{g.no}</span>
             <h3 className="font-serif text-xl leading-tight text-pearl md:text-2xl">{CATEGORY_LABELS[g.cat] ?? g.cat}</h3>
             {g.items.length > 0 ? (
               <span className="ml-auto shrink-0 t-mono text-[0.6rem] uppercase tracking-[0.14em] text-steel">{g.items.length} paper{g.items.length === 1 ? "" : "s"}</span>
@@ -197,7 +215,7 @@ export function PaperShelf({ papers }: { papers: Paper[] }) {
         </section>
       ))}
 
-      {uncategorized.length > 0 ? (
+      {uncategorized.length > 0 && active === "All" ? (
         <section>
           <div className="mb-5 flex items-baseline gap-4 border-b border-pearl/10 pb-3">
             <h3 className="font-serif text-xl leading-tight text-pearl md:text-2xl">Other</h3>
@@ -210,6 +228,7 @@ export function PaperShelf({ papers }: { papers: Paper[] }) {
           </ol>
         </section>
       ) : null}
+      </div>
     </div>
   );
 }

@@ -25,7 +25,8 @@ async function resolveAndDownload(slug: string, kind: Kind, router: ReturnType<t
       return null;
     }
     if (ex instanceof ApiError && ex.status === 402) {
-      router.push("/checkout?plan=pro-monthly");
+      // The server names the tier this slug needs (Plus vs Pro) — honour it.
+      router.push(`/checkout?plan=${ex.requiredPlan ?? "pro-monthly"}`);
       return null;
     }
     return ex instanceof ApiError ? ex.message : "The platform API is unreachable.";

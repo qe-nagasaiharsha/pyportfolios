@@ -55,6 +55,9 @@ class Settings(BaseSettings):
     # site into the vault — the API is the only way users obtain these files.
     content_notebooks_dir: str = "../vault/notebooks"
     content_bundles_dir: str = "../vault/bundles"
+    # PDFs used to ship in the static site (public); they moved here so the API
+    # can gate them (research notes are a Pro-tier perk — see content_access).
+    content_pdfs_dir: str = "../vault/pdfs"
 
     # Email backend: "console" (default; DEV ONLY, logs emails via logging)
     # or "smtp" (requires the SMTP_* settings below).

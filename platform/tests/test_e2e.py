@@ -20,7 +20,10 @@ from app.main import app
 from app.payments.mock import CARD_DECLINE, CARD_SUCCESS, mock_provider
 from app.payments.stripe_adapter import verify_stripe_signature
 
-NOTEBOOK_SLUG = "momentum-alpha"
+NOTEBOOK_SLUG = "momentum-alpha"  # standard library — Plus ($29) and up
+SAMPLE_SLUG = "brownian-motion"  # a free sample tutorial — any signed-in user
+PRO_ONLY_SLUG = "black-litterman"  # advanced/scholarly set — Pro ($79) only
+CONTENT_SLUGS = (NOTEBOOK_SLUG, SAMPLE_SLUG, PRO_ONLY_SLUG)
 NOTEBOOK_BODY = json.dumps({"cells": [], "nbformat": 4, "nbformat_minor": 5})
 
 PASSWORD = "s3cure-pass!"
@@ -30,12 +33,19 @@ PASSWORD = "s3cure-pass!"
 def client(tmp_path, monkeypatch):
     db_path = tmp_path / "test.db"
     notebooks = tmp_path / "notebooks"
-    notebooks.mkdir()
-    (notebooks / f"{NOTEBOOK_SLUG}.ipynb").write_text(NOTEBOOK_BODY, encoding="utf-8")
+    bundles = tmp_path / "bundles"
+    pdfs = tmp_path / "pdfs"
+    for d in (notebooks, bundles, pdfs):
+        d.mkdir()
+    for slug in CONTENT_SLUGS:
+        (notebooks / f"{slug}.ipynb").write_text(NOTEBOOK_BODY, encoding="utf-8")
+        (bundles / f"{slug}.zip").write_bytes(b"PK\x03\x04stub-bundle")
+        (pdfs / f"{slug}.pdf").write_bytes(b"%PDF-1.4 stub")
 
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{db_path.as_posix()}")
     monkeypatch.setenv("CONTENT_NOTEBOOKS_DIR", str(notebooks))
-    monkeypatch.setenv("CONTENT_BUNDLES_DIR", str(tmp_path / "bundles"))
+    monkeypatch.setenv("CONTENT_BUNDLES_DIR", str(bundles))
+    monkeypatch.setenv("CONTENT_PDFS_DIR", str(pdfs))
     monkeypatch.setenv("PAYMENT_PROVIDER", "mock")
     get_settings.cache_clear()
     mock_provider._checkouts.clear()
@@ -66,6 +76,55 @@ def buy(client: TestClient, plan_code: str, card: str) -> tuple[int, dict]:
         json={"card_number": card},
     )
     return r2.status_code, r2.json()
+
+
+# ---------------------------------------------------------------------------
+# Per-tier content access (mirrors the pricing copy / content_access.py):
+#   Basic (starter): the 4 samples only (notebook, bundle, PDF)
+#   Plus  (pro):     all standard notebooks/bundles; sample PDFs only
+#   Pro   (premium): everything, incl. Pro-only notebooks and all PDFs
+# ---------------------------------------------------------------------------
+
+def _required_plan(client: TestClient, path: str) -> str:
+    r = client.get(path)
+    assert r.status_code == 402, f"{path} -> {r.status_code}, expected 402"
+    return r.json()["detail"]["required_plan"]
+
+
+def test_content_tiering_matrix(client):
+    register(client, "tier@example.com", "Tier")
+
+    # --- Basic / starter -----------------------------------------------------
+    assert client.get(f"/api/content/notebooks/{SAMPLE_SLUG}").status_code == 200
+    assert client.get(f"/api/content/bundles/{SAMPLE_SLUG}").status_code == 200
+    assert client.get(f"/api/content/pdfs/{SAMPLE_SLUG}").status_code == 200
+    # Standard library needs Plus; Pro-only + non-sample PDFs need Pro.
+    assert _required_plan(client, f"/api/content/notebooks/{NOTEBOOK_SLUG}") == "pro-monthly"
+    assert _required_plan(client, f"/api/content/notebooks/{PRO_ONLY_SLUG}") == "premium-monthly"
+    assert _required_plan(client, f"/api/content/pdfs/{NOTEBOOK_SLUG}") == "premium-monthly"
+
+    # --- Plus / pro ----------------------------------------------------------
+    status, body = buy(client, "pro-monthly", CARD_SUCCESS)
+    assert status == 200, body
+    assert client.get(f"/api/content/notebooks/{NOTEBOOK_SLUG}").status_code == 200
+    assert client.get(f"/api/content/bundles/{NOTEBOOK_SLUG}").status_code == 200
+    assert client.get(f"/api/content/notebooks/{SAMPLE_SLUG}").status_code == 200
+    # Pro-only content and the research-note PDFs still need premium.
+    assert _required_plan(client, f"/api/content/notebooks/{PRO_ONLY_SLUG}") == "premium-monthly"
+    assert _required_plan(client, f"/api/content/pdfs/{NOTEBOOK_SLUG}") == "premium-monthly"
+    assert client.get(f"/api/content/pdfs/{SAMPLE_SLUG}").status_code == 200  # sample still free
+
+    # --- Pro / premium (upgrade) --------------------------------------------
+    status, body = buy(client, "premium-monthly", CARD_SUCCESS)
+    assert status == 200, body
+    assert client.get(f"/api/content/notebooks/{PRO_ONLY_SLUG}").status_code == 200
+    assert client.get(f"/api/content/pdfs/{NOTEBOOK_SLUG}").status_code == 200
+    assert client.get(f"/api/content/pdfs/{PRO_ONLY_SLUG}").status_code == 200
+
+
+def test_pdf_requires_auth(client):
+    # Signed-out: even a free-sample PDF requires an account (Basic = sign-up).
+    assert client.get(f"/api/content/pdfs/{SAMPLE_SLUG}").status_code == 401
 
 
 # ---------------------------------------------------------------------------

@@ -10,9 +10,37 @@
 const BASE = process.env.NEXT_PUBLIC_API_BASE ?? "/api";
 
 export class ApiError extends Error {
-  constructor(public status: number, message: string) {
+  /** For 402s, the plan_code to upsell (e.g. "premium-monthly"), when the
+      server tells us which tier the blocked download needs. */
+  requiredPlan?: string;
+  constructor(public status: number, message: string, requiredPlan?: string) {
     super(message);
+    this.requiredPlan = requiredPlan;
   }
+}
+
+/** Build an ApiError from a non-OK response, parsing FastAPI's `detail`, which
+    may be a string, a validation array, or an object {message, required_plan}
+    (the content gate uses the last form). */
+async function errorFrom(res: Response): Promise<ApiError> {
+  let message = res.statusText;
+  let requiredPlan: string | undefined;
+  try {
+    const body = (await res.json()) as {
+      detail?: string | { msg?: string }[] | { message?: string; required_plan?: string };
+    };
+    const d = body.detail;
+    if (typeof d === "string") message = d;
+    else if (Array.isArray(d)) {
+      if (d[0]?.msg) message = d[0].msg!;
+    } else if (d && typeof d === "object") {
+      if (d.message) message = d.message;
+      requiredPlan = d.required_plan;
+    }
+  } catch {
+    /* non-JSON error body */
+  }
+  return new ApiError(res.status, message, requiredPlan);
 }
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
@@ -21,17 +49,7 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
     headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
     ...init,
   });
-  if (!res.ok) {
-    let detail = res.statusText;
-    try {
-      const body = (await res.json()) as { detail?: string | { msg?: string }[] };
-      if (typeof body.detail === "string") detail = body.detail;
-      else if (Array.isArray(body.detail) && body.detail[0]?.msg) detail = body.detail[0].msg!;
-    } catch {
-      /* non-JSON error body */
-    }
-    throw new ApiError(res.status, detail);
-  }
+  if (!res.ok) throw await errorFrom(res);
   return (await res.json()) as T;
 }
 
@@ -93,16 +111,23 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ card_number: card.number }),
     }),
-  /** Gated download — returns a Blob (402 when not entitled). */
+  /** Gated notebook download — returns a Blob; throws ApiError (401 signed-out,
+      402 not entitled, with .requiredPlan set to the tier to upsell). */
   notebook: async (slug: string): Promise<Blob> => {
     const res = await fetch(`${BASE}/content/notebooks/${slug}`, { credentials: "include" });
-    if (!res.ok) throw new ApiError(res.status, res.status === 402 ? "Pro subscription required" : res.statusText);
+    if (!res.ok) throw await errorFrom(res);
     return res.blob();
   },
   /** Gated run-anywhere ZIP bundle (notebook + launchers). */
   bundle: async (slug: string): Promise<Blob> => {
     const res = await fetch(`${BASE}/content/bundles/${slug}`, { credentials: "include" });
-    if (!res.ok) throw new ApiError(res.status, res.status === 402 ? "Pro subscription required" : res.statusText);
+    if (!res.ok) throw await errorFrom(res);
+    return res.blob();
+  },
+  /** Gated typeset research-note PDF — free for the 4 samples, otherwise Pro. */
+  pdf: async (slug: string): Promise<Blob> => {
+    const res = await fetch(`${BASE}/content/pdfs/${slug}`, { credentials: "include" });
+    if (!res.ok) throw await errorFrom(res);
     return res.blob();
   },
   earlyAccess: (email: string) =>

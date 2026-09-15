@@ -181,13 +181,25 @@ def record_failed_payment(
     db.commit()
 
 
+def user_tier(db: Session, user_id: int) -> str:
+    """Resolve the access tier for gating: "starter" | "pro" | "premium".
+
+    A single source of truth used by both the entitlements payload and the
+    per-slug content gate (routes/content.py via content_access)."""
+    sub = get_subscription(db, user_id)
+    if (
+        sub is not None
+        and effective_status(sub) == "active"
+        and sub.plan_code in PAID_PLAN_CODES
+    ):
+        return "premium" if sub.plan_code in PREMIUM_PLAN_CODES else "pro"
+    return "starter"
+
+
 def entitlements_for(db: Session, user_id: int) -> dict:
     """Tier + feature flags for client-side gating (server routes still
     enforce independently — see routes/content.py)."""
-    sub = get_subscription(db, user_id)
-    tier = "starter"
-    if sub is not None and effective_status(sub) == "active" and sub.plan_code in PAID_PLAN_CODES:
-        tier = "premium" if sub.plan_code in PREMIUM_PLAN_CODES else "pro"
+    tier = user_tier(db, user_id)
 
     features = ["foundations-module", "backtests-5-per-month", "community-forum"]
     if tier in ("pro", "premium"):

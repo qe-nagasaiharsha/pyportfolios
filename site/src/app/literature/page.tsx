@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BOOK_GROUPS, PAPERS, PAPER_RECS, BOOK_COUNT, PAPER_REC_COUNT } from "@/lib/literature";
+import { BOOK_GROUPS, PAPER_RECS, BOOK_COUNT, PAPER_REC_COUNT } from "@/lib/literature";
 import { LiteratureTabs } from "@/components/landing/LiteratureTabs";
 import { ArticleNav } from "@/components/article/ArticleNav";
 import { Lightbox } from "@/components/landing/Lightbox";
@@ -40,9 +40,9 @@ export default function LiteraturePage() {
           </div>
         </section>
 
-        {/* books + papers, as tabs (Papers empty for now) */}
+        {/* books + papers, as tabs */}
         <section id="library" className="scroll-mt-20 py-12 md:py-16">
-          <LiteratureTabs groups={BOOK_GROUPS} papers={PAPER_RECS} landmarkPapers={PAPERS} />
+          <LiteratureTabs groups={BOOK_GROUPS} papers={PAPER_RECS} />
         </section>
       </main>
 

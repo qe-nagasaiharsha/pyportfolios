@@ -3,6 +3,8 @@
    Logos are taken from the brand guidelines so they match exactly; each sits on
    a white chip, never recoloured, given room. */
 
+import { LogoChip } from "./LogoChip";
+
 interface Exch {
   name: string;
   slug: string; // → /public/logos/exchanges/<slug>.png
@@ -57,22 +59,7 @@ export function ExchangeRow() {
           </div>
           <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 lg:grid-cols-6">
             {r.venues.map((e) => (
-              <div
-                key={e.slug}
-                className="flex h-16 items-center justify-center rounded-sm border border-pearl/10 bg-white px-3 transition-transform duration-300 hover:-translate-y-0.5"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`/logos/exchanges/${e.slug}.png`}
-                  alt={`${e.name} logo`}
-                  className="max-h-9 w-auto max-w-[88%] cursor-zoom-in object-contain"
-                  loading="lazy"
-                  data-zoom
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Enlarge ${e.name} logo`}
-                />
-              </div>
+              <LogoChip key={e.slug} src={`/logos/exchanges/${e.slug}.png`} name={e.name} />
             ))}
           </div>
         </div>

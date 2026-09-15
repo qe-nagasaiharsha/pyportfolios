@@ -6,6 +6,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { LogoChip } from "./LogoChip";
 
 const SECTORS = [
   "Energy", "Healthcare", "Industrials", "Utilities", "IT", "Materials",
@@ -64,22 +65,9 @@ export function SectorsIndices() {
       <div>
         <GroupLabel>Index Providers</GroupLabel>
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-          {INDEX_PROVIDERS.map((p) => {
-            const logo = providerLogo(p.slug);
-            return (
-              <div
-                key={p.slug}
-                className="flex h-16 items-center justify-center rounded-sm border border-pearl/10 bg-white px-4 text-center transition-transform duration-300 hover:-translate-y-0.5"
-              >
-                {logo ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img src={logo} alt={`${p.name} logo`} className="max-h-9 w-auto max-w-[88%] cursor-zoom-in object-contain" loading="lazy" data-zoom role="button" tabIndex={0} aria-label={`Enlarge ${p.name} logo`} />
-                ) : (
-                  <span className="text-sm font-semibold tracking-tight text-anthracite">{p.name}</span>
-                )}
-              </div>
-            );
-          })}
+          {INDEX_PROVIDERS.map((p) => (
+            <LogoChip key={p.slug} src={providerLogo(p.slug)} name={p.name} />
+          ))}
         </div>
       </div>
 

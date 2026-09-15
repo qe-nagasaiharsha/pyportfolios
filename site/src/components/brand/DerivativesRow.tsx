@@ -6,6 +6,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { LogoChip } from "./LogoChip";
 
 const VENUES: { name: string; slug: string }[] = [
   { name: "CME", slug: "cme" },
@@ -35,32 +36,11 @@ export function DerivativesRow() {
         <span className="t-mono text-[0.68rem] uppercase tracking-[0.22em] text-aqua/80">Futures, Options &amp; Derivatives</span>
         <span className="h-px flex-1 bg-pearl/10" />
       </div>
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-5">
-        {VENUES.map((v) => {
-          const logo = venueLogo(v.slug);
-          return (
-            <div
-              key={v.slug}
-              className="flex h-20 w-full items-center justify-center rounded-sm border border-pearl/10 bg-white px-4 transition-transform duration-300 hover:-translate-y-0.5"
-            >
-              {logo ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={logo}
-                  alt={`${v.name} logo`}
-                  className="max-h-10 w-auto max-w-[86%] cursor-zoom-in object-contain"
-                  loading="lazy"
-                  data-zoom
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Enlarge ${v.name} logo`}
-                />
-              ) : (
-                <span className="text-sm font-semibold tracking-tight text-anthracite">{v.name}</span>
-              )}
-            </div>
-          );
-        })}
+      {/* same grid as the stock exchanges above, so the two rows of chips line up */}
+      <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 lg:grid-cols-6">
+        {VENUES.map((v) => (
+          <LogoChip key={v.slug} src={venueLogo(v.slug)} name={v.name} />
+        ))}
       </div>
     </div>
   );

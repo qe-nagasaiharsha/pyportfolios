@@ -373,8 +373,10 @@ export function Pricing() {
           </p>
         </div>
 
-        {/* cards — each paid one carries its own billing switch, top right */}
-        <div className="mt-12 grid items-start gap-6 md:grid-cols-3">
+        {/* cards — each paid one carries its own billing switch, top right.
+            No items-start: the grid stretches all three to the tallest, so
+            the frames line up top and bottom whatever each list holds. */}
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
           {TIERS.map((t, i) => {
             const ctaState: "action" | "current" | "included" =
               showOwnership && t.rank < owned ? "included"

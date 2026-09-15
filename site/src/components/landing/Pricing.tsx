@@ -365,16 +365,12 @@ export function Pricing() {
         >
           Choose your <span className="text-aqua">access.</span>
         </h3>
-        <div data-reveal className="mt-5 max-w-2xl space-y-1 t-mono text-[0.78rem] leading-relaxed text-mist">
-          <p>
-            <strong className="font-semibold text-pearl">Basic</strong> features 4 tutorials for free — one from each category.
-          </p>
-          <p>
-            <strong className="font-semibold text-pearl">Plus</strong> opens the full library of notebooks.
-          </p>
-          <p>
-            <strong className="font-semibold text-pearl">Pro</strong> adds advanced contents, formatted PDFs, the instrument universe and early access.
-          </p>
+        {/* Plain sans body copy, like every other section intro on the page —
+            the tier names are not emphasised. */}
+        <div data-reveal className="mt-5 max-w-2xl space-y-1 font-sans text-lg leading-relaxed text-mist">
+          <p>Basic features 4 tutorials for free — one from each category.</p>
+          <p>Plus opens the full library of notebooks.</p>
+          <p>Pro adds advanced contents, formatted PDFs, the instrument universe and early access.</p>
         </div>
 
         {/* cards — each paid one carries its own billing switch, top right.

@@ -27,6 +27,7 @@ export function CategoryNavItem({
 }) {
   const slug = href.split("/").pop() as CategorySlug;
   const posts = articlesByCategory(slug);
+  const words = label.split(" ");
 
   return (
     <li className="group relative">
@@ -34,8 +35,20 @@ export function CategoryNavItem({
         href={href}
         className="block text-center font-sans font-black text-[0.68rem] leading-[1.05] tracking-[0.1em] text-pearl/85 transition-colors duration-200 hover:text-pearl"
       >
-        {label.split(" ").map((word) => (
-          <span key={word} className="block">{word}</span>
+        {/* The category's roman numeral leads the first line, the way the
+            article eyebrow reads "I · Quant Finance Foundations". Same face,
+            size and weight as the words, but solid white so it stands out from
+            the slightly dimmed label. */}
+        {words.map((word, i) => (
+          <span key={word} className="block">
+            {i === 0 ? (
+              <>
+                <span className="text-pearl">{CATEGORIES[slug].numeral}</span>
+                {" · "}
+              </>
+            ) : null}
+            {word}
+          </span>
         ))}
       </Link>
       {/* Panel is sized so four articles fit without scrolling — the common case

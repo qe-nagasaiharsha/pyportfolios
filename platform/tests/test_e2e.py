@@ -127,6 +127,17 @@ def test_pdf_requires_auth(client):
     assert client.get(f"/api/content/pdfs/{SAMPLE_SLUG}").status_code == 401
 
 
+def test_content_catalog(client):
+    # Public hint used by the account UI to badge Pro-only rows.
+    r = client.get("/api/content/catalog")
+    assert r.status_code == 200
+    body = r.json()
+    assert SAMPLE_SLUG in body["free_samples"]
+    assert PRO_ONLY_SLUG in body["pro_only"]
+    assert NOTEBOOK_SLUG not in body["free_samples"]
+    assert NOTEBOOK_SLUG not in body["pro_only"]
+
+
 # ---------------------------------------------------------------------------
 # Happy path: register -> login -> plans -> buy pro-monthly -> gated content
 # -> cancel at period end

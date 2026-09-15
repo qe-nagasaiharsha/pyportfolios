@@ -24,13 +24,24 @@ from sqlalchemy.orm import Session
 from .. import services
 from ..auth import get_current_user
 from ..config import get_settings
-from ..content_access import download_decision
+from ..content_access import FREE_SAMPLE_SLUGS, PRO_ONLY_SLUGS, download_decision
 from ..db import get_db
 from ..models import User
 
 router = APIRouter(prefix="/api/content", tags=["content"])
 
 SLUG_RE = re.compile(r"^[a-z0-9-]+$")
+
+
+@router.get("/catalog")
+def content_catalog() -> dict:
+    """Public classification so the client can show accurate per-item lock state
+    (e.g. badge the Pro-only notebooks in the account library). This is a hint
+    only — the download routes remain the enforcement point."""
+    return {
+        "free_samples": sorted(FREE_SAMPLE_SLUGS),
+        "pro_only": sorted(PRO_ONLY_SLUGS),
+    }
 
 
 def _gated_file(

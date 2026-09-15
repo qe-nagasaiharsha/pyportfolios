@@ -92,6 +92,9 @@ export interface CheckoutSession {
 export const api = {
   /** Liveness + which payment provider is active ("mock" | "stripe"). */
   health: () => req<{ ok: boolean; provider: string }>("/health"),
+  /** Which slugs are free samples vs Pro-only — a hint for per-item lock state
+      (enforcement is still server-side on the download routes). */
+  contentCatalog: () => req<{ free_samples: string[]; pro_only: string[] }>("/content/catalog"),
   register: (email: string, password: string, name?: string) =>
     req<Me>("/auth/register", { method: "POST", body: JSON.stringify({ email, password, name }) }),
   login: (email: string, password: string) =>

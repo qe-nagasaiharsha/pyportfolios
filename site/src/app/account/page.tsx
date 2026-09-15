@@ -38,6 +38,22 @@ function planLabel(code: string): string {
   return PLAN_LABEL[code] ?? code;
 }
 
+/* Mirror of the backend notebook/bundle gate (content_access.download_decision),
+   used only to show accurate per-row lock state — enforcement stays server-side.
+   Until the catalog hint loads we assume accessible, so locks never flash in. */
+function notebookAccess(
+  slug: string,
+  tier: string | undefined,
+  cat: { free_samples: string[]; pro_only: string[] } | null,
+): { ok: boolean; plan?: string; needs?: string } {
+  if (!cat) return { ok: true };
+  const rank = tier === "premium" ? 2 : tier === "pro" ? 1 : 0;
+  if (cat.free_samples.includes(slug)) return { ok: true };
+  if (cat.pro_only.includes(slug))
+    return rank >= 2 ? { ok: true } : { ok: false, plan: "premium-monthly", needs: "Pro" };
+  return rank >= 1 ? { ok: true } : { ok: false, plan: "pro-monthly", needs: "Plus" };
+}
+
 function AuthForms({ onAuthed }: { onAuthed: (me: Me) => void }) {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -207,13 +223,19 @@ function ChangePassword() {
 function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
   const [sub, setSub] = useState<SubscriptionInfo | null>(null);
   const [ent, setEnt] = useState<Entitlements | null>(null);
+  const [cat, setCat] = useState<{ free_samples: string[]; pro_only: string[] } | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const refresh = useCallback(async () => {
-    const [s, e] = await Promise.all([api.subscription().catch(() => null), api.entitlements().catch(() => null)]);
+    const [s, e, c] = await Promise.all([
+      api.subscription().catch(() => null),
+      api.entitlements().catch(() => null),
+      api.contentCatalog().catch(() => null),
+    ]);
     setSub(s);
     setEnt(e);
+    setCat(c);
   }, []);
 
   useEffect(() => { void refresh(); }, [refresh]);
@@ -336,24 +358,36 @@ function MemberArea({ me, onSignedOut }: { me: Me; onSignedOut: () => void }) {
                 <p className="truncate text-[0.95rem] text-pearl">{a.title}</p>
                 <p className="t-mono text-[0.66rem] text-steel">{a.notebook}</p>
               </div>
-              {/* Buttons always render; the backend gate resolves at click —
-                  entitled → download, otherwise → the right plan's checkout.
-                  Keeps this list consistent with the article-page downloads and
-                  lets free members grab the 4 samples. */}
-              <span className="flex shrink-0 items-center gap-4">
-                <button
-                  onClick={() => download(a.slug, "bundle")}
-                  className="t-mono text-[0.66rem] uppercase tracking-[0.14em] text-aqua transition-transform hover:translate-x-0.5"
-                >
-                  Bundle ↓
-                </button>
-                <button
-                  onClick={() => download(a.slug, "notebook")}
-                  className="t-mono text-[0.66rem] uppercase tracking-[0.14em] text-steel hover:text-aqua"
-                >
-                  .ipynb ↓
-                </button>
-              </span>
+              {/* Accessible rows show download buttons; the rest show the tier
+                  they need (linking to that plan's checkout), so the list lines
+                  up with the "12 of 16" header. Enforcement is still server-side
+                  — the buttons also resolve at click for the accessible ones. */}
+              {(() => {
+                const acc = notebookAccess(a.slug, ent?.tier, cat);
+                return acc.ok ? (
+                  <span className="flex shrink-0 items-center gap-4">
+                    <button
+                      onClick={() => download(a.slug, "bundle")}
+                      className="t-mono text-[0.66rem] uppercase tracking-[0.14em] text-aqua transition-transform hover:translate-x-0.5"
+                    >
+                      Bundle ↓
+                    </button>
+                    <button
+                      onClick={() => download(a.slug, "notebook")}
+                      className="t-mono text-[0.66rem] uppercase tracking-[0.14em] text-steel hover:text-aqua"
+                    >
+                      .ipynb ↓
+                    </button>
+                  </span>
+                ) : (
+                  <Link
+                    href={`/checkout?plan=${acc.plan}`}
+                    className="shrink-0 rounded-full border border-pearl/20 px-2.5 py-1 t-mono text-[0.62rem] uppercase tracking-[0.14em] text-steel/70 transition-colors hover:border-aqua/50 hover:text-aqua"
+                  >
+                    {acc.needs} ↑
+                  </Link>
+                );
+              })()}
             </li>
           ))}
         </ul>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BOOK_GROUPS, PAPERS, PAPER_RECS, BOOK_COUNT, PAPER_COUNT } from "@/lib/literature";
+import { BOOK_GROUPS, PAPERS, PAPER_RECS, BOOK_COUNT, PAPER_REC_COUNT } from "@/lib/literature";
 import { LiteratureTabs } from "@/components/landing/LiteratureTabs";
 import { ArticleNav } from "@/components/article/ArticleNav";
 import { Lightbox } from "@/components/landing/Lightbox";
@@ -10,8 +10,6 @@ export const metadata: Metadata = {
   description:
     "The canon of quantitative finance — the essential books and the landmark papers that built the field, from Markowitz (1952) to Hierarchical Risk Parity.",
 };
-
-const span = PAPERS.length ? new Date().getFullYear() - PAPERS[0].year : 75;
 
 export default function LiteraturePage() {
   return (
@@ -25,22 +23,19 @@ export default function LiteraturePage() {
           <div className="relative mx-auto max-w-6xl px-6 py-24 md:py-32 lg:px-8">
             <div className="flex items-center gap-4">
               <span className="h-px w-10 bg-pearl/25" aria-hidden="true" />
-              <p className="t-eyebrow text-pearl">Literature · Books &amp; landmark papers</p>
+              <p className="t-eyebrow text-pearl">Literature</p>
             </div>
             <h1 className="t-display mt-8 max-w-3xl text-pearl">
-              The canon<span className="text-aqua">.</span>
+              Books &amp; Landmark Papers
             </h1>
             <p className="mt-8 max-w-xl text-lg leading-relaxed text-mist">
-              The books worth owning and the papers that built quantitative finance — from Markowitz&apos;s
-              1952 mean–variance frontier to the methods behind today&apos;s research. Where a paper has a
-              case study on this site, it links straight through.
+              Key quant finance books and academic papers that shaped the discipline — from
+              Markowitz&apos;s (1952) to current research.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 t-mono text-xs uppercase tracking-[0.18em] text-steel">
               <span>{BOOK_COUNT} books</span>
               <span className="text-aqua/50" aria-hidden="true">·</span>
-              <span>{PAPER_COUNT} landmark papers</span>
-              <span className="text-aqua/50" aria-hidden="true">·</span>
-              <span className="text-aqua">{span} years</span>
+              <span>{PAPER_REC_COUNT} landmark papers</span>
             </div>
           </div>
         </section>

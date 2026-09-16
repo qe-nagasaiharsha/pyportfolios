@@ -12,7 +12,9 @@
 # button on the Actions tab triggers it on demand, e.g. the day a new WEO is out.
 #
 # Note: GitHub only fires `schedule` from the repository's default branch, so a
-# copy of this file must live there for the daily run to happen.
+# copy of this file must live there for the daily run to happen. The `push`
+# trigger needs no such copy: it runs from whichever branch was pushed, so a
+# change to the script or to this file is exercised the moment it lands.
 
 name: Update GDP figures
 
@@ -20,6 +22,11 @@ on:
   schedule:
     - cron: "0 6 * * *" # 06:00 UTC daily
   workflow_dispatch:
+  push:
+    branches: ["11.0", "main"]
+    paths:
+      - ".github/workflows/update-gdp.yml"
+      - "site/scripts/update-gdp.mjs"
 
 permissions:
   contents: write

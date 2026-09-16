@@ -41,9 +41,19 @@ const COUNTRIES = {
 const API = "https://www.imf.org/external/datamapper/api/v1";
 const INDICATOR = "NGDPD"; // GDP, current prices, billions of USD
 
+/* A named user-agent: the IMF sits behind a CDN that may refuse the bare
+   "node" default, and it tells them who is asking. */
+const HEADERS = {
+  accept: "application/json",
+  "user-agent": "pyportfolios-gdp-refresh/1.0 (+https://pyportfolios.com; GitHub Actions)",
+};
+
 async function getJson(url) {
-  const res = await fetch(url, { headers: { accept: "application/json" }, signal: AbortSignal.timeout(30_000) });
-  if (!res.ok) throw new Error(`${url} → HTTP ${res.status}`);
+  const res = await fetch(url, { headers: HEADERS, signal: AbortSignal.timeout(30_000) });
+  if (!res.ok) {
+    const body = (await res.text().catch(() => "")).slice(0, 200).replace(/\s+/g, " ");
+    throw new Error(`${url} → HTTP ${res.status}${body ? ` (${body})` : ""}`);
+  }
   return res.json();
 }
 
@@ -102,6 +112,10 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error(`update-gdp failed, file left unchanged: ${err.message}`);
+  const msg = `update-gdp failed, file left unchanged: ${err.message}`;
+  console.error(msg);
+  /* On GitHub Actions this line becomes an annotation on the run, which is
+     visible on a public repo without signing in — the step log itself is not. */
+  if (process.env.GITHUB_ACTIONS) console.log(`::error::${msg}`);
   process.exit(1);
 });

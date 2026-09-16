@@ -19,15 +19,28 @@
    So the map stays a server component and is passed in as `children`. React
    renders those children on the server and hands this component the finished
    node, which is why the paths do not follow it into the bundle. The listener
-   is delegated from the wrapper, and the data comes off the hovered <path>'s
-   own data-market/data-group/data-gdp attributes — set by the generator — so
+   is delegated from the wrapper, and the name and group come off the hovered
+   <path>'s own data-market/data-group attributes — set by the generator — so
    there is no market list duplicated on this side either.
+
+   The GDP figure is the one thing that changes on its own: the IMF revises its
+   World Economic Outlook every April and October. So it is not baked into the
+   paths but read from src/data/gdp.json, keyed by the same display name, which
+   scripts/update-gdp.mjs refreshes from the IMF API on a daily schedule (see
+   .github/workflows/update-gdp.yml). The path's data-gdp is only a fallback
+   for a name the JSON does not know. The footnote names the WEO release the
+   numbers came from, so it can never claim a vintage the data is not.
 
    Unshaded countries carry no data-market and are deliberately silent, exactly
    as the earlier ECharts version was: the map covers fifteen economies and
    should not appear to know anything about the rest. */
 
 import { useCallback, useRef, useState } from "react";
+import gdpData from "@/data/gdp.json";
+
+/* "World Economic Outlook (April 2026)" → "IMF WEO April 2026 · 2026 est." */
+const GDP_NOTE = `IMF WEO ${gdpData.source.replace(/^World Economic Outlook\s*\((.+)\)$/, "$1")} · ${gdpData.year} est.`;
+const GDP: Record<string, number> = gdpData.values;
 
 interface Hovered {
   name: string;
@@ -52,7 +65,11 @@ export function MapHover({ children }: { children: React.ReactNode }) {
     setHit({
       name: target.getAttribute("data-market") || "",
       group: target.getAttribute("data-group") || "",
-      gdp: target.getAttribute("data-gdp") || "",
+      gdp: (() => {
+        const name = target.getAttribute("data-market") || "";
+        const tn = GDP[name];
+        return typeof tn === "number" ? tn.toFixed(2) : target.getAttribute("data-gdp") || "";
+      })(),
       x: e.clientX - r.left,
       y: e.clientY - r.top,
     });
@@ -88,7 +105,7 @@ export function MapHover({ children }: { children: React.ReactNode }) {
             GDP <span className="font-semibold text-pearl">${hit.gdp} tn</span>
           </p>
           <p className="mt-0.5 t-mono text-[0.56rem] uppercase tracking-[0.12em] text-pearl/40">
-            IMF WEO 2026 est.
+            {GDP_NOTE}
           </p>
         </div>
       ) : null}

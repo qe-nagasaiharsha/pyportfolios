@@ -63,34 +63,44 @@ C_BORDER = "#ffffff"
 HATCH_PERIOD = 12.4                 # perpendicular to the stripes
 HATCH_DARK = 0.75                   # duty cycle measured across Russia
 
-# The fifteen: (GeoJSON name, display name, nominal GDP in USD trillions).
+# The fifteen: (GeoJSON name, display name).
 #
 # The first entry must match the GeoJSON feature name, which is not always the
-# display name — "United States of America". GDP is IMF World Economic Outlook
-# 2026, which is a projection rather than an outturn; that is why every surface
-# showing these says "IMF WEO 2026 est." rather than stating them as settled.
+# display name — "United States of America".
 #
-# These ride onto the shaded paths as data attributes, so the hover tooltip
-# reads them straight off the DOM and needs no data module of its own.
+# GDP is no longer typed here. It lives in site/src/data/gdp.json, which
+# site/scripts/update-gdp.mjs refreshes from the IMF World Economic Outlook on
+# a daily schedule (.github/workflows/update-gdp.yml). The hover tooltip reads
+# that JSON directly, so the map does not need regenerating when the IMF
+# revises its numbers. The figure still rides onto each shaded path as
+# data-gdp — taken from the same JSON at generation time — purely as a fallback.
 DEVELOPED = [
-    ("United States of America", "United States", 32.38),
-    ("Germany", "Germany", 5.45),
-    ("Japan", "Japan", 4.38),
-    ("United Kingdom", "United Kingdom", 4.26),
-    ("France", "France", 3.60),
-    ("Italy", "Italy", 2.74),
-    ("Canada", "Canada", 2.51),
-    ("Australia", "Australia", 2.12),
-    ("Spain", "Spain", 2.09),
-    ("South Korea", "South Korea", 1.93),
+    ("United States of America", "United States"),
+    ("Germany", "Germany"),
+    ("Japan", "Japan"),
+    ("United Kingdom", "United Kingdom"),
+    ("France", "France"),
+    ("Italy", "Italy"),
+    ("Canada", "Canada"),
+    ("Australia", "Australia"),
+    ("Spain", "Spain"),
+    ("South Korea", "South Korea"),
 ]
 EMERGING = [
-    ("China", "China", 20.85),
-    ("India", "India", 4.15),
-    ("Russia", "Russia", 2.66),
-    ("Brazil", "Brazil", 2.64),
-    ("Mexico", "Mexico", 2.12),
+    ("China", "China"),
+    ("India", "India"),
+    ("Russia", "Russia"),
+    ("Brazil", "Brazil"),
+    ("Mexico", "Mexico"),
 ]
+
+GDP_JSON = os.path.join(os.path.dirname(__file__), "..", "site", "src", "data", "gdp.json")
+
+
+def load_gdp():
+    """display name -> nominal GDP in USD trillions, from gdp.json."""
+    with open(GDP_JSON, encoding="utf-8") as f:
+        return json.load(f)["values"]
 
 
 def project(lon, lat):
@@ -209,10 +219,11 @@ def main():
 
     # geo name -> (fill, display name, group, gdp)
     fills = {}
-    for name, label, gdp in DEVELOPED:
-        fills[name] = (C_DEVELOPED, label, "Developed", gdp)
-    for name, label, gdp in EMERGING:
-        fills[name] = ("url(#wm-hatch)", label, "Emerging", gdp)
+    gdp = load_gdp()
+    for name, label in DEVELOPED:
+        fills[name] = (C_DEVELOPED, label, "Developed", gdp[label])
+    for name, label in EMERGING:
+        fills[name] = ("url(#wm-hatch)", label, "Emerging", gdp[label])
 
     # Every one of the fifteen must actually be found in the boundaries, or a
     # market would silently render unshaded and nobody would notice.
@@ -240,8 +251,9 @@ def main():
         lines.append('        <path d="%s" fill="%s" />' % (d, C_PLAIN))
     for name, d, info in marked:
         fill, label, group, gdp = info
-        # The tooltip reads these off the hovered node, so no data module is
-        # needed on the client and the 131 KB of path data stays server-rendered.
+        # The tooltip reads name and group off the hovered node; the GDP it
+        # takes from gdp.json, with data-gdp as its fallback. The 131 KB of
+        # path data stays server-rendered either way.
         lines.append(
             '        <path d="%s" fill="%s"\n'
             '          data-market="%s" data-group="%s" data-gdp="%.2f" />'

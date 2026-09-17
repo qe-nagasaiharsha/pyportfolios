@@ -1,22 +1,17 @@
-# Keeps the Geographies map's GDP figures current.
-#
-# Once a day this asks the IMF for the latest World Economic Outlook estimates
-# and, only if a number or the release name changed, commits the refreshed
-# site/src/data/gdp.json to the 11.0 branch. That push is what makes Vercel
-# rebuild, so the live map updates within minutes of the commit. A day with no
-# change makes no commit and no deploy.
-#
-# If the IMF API is unreachable the script exits non-zero without touching the
-# file: this run shows as failed (GitHub emails the repo owner), the site keeps
-# its last good numbers, and tomorrow's run tries again. The "Run workflow"
-# button on the Actions tab triggers it on demand, e.g. the day a new WEO is out.
-#
-# Note: GitHub only fires `schedule` from the repository's default branch, so a
-# copy of this file must live there for the daily run to happen. The `push`
-# trigger needs no such copy: it runs from whichever branch was pushed, so a
-# change to the script or to this file is exercised the moment it lands.
-
 name: Update GDP figures
+
+# WHERE THIS RUNS. GitHub only fires `schedule` from the default branch, so
+# this file lives on both main and 11.0 and the two copies must stay identical:
+# main's copy is the one that actually wakes up each morning, and it checks out
+# 11.0 to do the work. Edit one, copy it to the other.
+#
+# GitHub also switches off scheduled workflows on a repository that has had no
+# commits for 60 days (it emails a warning first). This repo is active; if it
+# ever goes quiet, re-enable it under Actions → this workflow → "Enable".
+#
+# `ref: "11.0"` below is the branch Vercel deploys. If production ever moves to
+# another branch, change it here, or the bot will keep updating a branch that
+# nobody ships.
 
 on:
   schedule:
@@ -30,6 +25,16 @@ on:
 
 permissions:
   contents: write
+  issues: write
+
+# One run at a time. A scheduled run and a push-triggered run landing together
+# would race on `git push`, and the loser would fail for no real reason.
+concurrency:
+  group: update-gdp
+  cancel-in-progress: false
+
+env:
+  ISSUE_TITLE: "GDP refresh is failing"
 
 jobs:
   update:
@@ -44,7 +49,12 @@ jobs:
           node-version: 22
 
       - name: Fetch the latest WEO estimates
-        run: node site/scripts/update-gdp.mjs
+        run: node site/scripts/update-gdp.mjs 2>&1 | tee refresh.log
+
+      # The script never writes invalid JSON, but the site build reads this
+      # file and a broken one would fail every deploy — cheap to be certain.
+      - name: Check the file still parses
+        run: node -e "JSON.parse(require('fs').readFileSync('site/src/data/gdp.json', 'utf8'))"
 
       - name: Commit if anything changed
         run: |
@@ -57,3 +67,33 @@ jobs:
           git add site/src/data/gdp.json
           git commit -m "Refresh the map's GDP figures from the IMF WEO"
           git push origin HEAD:11.0
+
+      # A failure that repeats every morning must be ONE open issue, not a
+      # daily email that becomes wallpaper. The first failure opens it, later
+      # ones add a comment, and the next success closes it. Found by title, so
+      # no label has to exist beforehand.
+      - name: Open or update the failure issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          reason=$(grep -m1 "update-gdp failed" refresh.log 2>/dev/null || echo "the workflow failed before the script reported anything")
+          body=$(printf '**%s**\n\nThe world map keeps its last good figures until this is fixed; nothing wrong is published.\n\nRun: %s\n\n```\n%s\n```' \
+                 "$(date -u +%Y-%m-%d)" "$RUN_URL" "$reason")
+          n=$(gh issue list --state open --search "\"$ISSUE_TITLE\" in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$n" ]; then
+            gh issue comment "$n" --body "$body"
+          else
+            gh issue create --title "$ISSUE_TITLE" --body "$body"
+          fi
+
+      - name: Close the failure issue on recovery
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          n=$(gh issue list --state open --search "\"$ISSUE_TITLE\" in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$n" ]; then
+            gh issue close "$n" --comment "Recovered: the refresh succeeded on $(date -u +%Y-%m-%d)."
+          fi

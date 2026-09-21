@@ -11,6 +11,8 @@ site/public/bundles/<slug>.zip containing:
     run-mac.command       double-click on macOS    (LF, executable bit set)
     run-linux.sh          double-click / bash on Linux (LF, executable bit)
     README.txt            what to do on each OS
+    TECHNICAL.txt         what the launcher actually does, and why — for the
+                          reader who wants to know before running anything
 
 Each launcher: checks Python, creates a local .venv next to the files,
 installs requirements into it, and opens the notebook in Jupyter Lab.
@@ -160,6 +162,108 @@ the data vendor, not your machine.
 """
 
 
+def technical(slug: str, reqs: list[str]) -> str:
+    """The companion to README.txt. README says what to click; this says what
+    happens when you do, so a cautious reader can check it before running
+    anything. Every statement here describes the launchers above — keep the
+    two in step if the launchers change."""
+    # The file table: the notebook's name is the slug, which can run to forty
+    # characters, so the description column is placed off the longest name
+    # rather than at a fixed offset. Continuation lines indent to match.
+    rows = [
+        (f"{slug}.ipynb", ["The notebook: the article's code, runnable end to end,",
+                           "with the explanation in Markdown cells between the code."]),
+        ("requirements.txt", ["The Python packages it needs, one per line. This is the",
+                              "only place the dependency list lives; the launchers read it."]),
+        ("run-windows.bat", ["Launcher for Windows (Windows line endings)."]),
+        ("run-mac.command", ["Launcher for macOS (Unix line endings, marked executable)."]),
+        ("run-linux.sh", ["Launcher for Linux (same script as the macOS one)."]),
+        ("README.txt", ["The one-page how-to."]),
+        ("TECHNICAL.txt", ["This file."]),
+    ]
+    width = max(len(name) for name, _ in rows) + 3
+    folder = "\n".join(
+        name.ljust(width) + lines[0] + "".join("\n" + " " * width + more for more in lines[1:])
+        for name, lines in rows
+    )
+    return f"""pyportfolios.com - technical notes for this bundle
+==================================================
+
+README.txt tells you what to click. This file tells you what that click
+does, where the numbers come from, and why the results should match the
+article. Nothing here is required reading to run the notebook.
+
+What is in the folder
+---------------------
+{folder}
+
+The three launchers are the same procedure written for three shells. You
+only ever need the one for your machine.
+
+What the launcher does, step by step
+------------------------------------
+1. Moves into this folder, so relative paths in the notebook resolve.
+2. Looks for Python on your PATH (python3 or python). Version 3.10 or
+   newer is needed. If none is found it says so and stops - it will not
+   install Python for you.
+3. Checks for a folder named .venv next to these files. If absent, it
+   creates one with  python -m venv .venv  - a private, self-contained
+   Python environment that lives only inside this folder.
+4. Activates that environment, upgrades pip inside it, and installs every
+   line of requirements.txt into it. Nothing is installed system-wide and
+   nothing you already have is touched. The first time this takes a few
+   minutes and needs an internet connection; after that the packages are
+   already present and the step is quick.
+5. Opens the notebook in Jupyter Lab. That starts a small local web server
+   and opens a browser tab pointing at it. The terminal window is that
+   server: closing it closes Jupyter. Nothing leaves your machine.
+
+Because step 3 checks before creating, the launcher is safe to run again
+and again: the second double-click skips straight to Jupyter. To start
+completely clean, delete the .venv folder and double-click once more.
+
+Where the data comes from
+-------------------------
+No market data is shipped in this bundle. The notebook downloads what it
+needs at run time through yfinance, which reads Yahoo Finance's public
+price history. That is why an internet connection is needed whenever a
+data cell runs, and why the first figures can take a moment to appear.
+
+The notebook fixes its tickers and date window in code, so it asks for
+the same series the article used. It does not use a paid data feed and
+needs no API key.
+
+Why the results match the article
+---------------------------------
+Two things can move a number between the author's run and yours.
+
+Randomness: any simulation in the notebook is seeded - default_rng(42) -
+so the random draws are the same sequence every time, on every machine.
+Monte-Carlo paths, bootstraps and the like reproduce exactly.
+
+Data: Yahoo occasionally restates adjusted closes (dividends, splits,
+corrections). If a figure differs from the article in the third decimal
+place, that is the data vendor revising history, not an error in your
+environment. Anything larger is worth a second look.
+
+What gets installed
+-------------------
+{chr(10).join("  - " + r for r in reqs)}
+
+Each is a mainstream, openly maintained package from PyPI, installed at
+whatever version pip resolves on the day. The notebook is written against
+the stable interfaces of these libraries, not pinned builds.
+
+If you would rather not use the launcher
+----------------------------------------
+Everything above is four commands, which README.txt lists under "Any OS,
+manually". The launcher exists so that someone who has never opened a
+terminal can still run the article; it adds nothing you cannot do by hand.
+
+(c) pyportfolios.com - where finance theory, coding & markets converge
+"""
+
+
 def build(slug: str) -> None:
     reqs = requirements_for(slug)
     OUT.mkdir(parents=True, exist_ok=True)
@@ -178,12 +282,19 @@ def build(slug: str) -> None:
         nb_info = zipfile.ZipInfo(f"{slug}/{slug}.ipynb", date_time=(2026, 7, 27, 0, 0, 0))
         nb_info.compress_type = zipfile.ZIP_DEFLATED
         nb_info.external_attr = 0o644 << 16
-        zf.writestr(nb_info, (NB_DIR / f"{slug}.ipynb").read_bytes())
+        # LF, whatever the checkout did. The repo stores the notebooks with LF
+        # but core.autocrlf=true hands them over as CRLF on Windows, and
+        # shipping raw disk bytes made the zip depend on the machine that ran
+        # this: 8 of the 20 committed bundles carried LF notebooks and 12
+        # carried CRLF, JSON-identical, bytes-different. Jupyter does not care
+        # either way; determinism does.
+        zf.writestr(nb_info, (NB_DIR / f"{slug}.ipynb").read_bytes().replace(b"\r\n", b"\n"))
         add(zf, "requirements.txt", "\n".join(reqs) + "\n", crlf=False, exe=False)
         add(zf, "run-windows.bat", bat(slug), crlf=True, exe=False)
         add(zf, "run-mac.command", sh(slug, mac=True), crlf=False, exe=True)
         add(zf, "run-linux.sh", sh(slug, mac=False), crlf=False, exe=True)
         add(zf, "README.txt", readme(slug, reqs), crlf=False, exe=False)
+        add(zf, "TECHNICAL.txt", technical(slug, reqs), crlf=False, exe=False)
     print(f"ok  {zpath.name}  ({zpath.stat().st_size / 1024:.0f} KB, {len(reqs)} reqs)")
 
 

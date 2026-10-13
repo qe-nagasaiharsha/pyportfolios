@@ -1,22 +1,22 @@
 {
-  "source": "World Economic Outlook (April 2026)",
+  "source": "World Economic Outlook (October 2026)",
   "unit": "USD trillions, current prices",
   "year": 2026,
   "values": {
-    "United States": 32.38,
-    "Canada": 2.51,
-    "Mexico": 2.12,
-    "Brazil": 2.64,
-    "United Kingdom": 4.26,
-    "France": 3.6,
-    "Germany": 5.45,
-    "Italy": 2.74,
+    "United States": 32.64,
+    "Canada": 2.49,
+    "Mexico": 2.18,
+    "Brazil": 2.65,
+    "United Kingdom": 4.27,
+    "France": 3.55,
+    "Germany": 5.47,
+    "Italy": 2.7,
     "Spain": 2.09,
-    "Russia": 2.66,
-    "India": 4.15,
-    "China": 20.85,
-    "Japan": 4.38,
-    "South Korea": 1.93,
-    "Australia": 2.12
+    "Russia": 2.86,
+    "India": 4.06,
+    "China": 21.55,
+    "Japan": 4.34,
+    "South Korea": 2.25,
+    "Australia": 2.11
   }
 }

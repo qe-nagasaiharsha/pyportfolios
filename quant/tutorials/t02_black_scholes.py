@@ -23,8 +23,8 @@ from emit import code, downsample, load, md, r, write_nb, write_ts, year_labels 
 
 SLUG = "black-scholes-and-the-greeks"
 SEED = 42          # no RNG needed — everything here is closed-form — kept for convention
-RF = 0.04          # flat risk-free rate used throughout
-T_1Y = 1.0
+RF = 0.045         # flat risk-free rate used throughout
+T_OPT = 0.25       # the headline option is 3-month, matching the article
 WINDOW = 252       # trailing realized-vol window
 
 
@@ -77,37 +77,50 @@ def main() -> None:
 
     s0 = float(px.iloc[-1])
     sigma = float(vol.iloc[-1])
-    k_atm = s0
+    k_atm = float(round(s0))   # a real listed strike, not the exact spot
 
-    # --- (e) ATM 1y call: price, all five Greeks, put-call parity ---------
-    c_atm = float(bs_price(s0, k_atm, T_1Y, RF, sigma, "call"))
-    p_atm = float(bs_price(s0, k_atm, T_1Y, RF, sigma, "put"))
-    delta, gamma, vega, theta, rho = (float(g) for g in bs_greeks(s0, k_atm, T_1Y, RF, sigma, "call"))
+    # --- (e) ATM 3-month call: price, all five Greeks, put-call parity ---------
+    c_atm = float(bs_price(s0, k_atm, T_OPT, RF, sigma, "call"))
+    p_atm = float(bs_price(s0, k_atm, T_OPT, RF, sigma, "put"))
+    delta, gamma, vega, theta, rho = (float(g) for g in bs_greeks(s0, k_atm, T_OPT, RF, sigma, "call"))
     parity_lhs = c_atm - p_atm
-    parity_rhs = s0 - k_atm * np.exp(-RF * T_1Y)
+    parity_rhs = s0 - k_atm * np.exp(-RF * T_OPT)
     parity_gap = abs(parity_lhs - parity_rhs)
 
+    # --- Monte Carlo cross-check -----------------------------------------
+    # Black-Scholes IS the discounted risk-neutral expectation of the GBM
+    # payoff, so simulating that GBM with drift = r must land on the closed
+    # form. Seeded, so the figure quoted in the prose is reproducible.
+    rng = np.random.default_rng(SEED)
+    n_mc = 200_000
+    z = rng.standard_normal(n_mc)
+    s_t = s0 * np.exp((RF - 0.5 * sigma ** 2) * T_OPT + sigma * np.sqrt(T_OPT) * z)
+    payoff = np.maximum(s_t - k_atm, 0.0)
+    mc_call = float(np.exp(-RF * T_OPT) * payoff.mean())
+    mc_se = float(np.exp(-RF * T_OPT) * payoff.std(ddof=1) / np.sqrt(n_mc))
+    mc_sigmas = abs(mc_call - c_atm) / mc_se
+
     # implied-vol round trip: invert the ATM price back to sigma
-    iv_recovered = float(implied_vol(c_atm, s0, k_atm, T_1Y, RF))
+    iv_recovered = float(implied_vol(c_atm, s0, k_atm, T_OPT, RF))
     # and what a 1-vol-pt repricing does (the vega check)
-    c_up1pt = float(bs_price(s0, k_atm, T_1Y, RF, sigma + 0.01, "call"))
+    c_up1pt = float(bs_price(s0, k_atm, T_OPT, RF, sigma + 0.01, "call"))
 
     # --- (b) call/put price vs strike, moneyness 0.7-1.3 ------------------
-    m = np.linspace(0.7, 1.3, 61)
+    m = np.linspace(0.80, 1.20, 81)
     strikes = m * s0
-    call_k = bs_price(s0, strikes, T_1Y, RF, sigma, "call")
-    put_k = bs_price(s0, strikes, T_1Y, RF, sigma, "put")
+    call_k = bs_price(s0, strikes, T_OPT, RF, sigma, "call")
+    put_k = bs_price(s0, strikes, T_OPT, RF, sigma, "put")
 
     # --- (c) delta & gamma vs moneyness ------------------------------------
     # vega and theta come along too: the article's Greeks figure shows all four
     # across strikes, and it is drawn from this payload rather than shipped as
     # a static image.
-    delta_m, gamma_m, vega_m, theta_m, _ = bs_greeks(s0, strikes, T_1Y, RF, sigma, "call")
+    delta_m, gamma_m, vega_m, theta_m, _ = bs_greeks(s0, strikes, T_OPT, RF, sigma, "call")
     vega_m_pt = vega_m / 100.0        # per vol point
     theta_m_day = theta_m / 365.0     # per calendar day
 
     # --- (d) vega & theta vs maturity for the ATM strike --------------------
-    mats = np.linspace(0.05, 2.0, 40)
+    mats = np.linspace(1e-3, 1.0, 60)
     _, _, vega_t, theta_t, _ = bs_greeks(s0, k_atm, mats, RF, sigma, "call")
     vega_t_pt = vega_t / 100.0        # per vol point
     theta_t_day = theta_t / 365.0     # per calendar day
@@ -116,10 +129,11 @@ def main() -> None:
     # the decay figure: both curves fall toward zero, steepening near expiry
     call_atm_t = bs_price(s0, k_atm, mats, RF, sigma, "call")
     call_otm_t = bs_price(s0, k_atm * 1.05, mats, RF, sigma, "call")
+    call_itm_t = bs_price(s0, k_atm * 0.95, mats, RF, sigma, "call")
 
-    # --- (a supplement) the ATM 1y call priced through time ----------------
-    # each day: spot + that day's trailing vol -> today's cost of 1y ATM insurance
-    call_ts = bs_price(px.values, px.values, T_1Y, RF, vol.values, "call") / px.values  # as % of spot
+    # --- (a supplement) the ATM 3-month call priced through time ----------------
+    # each day: spot + that day's trailing vol -> today's cost of 3-month ATM insurance
+    call_ts = bs_price(px.values, px.values, T_OPT, RF, vol.values, "call") / px.values  # as % of spot
 
     # vol regime stats for the prose
     v_hi_i, v_lo_i = int(np.argmax(vol.values)), int(np.argmin(vol.values))
@@ -127,7 +141,7 @@ def main() -> None:
     payload = {
         "params": {
             "start": str(px.index[0].date()), "end": str(px.index[-1].date()),
-            "nObs": int(len(px)), "s0": r(s0, 2), "rf": RF, "T": T_1Y,
+            "nObs": int(len(px)), "s0": r(s0, 2), "rf": RF, "T": T_OPT,
             "window": WINDOW, "sigma": r(sigma), "seed": SEED,
         },
         "history": {
@@ -156,6 +170,7 @@ def main() -> None:
             "thetaDay": r(list(theta_t_day), 4),
             "callAtm": r(list(call_atm_t), 2),
             "callOtm5": r(list(call_otm_t), 2),
+            "callItm5": r(list(call_itm_t), 2),
         },
         "atm": {
             "call": r(c_atm, 2), "put": r(p_atm, 2),
@@ -167,6 +182,9 @@ def main() -> None:
             "parityGap": r(parity_gap, 10),
             "ivRecovered": r(iv_recovered, 6),
             "callUp1pt": r(c_up1pt, 2),
+            "k": r(k_atm, 2),
+            "mcCall": r(mc_call, 3), "mcSe": r(mc_se, 4), "mcSigmas": r(mc_sigmas, 2),
+            "mcN": n_mc,
         },
     }
     ts = write_ts(SLUG, payload)
@@ -250,7 +268,7 @@ Price 1y calls and puts across moneyness 0.7–1.3 at today's spot and vol. The 
 identity $C - P = S - Ke^{-rT}$ holds to machine precision — if it doesn't, the
 implementation is wrong. It is the cheapest unit test in quantitative finance."""),
         code("""T = 1.0
-m = np.linspace(0.7, 1.3, 61)
+m = np.linspace(0.80, 1.20, 81)
 K = m * s0
 calls, puts = bs_price(s0, K, T, RF, sigma, "call"), bs_price(s0, K, T, RF, sigma, "put")
 
@@ -289,7 +307,7 @@ For the ATM strike, vega grows like $\\sqrt T$ — long-dated options are volati
 instruments — while per-day theta explodes as expiry approaches: the shorter the option,
 the faster the clock. This trade-off *is* the term-structure decision every options
 book makes."""),
-        code("""mats = np.linspace(0.05, 2.0, 40)
+        code("""mats = np.linspace(1e-3, 1.0, 60)
 _, _, vega_t, theta_t, _ = bs_greeks(s0, s0, mats, RF, sigma, "call")
 
 fig, ax1 = plt.subplots()

@@ -2,7 +2,6 @@ import { Section, SubSection, Lead, P, Bullets, CodeBlock, DataTable, Figure, Fo
 import { ProjectCard } from "@/components/article/ProjectCard";
 import { BOND_FUNCS, PRICE_YIELD_CODE, LADDER_CODE, ETF_CODE, TAYLOR_CODE } from "./bond-code";
 import d from "./data/bond-pricing-duration-convexity";
-import { Bar } from "@/components/charts/echarts/Bar";
 import { Line } from "@/components/charts/echarts/Line";
 
 export default function BondDurationConvexity() {
@@ -88,9 +87,10 @@ export default function BondDurationConvexity() {
             <Line
               ariaLabel="Price against yield for a 4% coupon bond at three maturities; every curve slopes down and the longest maturity is both the steepest and the most curved"
               height={260}
-              series={[{ name: "price", y: [...d.priceYield.price], color: "teal", width: 2 },
-                       { name: "duration tangent", y: [...d.priceYield.tangent], color: "graphite", dash: true }]}
-              xLabels={d.priceYield.xLabels.map((x) => [x[0], x[1]] as [number, string])}
+              series={[{ name: "2y Treasury", y: [...d.curves.p2], color: "graphite", width: 2 },
+                       { name: "10y Treasury", y: [...d.curves.p10], color: "teal", width: 2 },
+                       { name: "30y Treasury", y: [...d.curves.p30], color: "rust", width: 2 }]}
+              xLabels={d.curves.xLabels.map((x) => [x[0], x[1]] as [number, string])}
               yFmt={{ decimals: 0 }}
               xName="Yield"
               yName="Price"
@@ -107,14 +107,12 @@ export default function BondDurationConvexity() {
           <DataTable
             variant="prose"
             head={["Maturity (y)", "Mod. duration", "Convexity", "Exact dP for +100bp"]}
-            rows={[
-              ["1", "0.97", "1.4", "-0.96%"],
-              ["2", "1.90", "4.6", "-1.88%"],
-              ["5", "4.49", "23.5", "-4.38%"],
-              ["10", "8.18", "78.9", "-7.79%"],
-              ["20", "13.68", "239.9", "-12.55%"],
-              ["30", "17.38", "420.8", "-15.45%"],
-            ]}
+            rows={d.ladder.rows.map((r) => [
+              String(r.maturity),
+              r.duration.toFixed(2),
+              r.convexity.toFixed(1),
+              r.exact100.toFixed(2) + "%",
+            ])}
           />
         </SubSection>
 
@@ -129,11 +127,13 @@ export default function BondDurationConvexity() {
           <DataTable
             variant="prose"
             head={["ETF", "duration", "dY 2022", "predicted -D*dY", "actual 2022"]}
-            rows={[
-              ["SHY", "1.9", "3.70%", "-7.0%", "-3.9%"],
-              ["IEF", "7.5", "2.37%", "-17.8%", "-15.2%"],
-              ["TLT", "17.5", "2.07%", "-36.2%", "-31.2%"],
-            ]}
+            rows={d.etfPredict.rows.map((r) => [
+              r.etf,
+              r.duration.toFixed(1),
+              (r.dyBp / 100).toFixed(2) + "%",
+              r.predicted.toFixed(1) + "%",
+              r.actual.toFixed(1) + "%",
+            ])}
           />
           <Figure caption="Figure 4.3 · 2022 — the duration ladder in real life (indexed to 100)">
             <Line
@@ -163,15 +163,15 @@ export default function BondDurationConvexity() {
           </P>
           <CodeBlock code={TAYLOR_CODE} />
           <Figure caption="Figure 4.4 · 30y bond — Taylor approximation quality">
-            <Bar
-              ariaLabel="Actual price change against the duration-only and duration-plus-convexity approximations across yield shocks from minus 200 to plus 200 basis points"
+            <Line
+              ariaLabel="Exact price change for a 30-year bond against the duration-only and duration-plus-convexity approximations, across yield shocks from minus 300 to plus 300 basis points; the duration-only line sits below the exact curve on both sides"
               height={250}
-              labels={d.stress.rows.map((r) => `${r.bp > 0 ? "+" : ""}${r.bp}bp`)}
               series={[
-                { name: "duration only", values: d.stress.rows.map((r) => r.durOnly), color: "graphite" },
-                { name: "duration + convexity", values: d.stress.rows.map((r) => r.durConv), color: "teal" },
-                { name: "actual", values: d.stress.rows.map((r) => r.full), color: "rust" },
+                { name: "exact repricing", y: [...d.taylor.exact], color: "rust", width: 2 },
+                { name: "duration + convexity", y: [...d.taylor.quad], color: "teal", width: 2 },
+                { name: "duration only", y: [...d.taylor.lin], color: "graphite", width: 2, dash: true },
               ]}
+              xLabels={d.taylor.xLabels.map((x) => [x[0], x[1]] as [number, string])}
               yFmt={{ decimals: 0, suffix: "%" }}
               xName="Yield shock"
               yName="Price change"

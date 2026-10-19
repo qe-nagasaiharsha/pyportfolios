@@ -136,6 +136,54 @@ def main() -> None:
             "total2022": totals[c],
         })
 
+    # --- 5 · v2 exhibits ---------------------------------------------------
+    # (a) price/yield for three maturities on one axis: the slope is duration,
+    #     the bend is convexity, and both grow with maturity.
+    y_wide = np.linspace(0.001, 0.10, 200)
+    curves = {t: [bond_price(y, maturity=t) for y in y_wide] for t in (2, 10, 30)}
+    wide_pct = y_wide * 100
+    wx = lambda v: round((v - wide_pct[0]) / (wide_pct[-1] - wide_pct[0]), 4)  # noqa: E731
+    curve_xlabels = [[wx(v), f"{v:.0f}%"] for v in (0, 2, 4, 6, 8, 10)]
+
+    # (b) the duration ladder: one +100bp shock, six maturities, priced exactly
+    #     rather than approximated. This table IS the risk report.
+    ladder_rows = []
+    for t in (1, 2, 5, 10, 20, 30):
+        _, mod_t, conv_t = duration_convexity(YTM0, maturity=t)
+        pa = bond_price(YTM0, maturity=t)
+        pb = bond_price(YTM0 + 0.01, maturity=t)
+        ladder_rows.append({
+            "maturity": t,
+            "duration": r(mod_t, 2),
+            "convexity": r(conv_t, 1),
+            "exact100": r((pb / pa - 1) * 100, 2),
+        })
+
+    # (c) how good is the approximation? 30y bond, shocks out to +/-300bp.
+    #     duration-only always sits below the exact curve — convexity is the
+    #     holder's friend, overstating losses and understating gains.
+    T_LONG = 30
+    p0_long = bond_price(YTM0, maturity=T_LONG)
+    _, mod_long, conv_long = duration_convexity(YTM0, maturity=T_LONG)
+    shocks = np.linspace(-0.03, 0.03, 121)
+    exact_pct = np.array([bond_price(YTM0 + sh, maturity=T_LONG) / p0_long - 1 for sh in shocks]) * 100
+    lin_pct = -mod_long * shocks * 100
+    quad_pct = (-mod_long * shocks + 0.5 * conv_long * shocks ** 2) * 100
+    sx = lambda v: round((v - (-3.0)) / 6.0, 4)  # noqa: E731
+
+    # (d) 2022 reality check: published ETF durations against the actual move
+    ETF_D = {"SHY": (1.9, 0.0370), "IEF": (7.5, 0.0237), "TLT": (17.5, 0.0207)}
+    predict_rows = []
+    for c in ("SHY", "IEF", "TLT"):
+        dur_c, dy_c = ETF_D[c]
+        predict_rows.append({
+            "etf": c,
+            "duration": dur_c,
+            "dyBp": int(round(dy_c * 1e4)),
+            "predicted": r(-dur_c * dy_c * 100, 1),
+            "actual": r(totals[c] * 100, 1),   # totals are fractions; the table is in %
+        })
+
     payload = {
         "bond": {
             "face": FACE, "coupon": COUPON, "maturity": MATURITY, "freq": FREQ,
@@ -167,6 +215,30 @@ def main() -> None:
             "nDays": int(n22),
         },
         "empirical": {"rows": emp_rows},
+        "curves": {
+            "yPct": r(list(wide_pct), 2),
+            "p2": r(list(curves[2]), 2),
+            "p10": r(list(curves[10]), 2),
+            "p30": r(list(curves[30]), 2),
+            "xLabels": curve_xlabels,
+        },
+        "ladder": {"rows": ladder_rows},
+        "taylor": {
+            "maturity": T_LONG,
+            "duration": r(mod_long, 1),
+            "convexity": r(conv_long, 0),
+            "shockPct": r(list(shocks * 100), 2),
+            "exact": r(list(exact_pct), 2),
+            "lin": r(list(lin_pct), 2),
+            "quad": r(list(quad_pct), 2),
+            "xLabels": [[sx(v), f"{v:+.0f}%"] for v in (-3, -2, -1, 0, 1, 2, 3)],
+            "at200": {
+                "exact": r(float((bond_price(YTM0 + 0.02, maturity=T_LONG) / p0_long - 1) * 100), 2),
+                "lin": r(float(-mod_long * 0.02 * 100), 2),
+                "quad": r(float((-mod_long * 0.02 + 0.5 * conv_long * 0.02 ** 2) * 100), 2),
+            },
+        },
+        "etfPredict": {"rows": predict_rows},
     }
     ts = write_ts(SLUG, payload)
 

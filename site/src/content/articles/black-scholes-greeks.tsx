@@ -140,13 +140,14 @@ export default function BlackScholesGreeks() {
           <CodeBlock code={THETA_CODE} />
           <Figure caption="Figure 4.3 · QQQ call value vs time to expiry — Theta accelerates near zero">
             <Line
-              ariaLabel="Call value against time to expiry for an at-the-money and a 5% out-of-the-money QQQ call; both decay toward zero and steepen in the final weeks"
+              ariaLabel="Call value against time to expiry for a 5% in-the-money, an at-the-money and a 5% out-of-the-money QQQ call; all three decay toward zero and steepen in the final weeks"
               height={230}
-              series={[{ name: "at the money", y: [...d.maturity.callAtm], color: "teal", width: 2 },
-                       { name: "5% out of the money", y: [...d.maturity.callOtm5], color: "rust", width: 2, dash: true }]}
-              xLabels={[0, 0.25, 0.5, 0.75, 1].map((f) => [f, `${d.maturity.t[Math.round(f * (d.maturity.t.length - 1))].toFixed(1)}y`] as [number, string])}
+              series={[{ name: "5% in the money", y: [...d.maturity.callItm5], color: "graphite", width: 2, dash: true },
+                       { name: "at the money", y: [...d.maturity.callAtm], color: "teal", width: 2 },
+                       { name: "5% out of the money", y: [...d.maturity.callOtm5], color: "rust", width: 2 }]}
+              xLabels={[0, 0.25, 0.5, 0.75, 1].map((f) => [f, `${(d.maturity.t[Math.round(f * (d.maturity.t.length - 1))] * 12).toFixed(0)}m`] as [number, string])}
               yFmt={{ decimals: 0, prefix: "$" }}
-              xName="Time to expiry"
+              xName="Months to expiry"
               yName="Call value"
             />
           </Figure>
@@ -161,6 +162,22 @@ export default function BlackScholesGreeks() {
             ]}
           />
           <CodeBlock code={SANITY_CODE} />
+          <DataTable
+            variant="prose"
+            head={["Check", "Result", "Reading"]}
+            rows={[
+              [
+                <>Put&ndash;call parity</>,
+                <>gap {d.atm.parityGap < 1e-8 ? "< 1e-8" : d.atm.parityGap.toExponential(1)}</>,
+                "machine precision — the implementation is clean",
+              ],
+              [
+                <>Monte Carlo ({(d.atm.mcN / 1000).toFixed(0)}k paths)</>,
+                <>${d.atm.mcCall.toFixed(2)} vs ${d.atm.call.toFixed(2)}</>,
+                `${d.atm.mcSigmas.toFixed(2)} standard errors apart — agreement`,
+              ],
+            ]}
+          />
         </SubSection>
       </Section>
 

@@ -1,3 +1,10 @@
+/* Bond Pricing, Duration & Convexity.
+
+   Prose follows the v2 notebook (01-03_T_BondDuration_v2) section for section:
+   Introduction / Intuition / Theory / Application / Conclusion. The notebook is
+   the source of the words; every figure and table reads the generated data
+   module, so the numbers on the page are the numbers the code computed. */
+
 import { Section, SubSection, Lead, P, Bullets, CodeBlock, DataTable, Figure, Formula } from "@/components/article/prose";
 import { ProjectCard } from "@/components/article/ProjectCard";
 import { BOND_FUNCS, PRICE_YIELD_CODE, LADDER_CODE, ETF_CODE, TAYLOR_CODE } from "./bond-code";
@@ -7,81 +14,107 @@ import { Line } from "@/components/charts/echarts/Line";
 export default function BondDurationConvexity() {
   return (
     <>
-      <Lead>
-        A bond is just a promise of future cash flows — so its price is entirely a question of{" "}
-        <em>discounting</em>. From that single idea follow the three numbers every fixed-income desk
-        lives by: <b>price</b>, <b>duration</b> (first-order rate sensitivity, the bond&apos;s Delta)
-        and <b>convexity</b> (second-order, the bond&apos;s Gamma).
-      </Lead>
+      <Lead>Measuring interest rate risk with the key fixed income metrics.</Lead>
 
-      {/* topic-report card — the spec for the piece, in the same place
-          on every article */}
+      <Bullets
+        items={[
+          <>A bond is a stream of promised cash flows, so its price is a question of <b>discounting</b>.</>,
+          <><b>Duration</b> is the bond&apos;s delta: the first-order sensitivity of price to yield.</>,
+          <><b>Convexity</b> is its gamma — the curvature correction, and it works, for option-free bonds, in the holder&apos;s favour.</>,
+          <>Together they summarize the cash-flow schedule into 2 numbers of the risk report.</>,
+          <>2022 turned the theory into a live experiment: the same rate shock hit short and long bonds differently.</>,
+        ]}
+      />
+
       <ProjectCard slug="bond-duration-convexity" />
 
       <Section id="summary" n={1} title="Summary">
-        <P>
-          A bond&apos;s price is the present value of its coupons and principal, discounted at the{" "}
-          <b>yield to maturity</b>. Price and yield move inversely, and the relationship is{" "}
-          <em>curved</em>, not linear. <b>Duration</b> measures the percentage price change for a
-          small yield change; <b>convexity</b> corrects that estimate for the curvature — and the
-          correction always works in the bondholder&apos;s favour.
-        </P>
+        <P>A few simple facts to get up to speed:</P>
+        <Bullets
+          items={[
+            <>A bond&apos;s price is the <b>present value</b> of its coupons and principal, discounted at the yield to maturity.</>,
+            <>Price and yield move <b>inversely</b>, and the relationship is <em>curved</em>, not straight.</>,
+            <><b>2 numbers</b> summarise that relationship — both computable from the cash-flow schedule alone: <b>duration</b> <Formula key="d">{String.raw`D`}</Formula> (the slope: % price change per 1% yield change) and <b>convexity</b> <Formula key="c">{String.raw`C`}</Formula> (the curvature: how the slope itself changes).</>,
+          ]}
+        />
       </Section>
 
       <Section id="intuition" n={2} title="Intuition">
-        <SubSection label="2.1" title="Discounting, not magic">
-          <P>
-            When market yields rise from 2% to 4%, an old bond paying 2% coupons is suddenly a bad
-            deal — nobody pays face value for below-market cash flows. Its price falls until a buyer
-            earns the <em>new</em> market yield. No sentiment involved: pure arithmetic.
-          </P>
+        <P>The logic before diving into equations.</P>
+
+        <SubSection label="2.1" title="Discounting, not sentiment">
+          <Bullets
+            items={[
+              <>When market yields rise from 2% to 4%, a bond still paying 2% coupons is simply a worse deal.</>,
+              <>Its price falls until a new buyer earns the <em>current</em> market yield.</>,
+              <>Nothing behavioural is involved — it is arithmetic on fixed cash flows.</>,
+            ]}
+          />
         </SubSection>
 
-        <SubSection label="2.2" title="Duration = weighted waiting time">
-          <P>
-            Macaulay duration is the average time you wait for your money, weighting each cash flow by
-            its share of present value. A 30y bond makes you wait decades → huge sensitivity. A 2y
-            note returns your money quickly → barely reacts. <b>Rule of thumb: a bond loses ~duration
-            × Δy percent</b> when yields rise by Δy.
-          </P>
+        <SubSection label="2.2" title="Macaulay duration is the weighted average waiting time">
+          <Bullets
+            items={[
+              <>Each cash flow is weighted by its share of present value, then averaged by the time you wait for it.</>,
+              <>A 30-year bond makes you wait decades, so a small yield change compounds over a long horizon.</>,
+              <>Rule of thumb (modified duration): a bond changes roughly <Formula key="r">{String.raw`-D \times \Delta y`}</Formula> per cent when yields rise by <Formula key="dy">{String.raw`\Delta y`}</Formula>.</>,
+            ]}
+          />
         </SubSection>
 
-        <SubSection label="2.3" title="Convexity: the curvature that helps you">
-          <P>
-            The price-yield curve is convex: losses from rising yields are <em>smaller</em> than the
-            linear estimate, gains from falling yields are <em>larger</em>. Long bonds have the most
-            convexity — which is why duration alone increasingly misleads for big yield moves.
-          </P>
+        <SubSection label="2.3" title="Convexity is the holder's friend">
+          <Bullets
+            items={[
+              <>The price-yield curve bends upward, so losses from rising yields are <em>smaller</em> than the straight-line estimate.</>,
+              <>Gains from falling yields are correspondingly <em>larger</em>.</>,
+              <>Long bonds have the most convexity — which is why duration alone increasingly misleads for big moves.</>,
+            ]}
+          />
         </SubSection>
       </Section>
 
-      <Section id="mechanics" n={3} title="Theory & Mechanics">
-        <P>
-          With face <Formula>{String.raw`F`}</Formula>, coupon rate <Formula>{String.raw`c`}</Formula>{" "}
-          (paid <Formula>{String.raw`f`}</Formula> times a year), yield <Formula>{String.raw`y`}</Formula>{" "}
-          and <Formula>{String.raw`n = fT`}</Formula> periods:
-        </P>
-        <Formula block>{String.raw`P = \sum_{i=1}^{n} \frac{cF/f}{(1+y/f)^i} + \frac{F}{(1+y/f)^n}`}</Formula>
-        <P>
-          <b>Macaulay duration</b> (years):{" "}
-          <Formula>{String.raw`D_{mac} = \frac{1}{P}\sum_i t_i \cdot PV(CF_i)`}</Formula>, and{" "}
-          <b>modified duration</b> <Formula>{String.raw`D = D_{mac}/(1+y/f)`}</Formula>.
-        </P>
-        <P>
-          <b>Convexity</b> <Formula>{String.raw`C`}</Formula> is the second derivative of price w.r.t.
-          yield, scaled by price. Both derivatives can also be computed numerically — which is how
-          we&apos;ll verify the analytic formulas:
-        </P>
-        <Formula block>{String.raw`\frac{\Delta P}{P} \approx -D\,\Delta y + \tfrac{1}{2} C (\Delta y)^2`}</Formula>
-        <CodeBlock code={BOND_FUNCS} />
+      <Section id="mechanics" n={3} title="Theory &amp; Mechanics">
+        <P>Below the theoretical foundation and respective equations.</P>
+
+        <SubSection label="3.1" title="The pricing formula">
+          <P>
+            Face <Formula>{String.raw`F`}</Formula>, annual coupon rate <Formula>{String.raw`c`}</Formula>{" "}
+            paid <Formula>{String.raw`f`}</Formula> times a year, yield <Formula>{String.raw`y`}</Formula>,
+            and <Formula>{String.raw`n = fT`}</Formula> periods.
+          </P>
+          <Formula block>{String.raw`P = \sum_{i=1}^{n} \frac{cF/f}{(1+y/f)^i} + \frac{F}{(1+y/f)^n}`}</Formula>
+        </SubSection>
+
+        <SubSection label="3.2" title="Duration and convexity">
+          <P>
+            Macaulay duration is the PV-weighted average time to a cash flow; modified duration
+            rescales it into a price sensitivity.
+          </P>
+          <Formula block>{String.raw`D_{mac} = \frac{1}{P}\sum_i t_i\,PV(CF_i), \qquad D = \frac{D_{mac}}{1+y/f}, \qquad C = \frac{1}{P}\frac{\partial^2 P}{\partial y^2}`}</Formula>
+        </SubSection>
+
+        <SubSection label="3.3" title="The second-order approximation">
+          <P>
+            This is the equation risk reports actually use — duration for the slope, convexity for
+            the correction.
+          </P>
+          <Formula block>{String.raw`\frac{\Delta P}{P} \approx -D\,\Delta y + \tfrac{1}{2}C\,(\Delta y)^2`}</Formula>
+          <P>
+            The two functions below implement this: one returns the <b>price</b>, the other the{" "}
+            <b>sensitivities</b> by central difference.
+          </P>
+          <CodeBlock code={BOND_FUNCS} />
+        </SubSection>
       </Section>
 
       <Section id="example" n={4} title="Applied Example — US Treasuries">
         <SubSection label="4.1" title="The price-yield curve, by maturity">
-          <P>
-            Same 4% coupon, three maturities. Watch two things: the <b>slope</b> (longer = steeper =
-            more duration) and the <b>curvature</b> (longer = more convex).
-          </P>
+          <Bullets
+            items={[
+              <>Same 4% coupon, three maturities, plotted across a wide yield range.</>,
+              <>Watch the <b>slope</b> (longer = steeper = more duration) and the <b>curvature</b> (longer = more convex).</>,
+            ]}
+          />
           <CodeBlock code={PRICE_YIELD_CODE} />
           <Figure caption="Figure 4.1 · Price vs yield — 4% coupon, three maturities">
             <Line
@@ -98,11 +131,13 @@ export default function BondDurationConvexity() {
           </Figure>
         </SubSection>
 
-        <SubSection label="4.2" title="The duration ladder: a +100bp shock">
-          <P>
-            The whole risk story in one table — duration grows with maturity, and so does the damage
-            from the same yield move.
-          </P>
+        <SubSection label="4.2" title="The duration ladder — 1 shock, 6 maturities">
+          <Bullets
+            items={[
+              <>A parallel +100bp move applied across the curve, priced exactly rather than approximated.</>,
+              <>Duration rises with maturity, and so does the damage — this table <em>is</em> the risk report.</>,
+            ]}
+          />
           <CodeBlock code={LADDER_CODE} />
           <DataTable
             variant="prose"
@@ -116,13 +151,14 @@ export default function BondDurationConvexity() {
           />
         </SubSection>
 
-        <SubSection label="4.3" title="Reality check: SHY, IEF, TLT in 2022">
-          <P>
-            2022 was the worst bond year in modern history: the 2y yield rose ~370bp, the 10y ~237bp,
-            the 30y ~207bp. If duration analytics mean anything, the three Treasury ETFs&apos; losses
-            should line up with their durations (~1.9 / ~7.5 / ~17.5). Let&apos;s check against real
-            prices.
-          </P>
+        <SubSection label="4.3" title="Reality check: SHY, IEF and TLT in 2022">
+          <Bullets
+            items={[
+              <>2022 was the worst bond year in modern history: the 2y yield rose ~370bp, the 10y ~237bp, the 30y ~207bp.</>,
+              <>The three Treasury ETFs carry durations of roughly <b>1.9 / 7.5 / 17.5</b> years, so their losses should rank accordingly.</>,
+              <>The gap between predicted <Formula key="p">{String.raw`-D\Delta y`}</Formula> and realised return is itself the lesson: coupon carry, convexity and the fact that ETFs hold <em>rolling</em> portfolios all live in that residual.</>,
+            ]}
+          />
           <CodeBlock code={ETF_CODE} />
           <DataTable
             variant="prose"
@@ -148,21 +184,18 @@ export default function BondDurationConvexity() {
               yName="Indexed to 100"
             />
           </Figure>
-          <P>
-            The ranking is exactly as duration predicts — and the gaps between predicted and actual
-            returns are the tutorial&apos;s best teaching moment: coupon carry, convexity (helping
-            TLT), and the fact that ETFs hold rolling portfolios rather than a single bond all show up
-            in the residual.
-          </P>
         </SubSection>
 
-        <SubSection label="4.4" title="Sanity check: how good is the Taylor approximation?">
-          <P>
-            Duration-only vs duration+convexity vs exact repricing, for the 30y bond across shocks up
-            to ±300bp.
-          </P>
+        <SubSection label="4.4" title="Sanity check: how good is the approximation?">
+          <Bullets
+            items={[
+              <>Duration alone is a straight line; adding convexity bends it toward the true price curve.</>,
+              <><b>How to read the result:</b> the two approximations are indistinguishable for small shocks and diverge visibly beyond roughly ±100bp.</>,
+              <>The duration-only line always sits <em>below</em> the exact curve — it overstates losses and understates gains, which is convexity working for the holder.</>,
+            ]}
+          />
           <CodeBlock code={TAYLOR_CODE} />
-          <Figure caption="Figure 4.4 · 30y bond — Taylor approximation quality">
+          <Figure caption={`Figure 4.4 · ${d.taylor.maturity}y bond — Taylor approximation quality (D=${d.taylor.duration.toFixed(1)}, C=${d.taylor.convexity.toFixed(0)})`}>
             <Line
               ariaLabel="Exact price change for a 30-year bond against the duration-only and duration-plus-convexity approximations, across yield shocks from minus 300 to plus 300 basis points; the duration-only line sits below the exact curve on both sides"
               height={250}
@@ -177,28 +210,37 @@ export default function BondDurationConvexity() {
               yName="Price change"
             />
           </Figure>
+          <DataTable
+            variant="prose"
+            head={["+200bp on a 30y bond", "Price change"]}
+            rows={[
+              ["Exact repricing", d.taylor.at200.exact.toFixed(2) + "%"],
+              ["Duration only", d.taylor.at200.lin.toFixed(2) + "%"],
+              ["Duration + convexity", d.taylor.at200.quad.toFixed(2) + "%"],
+            ]}
+          />
         </SubSection>
       </Section>
 
-      <Section id="conclusion" n={5} title="Conclusion">
+      <Section id="conclusion" n={5} title="Strengths, limits &amp; extensions">
         <SubSection label="5a" title="Strengths">
           <Bullets
             items={[
-              <><b>One framework, any bond</b> — price, duration and convexity summarise rate risk in three numbers</>,
-              <><b>First-order accuracy is excellent</b> for small yield moves — the industry&apos;s daily risk language</>,
-              <><b>Convexity correction</b> keeps the approximation honest even for ±200bp shocks</>,
-              <><b>Model-free verification</b> — ETF drawdowns in 2022 line up with durations, straight from public data</>,
+              <><b>Three numbers, any bond</b> — price, duration and convexity summarise an entire cash-flow schedule</>,
+              <><b>Excellent first-order accuracy</b> — duration is the industry&apos;s daily risk language for good reason</>,
+              <><b>Convexity keeps it honest</b> — the correction holds the approximation together out to large shocks</>,
+              <><b>Model-free verification</b> — 2022 ETF returns line up with durations straight from public data</>,
             ]}
           />
         </SubSection>
 
-        <SubSection label="5b" title="Weaknesses & Limitations">
+        <SubSection label="5b" title="Weaknesses &amp; Limitations">
           <Bullets
             items={[
-              <><b>Parallel-shift assumption</b> — duration assumes the whole curve moves together; real curves twist and steepen (key-rate durations fix this)</>,
-              <><b>Constant yield reinvestment</b> — YTM assumes coupons reinvest at the same rate</>,
-              <><b>Credit ignored</b> — this is a rates framework; spreads and default risk need their own layer</>,
-              <><b>ETF ≠ single bond</b> — rolling portfolios have carry and roll-down effects the single-bond math misses</>,
+              <><b>Parallel-shift assumption</b> — real curves twist and steepen rather than moving in lockstep</>,
+              <><b>Constant reinvestment</b> — yield to maturity assumes coupons are reinvested at the same rate</>,
+              <><b>No credit</b> — this is a pure rates framework; spreads and default risk need their own layer</>,
+              <><b>An ETF is not a single bond</b> — rolling portfolios carry roll-down and carry effects the formula misses</>,
             ]}
           />
         </SubSection>
@@ -206,20 +248,20 @@ export default function BondDurationConvexity() {
         <SubSection label="5c" title="Applications in Practice">
           <Bullets
             items={[
-              "Portfolio duration targeting and immunisation",
-              "Rate-shock stress tests (the ±100bp tables in every risk report)",
-              "Barbell vs bullet trades — convexity is the whole game",
+              "Portfolio duration targeting and liability immunisation",
+              "The ±100bp rate-shock tables in every institutional risk report",
+              "Barbell versus bullet trades, where convexity is the entire argument",
             ]}
           />
         </SubSection>
 
-        <SubSection label="5d" title="Alternatives & Extensions">
+        <SubSection label="5d" title="Alternatives &amp; Extensions">
           <Bullets
             items={[
-              <><b>Key-rate durations</b> — sensitivity to individual curve points</>,
-              <><b>Yield curve bootstrapping with QuantLib</b> — the natural companion piece (curriculum M2)</>,
-              <><b>Term-structure models</b> — Vasicek, Hull-White, CIR for simulating rates rather than shocking them</>,
-              <><b>The SVB collapse</b> — our future case study on what happens when duration risk meets deposit flight</>,
+              <><b>Key-rate durations</b> — sensitivity to individual points on the curve rather than a parallel shift</>,
+              <><b>Yield-curve bootstrapping</b> — building the discount curve instead of assuming a single yield</>,
+              <><b>Term-structure models</b> — Vasicek, Hull-White and CIR simulate rates rather than shocking them</>,
+              <><b>Credit risk</b> — hazard rates and spread duration for anything that can default</>,
             ]}
           />
         </SubSection>

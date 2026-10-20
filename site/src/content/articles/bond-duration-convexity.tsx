@@ -111,7 +111,7 @@ export default function BondDurationConvexity() {
         <SubSection label="4.1" title="The price-yield curve, by maturity">
           <Bullets
             items={[
-              <>Same 4% coupon, three maturities, plotted across a wide yield range.</>,
+              <>Same 4% coupon, 3 maturities, plotted across a wide yield range.</>,
               <>Watch the <b>slope</b> (longer = steeper = more duration) and the <b>curvature</b> (longer = more convex).</>,
             ]}
           />
